@@ -1,0 +1,48 @@
+@using System.Security.Claims
+@using Newtonsoft.Json
+@using SFA.DAS.EmployerFeedback.Infrastructure.Configuration
+@model SFA.DAS.EmployerFeedback.Web.Models.Home.SignedInStubViewModel
+
+@{
+    ViewBag.Title = "You've signed in";
+    Layout = "_Layout";
+}
+
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+        <h1 class="govuk-heading-xl">
+            @ViewBag.Title
+        </h1>
+
+        <p>Id: @Model.StubId</p>
+        <p>Email: @Model.StubEmail</p>
+        <table class="govuk-table">
+            <thead class="govuk-table__head">
+            <tr class="govuk-table__row">
+                <th scope="col" class="govuk-table__header">Account ID</th>
+                <th scope="col" class="govuk-table__header">Role</th>
+                <th scope="col" class="govuk-table__header">Employer name</th>
+                <th scope="col" class="govuk-table__header"></th>
+            </tr>
+            </thead>
+            <tbody class="govuk-table__body">
+            @foreach (var account in Model.GetAccounts())
+            {
+                <tr class="govuk-table__row">
+                    <td class="govuk-table__cell">@account.AccountId</td>
+                    <td class="govuk-table__cell">@account.Role</td>
+                    <td class="govuk-table__cell">@account.EmployerName</td>
+                    @if (Model.HasHashedAccountIdPlaceholder())
+                    {
+                    <td class="govuk-table__cell"><a href="@Model.ReplaceHashedAccountIdPlaceholderUrl(account.AccountId)">Continue as @account.EmployerName</a></td>
+                    }
+                </tr>
+            }
+            </tbody>
+        </table>
+        @if (!Model.HasHashedAccountIdPlaceholder())
+        {
+            <a class="govuk-button" id="continue" href="@Model.ReturnUrl">Continue</a>
+        }
+    </div>
+</div>
