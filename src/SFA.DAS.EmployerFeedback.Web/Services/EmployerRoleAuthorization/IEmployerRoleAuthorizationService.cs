@@ -6,6 +6,6 @@ namespace SFA.DAS.EmployerFeedback.Web.Services.EmployerRoleAuthorization
 {
     public interface IEmployerRoleAuthorizationService
     {
-        Task<bool> IsEmployerAuthorized(ClaimsPrincipal user, UserRole minimumAllowedRole);
+
     }
 }

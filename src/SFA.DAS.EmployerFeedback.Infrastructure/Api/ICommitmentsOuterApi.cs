@@ -7,7 +7,7 @@ namespace SFA.DAS.EmployerFeedback.Infrastructure.Api
 {
     public interface ICommitmentsOuterApi
     {
-        [Get("/api/learners?{batch_size}&{batch_number}")]
+        [Get("/api/learners")]
         Task<LearnersResponse> GetLearners([Query] int batch_size, [Query] int batch_number);
 
         [Get("/ping")]

@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using RestEase;
 using SFA.DAS.EmployerFeedback.Infrastructure.Api;
 
 namespace SFA.DAS.EmployerFeedback.Web.Controllers
@@ -14,6 +15,7 @@ namespace SFA.DAS.EmployerFeedback.Web.Controllers
             this._logger = logger;
         }
 
+        [Get("")]
         public IActionResult Index()
         {
             _logger.LogInformation("TestController Index called");

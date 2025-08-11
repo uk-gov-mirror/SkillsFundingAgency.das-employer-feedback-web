@@ -47,4 +47,8 @@
     <ProjectReference Include="..\SFA.DAS.EmployerFeedback.Application\SFA.DAS.EmployerFeedback.Application.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Authorization\" />
+  </ItemGroup>
+
 </Project>

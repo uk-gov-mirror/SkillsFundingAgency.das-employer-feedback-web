@@ -53,8 +53,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Authorization\" />
     <Folder Include="Models\" />
     <Folder Include="Orchestrators\" />
+    <Folder Include="Services\" />
     <Folder Include="Validators\" />
   </ItemGroup>
 

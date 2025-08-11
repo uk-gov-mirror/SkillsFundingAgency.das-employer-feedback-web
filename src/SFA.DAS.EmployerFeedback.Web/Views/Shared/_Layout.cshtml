@@ -1,15 +1,14 @@
 ﻿@using Microsoft.Extensions.Configuration
 @using SFA.DAS.Employer.Shared.UI.Models
-@using SFA.DAS.EmployerFeedback.Web.Authorization
 @using SFA.DAS.EmployerFeedback.Web.Extensions
 @using SFA.DAS.EmployerFeedback.Web.ViewDataKeys
 @inject IConfiguration Configuration
 
 @{
-    var accountId = ViewContext.RouteData.Values[RouteValueKeys.HashedAccountId] as string;
-    ViewBag.HideHeaderBorder = true;
-    var cookieBannerModel = new CookieBannerModel { AccountId = accountId };
-    var footerModel = new FooterModel { AccountId = accountId, UsePrivacyV2 = true };
+    // var accountId = ViewContext.RouteData.Values[RouteValueKeys.HashedAccountId] as string;
+    // ViewBag.HideHeaderBorder = true;
+    // var cookieBannerModel = new CookieBannerModel { AccountId = accountId };
+    // var footerModel = new FooterModel { AccountId = accountId, UsePrivacyV2 = true };
 
     var hideHeader = (bool) ViewData[ViewDataKeys.HideAccountNavigation];
     var hideNavigationLinks = !(bool) ViewData[ViewDataKeys.ShowNav];
@@ -48,13 +47,13 @@
 
     <a href="#main-content" class="govuk-skip-link">Skip to main content</a>
 
-    <partial name="_CookieBanner" model="@cookieBannerModel"></partial>
+    @* <partial name="_CookieBanner" model="@cookieBannerModel"></partial>
 
     <partial name="_Header" />
     @if ((accountId != null && !hideHeader) || (!hideHeader && hideNavigationLinks))
     {
         <partial name="_Menu" model="@accountId" />
-    }
+    } *@
 
     <div class="govuk-phase-banner govuk-width-container">
         <p class="govuk-phase-banner__content">
@@ -70,7 +69,7 @@
     <div class="govuk-width-container">
         @RenderBody()
     </div>
-    <partial name="_Footer" model="@footerModel" />
+    @* <partial name="_Footer" model="@footerModel" /> *@
     <partial name="_GoogleAnalyticsInfo" />
 
     @* These javascripts are not included in the project they are loaded from the cdn *@

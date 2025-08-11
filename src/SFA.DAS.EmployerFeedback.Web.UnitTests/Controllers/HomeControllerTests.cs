@@ -45,8 +45,7 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Controllers
                 _configMock.Object,
                 _urlBuilderMock.Object,
                 _contextAccessorMock.Object,
-                _loggerMock.Object,
-                _stubAuthServiceMock.Object
+                _loggerMock.Object
             );
         }
 

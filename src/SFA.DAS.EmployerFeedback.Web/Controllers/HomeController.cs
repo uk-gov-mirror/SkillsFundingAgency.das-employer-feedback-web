@@ -27,7 +27,7 @@ namespace SFA.DAS.EmployerFeedback.Web.Controllers
         private readonly IHttpContextAccessor _contextAccessor;
         private readonly ILogger<HomeController> _logger;
         
-        private readonly IStubAuthenticationService _stubAuthenticationService;
+        //private readonly IStubAuthenticationService _stubAuthenticationService;
 
         #region Routes
         public const string DashboardStubRouteGet = nameof(DashboardStubRouteGet);
@@ -36,14 +36,13 @@ namespace SFA.DAS.EmployerFeedback.Web.Controllers
         #endregion Routes
 
         public HomeController(IConfiguration config, UrlBuilder urlBuilder, 
-            IHttpContextAccessor contextAccessor, ILogger<HomeController> logger, 
-            IStubAuthenticationService stubAuthenticationService)
+            IHttpContextAccessor contextAccessor, ILogger<HomeController> logger)
         {
             _config = config;
             _urlBuilder = urlBuilder;
             _contextAccessor = contextAccessor;
             _logger = logger;
-            _stubAuthenticationService = stubAuthenticationService;
+            //_stubAuthenticationService = stubAuthenticationService;
         }
 
         public IActionResult Index()
@@ -137,14 +136,14 @@ namespace SFA.DAS.EmployerFeedback.Web.Controllers
         [Route("SignIn-Stub")]
         public async Task<IActionResult> SigninStubPost(SignInStubViewModel model)
         {
-            var claims = await _stubAuthenticationService.GetStubSignInClaims(new StubAuthUserDetails
-            {
-                Email = model.StubEmail,
-                Id = model.StubId
-            });
+            //var claims = await _stubAuthenticationService.GetStubSignInClaims(new StubAuthUserDetails
+            //{
+            //    Email = model.StubEmail,
+            //    Id = model.StubId
+            //});
 
-            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, claims,
-                new AuthenticationProperties());
+            //await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, claims,
+            //    new AuthenticationProperties());
 
             return RedirectToRoute("SignedInStub", new { model.ReturnUrl});
         }
