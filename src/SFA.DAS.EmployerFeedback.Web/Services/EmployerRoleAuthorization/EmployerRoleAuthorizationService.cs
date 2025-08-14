@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using SFA.DAS.EmployerFeedback.Infrastructure.Api.Types;
+using SFA.DAS.EmployerFeedback.Web.Authorization;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
@@ -26,71 +27,71 @@ namespace SFA.DAS.EmployerFeedback.Web.Services.EmployerRoleAuthorization
             _logger = logger;
         }
 
-        //public async Task<bool> IsEmployerAuthorized(ClaimsPrincipal user, UserRole minimumAllowedRole)
-        //{
-        //    if (!_httpContextAccessor.HttpContext.Request.RouteValues.ContainsKey(RouteValueKeys.HashedAccountId))
-        //    {
-        //        return false;
-        //    }
+        public async Task<bool> IsEmployerAuthorized(ClaimsPrincipal user, UserRole minimumAllowedRole)
+        {
+            if (!_httpContextAccessor.HttpContext.Request.RouteValues.ContainsKey(RouteValueKeys.HashedAccountId))
+            {
+                return false;
+            }
 
-        //    var accountIdFromUrl = _httpContextAccessor.HttpContext.Request.RouteValues[RouteValueKeys.HashedAccountId].ToString().ToUpper();
-        //    var associatedAccountsClaim = user.FindFirst(c => c.Type.Equals(EmployerClaims.UserAssociatedAccountsClaimsTypeIdentifier));
+            var accountIdFromUrl = _httpContextAccessor.HttpContext.Request.RouteValues[RouteValueKeys.HashedAccountId].ToString().ToUpper();
+            var associatedAccountsClaim = user.FindFirst(c => c.Type.Equals(EmployerClaims.UserAssociatedAccountsClaimsTypeIdentifier));
 
-        //    if (associatedAccountsClaim?.Value == null)
-        //        return false;
+            if (associatedAccountsClaim?.Value == null)
+                return false;
 
-        //    Dictionary<string, EmployerUserAccountItem> employerAccounts;
+            Dictionary<string, EmployerUserAccountItem> employerAccounts;
 
-        //    try
-        //    {
-        //        employerAccounts = JsonConvert.DeserializeObject<Dictionary<string, EmployerUserAccountItem>>(associatedAccountsClaim.Value);
-        //    }
-        //    catch (JsonSerializationException e)
-        //    {
-        //        _logger.LogError(e, "Could not deserialize employer account claim for user");
-        //        return false;
-        //    }
+            try
+            {
+                employerAccounts = JsonConvert.DeserializeObject<Dictionary<string, EmployerUserAccountItem>>(associatedAccountsClaim.Value);
+            }
+            catch (JsonSerializationException e)
+            {
+                _logger.LogError(e, "Could not deserialize employer account claim for user");
+                return false;
+            }
 
-        //    EmployerUserAccountItem employerIdentifier = null;
+            EmployerUserAccountItem employerIdentifier = null;
 
-        //    if (employerAccounts != null)
-        //    {
-        //        employerIdentifier = employerAccounts.ContainsKey(accountIdFromUrl)
-        //            ? employerAccounts[accountIdFromUrl] : null;
-        //    }
+            if (employerAccounts != null)
+            {
+                employerIdentifier = employerAccounts.ContainsKey(accountIdFromUrl)
+                    ? employerAccounts[accountIdFromUrl] : null;
+            }
 
-        //    if (employerAccounts == null || !employerAccounts.ContainsKey(accountIdFromUrl))
-        //    {
-        //        var userIdClaim = user.Claims
-        //            .FirstOrDefault(c => c.Type.Equals(ClaimTypes.NameIdentifier));
+            if (employerAccounts == null || !employerAccounts.ContainsKey(accountIdFromUrl))
+            {
+                var userIdClaim = user.Claims
+                    .FirstOrDefault(c => c.Type.Equals(ClaimTypes.NameIdentifier));
 
-        //        var emailClaim = user.Claims
-        //            .FirstOrDefault(c => c.Type.Equals(ClaimTypes.Email));
+                var emailClaim = user.Claims
+                    .FirstOrDefault(c => c.Type.Equals(ClaimTypes.Email));
 
-        //        if (userIdClaim == null || emailClaim == null)
-        //            return false;
+                if (userIdClaim == null || emailClaim == null)
+                    return false;
 
-        //        var email = emailClaim.Value;
-        //        var userId = userIdClaim.Value;
+                var email = emailClaim.Value;
+                var userId = userIdClaim.Value;
 
-        //        var employerUser = await _userAccountsService.GetUserAccounts(userId, email);
-        //        var employerUserAccounts = employerUser.EmployerAccounts.ToDictionary(k => k.AccountId);
-        //        var employerUserAccountsAsJson = JsonConvert.SerializeObject(employerUserAccounts);
+                var employerUser = await _userAccountsService.GetUserAccounts(userId, email);
+                var employerUserAccounts = employerUser.EmployerAccounts.ToDictionary(k => k.AccountId);
+                var employerUserAccountsAsJson = JsonConvert.SerializeObject(employerUserAccounts);
 
-        //        userIdClaim.Subject.RemoveClaim(associatedAccountsClaim);
-        //        associatedAccountsClaim = new Claim(EmployerClaims.UserAssociatedAccountsClaimsTypeIdentifier, employerUserAccountsAsJson, JsonClaimValueTypes.Json);
-        //        userIdClaim.Subject.AddClaim(associatedAccountsClaim);
+                userIdClaim.Subject.RemoveClaim(associatedAccountsClaim);
+                associatedAccountsClaim = new Claim(EmployerClaims.UserAssociatedAccountsClaimsTypeIdentifier, employerUserAccountsAsJson, JsonClaimValueTypes.Json);
+                userIdClaim.Subject.AddClaim(associatedAccountsClaim);
 
-        //        if (!employerUserAccounts.ContainsKey(accountIdFromUrl))
-        //        {
-        //            return false;
-        //        }
+                if (!employerUserAccounts.ContainsKey(accountIdFromUrl))
+                {
+                    return false;
+                }
 
-        //        employerIdentifier = employerUserAccounts[accountIdFromUrl];
-        //    }
+                employerIdentifier = employerUserAccounts[accountIdFromUrl];
+            }
 
-        //    return CheckUserRoleForAccess(employerIdentifier, minimumAllowedRole);
-        //}
+            return CheckUserRoleForAccess(employerIdentifier, minimumAllowedRole);
+        }
 
         private static bool CheckUserRoleForAccess(EmployerUserAccountItem employerIdentifier, UserRole minimumAllowedRole)
         {

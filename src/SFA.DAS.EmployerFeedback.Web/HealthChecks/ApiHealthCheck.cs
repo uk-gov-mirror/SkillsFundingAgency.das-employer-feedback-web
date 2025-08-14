@@ -1,5 +1,5 @@
 ﻿using Microsoft.Extensions.Diagnostics.HealthChecks;
-using SFA.DAS.EmployerFeedback.Infrastructure.Api;
+using SFA.DAS.EmployerFeedback.Domain.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
@@ -11,9 +11,9 @@ namespace SFA.DAS.EmployerFeedback.Web.HealthChecks
     [ExcludeFromCodeCoverage]
     public class ApiHealthCheck : IHealthCheck
     {
-        private readonly ICommitmentsOuterApi _outerApi;
+        private readonly IEmployerFeedbackOuterApi _outerApi;
 
-        public ApiHealthCheck(ICommitmentsOuterApi outerApi)
+        public ApiHealthCheck(IEmployerFeedbackOuterApi outerApi)
         {
             _outerApi = outerApi;
         }

@@ -24,7 +24,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Services\UserAccounts\" />
+    <Folder Include="Api\Requests\" />
   </ItemGroup>
 
 </Project>

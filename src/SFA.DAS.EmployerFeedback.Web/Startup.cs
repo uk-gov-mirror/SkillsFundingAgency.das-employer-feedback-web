@@ -74,7 +74,7 @@ namespace SFA.DAS.EmployerFeedback.Web
 
             services
                 .AddEmployerAuthentication(_configuration)
-                //.AddAuthorizationPolicies()
+                .AddAuthorizationPolicies()
                 .AddSession()
                 .AddSessionOptions()
                 .AddCache(_environment, configurationWeb)

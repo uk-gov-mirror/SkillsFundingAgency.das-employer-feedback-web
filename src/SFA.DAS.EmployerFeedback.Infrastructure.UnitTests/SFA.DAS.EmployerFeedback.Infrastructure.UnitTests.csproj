@@ -34,10 +34,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Services\CacheStorage\" />
     <Folder Include="Services\SessionStorage\" />
-    <Folder Include="Services\UserAccounts\" />
-    <Folder Include="Services\User\" />
   </ItemGroup>
 
 </Project>

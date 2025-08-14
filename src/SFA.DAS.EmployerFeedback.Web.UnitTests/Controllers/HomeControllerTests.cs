@@ -10,6 +10,7 @@ using Microsoft.Extensions.Options;
 using Moq;
 using NUnit.Framework;
 using SFA.DAS.Employer.Shared.UI;
+using SFA.DAS.EmployerFeedback.Domain.Interfaces;
 using SFA.DAS.EmployerFeedback.Infrastructure.Configuration;
 using SFA.DAS.EmployerFeedback.TestHelper.Extensions;
 using SFA.DAS.EmployerFeedback.Web.Controllers;
@@ -30,6 +31,7 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Controllers
         private Mock<IHttpContextAccessor> _contextAccessorMock;
         private Mock<ILogger<HomeController>> _loggerMock;
         private Mock<IStubAuthenticationService> _stubAuthServiceMock;
+        private Mock<IEmployerFeedbackOuterApi> _outerApiMock;
         private HomeController _sut;
 
         [SetUp]
@@ -40,12 +42,15 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Controllers
             _contextAccessorMock = new Mock<IHttpContextAccessor>();
             _loggerMock = new Mock<ILogger<HomeController>>();
             _stubAuthServiceMock = new Mock<IStubAuthenticationService>();
-            
+            _outerApiMock = new Mock<IEmployerFeedbackOuterApi>();
+
             _sut = new HomeController(
                 _configMock.Object,
                 _urlBuilderMock.Object,
                 _contextAccessorMock.Object,
-                _loggerMock.Object
+                _loggerMock.Object,
+                _stubAuthServiceMock.Object,
+                _outerApiMock.Object
             );
         }
 

@@ -2,15 +2,19 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
 using RestEase.HttpClientFactory;
+using SFA.DAS.EmployerFeedback.Domain.Interfaces;
 using SFA.DAS.EmployerFeedback.Infrastructure.Configuration;
 using SFA.DAS.EmployerFeedback.Infrastructure.Services.CacheStorage;
 using SFA.DAS.EmployerFeedback.Infrastructure.Services.SessionStorage;
+using SFA.DAS.EmployerFeedback.Infrastructure.Services.UserAccounts;
 using SFA.DAS.EmployerFeedback.Infrastructure.Services.UserService;
 using SFA.DAS.EmployerFeedback.Web.Attributes;
+using SFA.DAS.EmployerFeedback.Web.Authorization;
+using SFA.DAS.EmployerFeedback.Web.Services.EmployerRoleAuthorization;
 using SFA.DAS.GovUK.Auth.Authentication;
 using SFA.DAS.Http.Configuration;
 using System.Diagnostics.CodeAnalysis;
-using SFA.DAS.EmployerFeedback.Infrastructure.Api;
+using SFA.DAS.GovUK.Auth.Employer;
 
 namespace SFA.DAS.EmployerFeedback.Web.StartupExtensions
 {
@@ -21,14 +25,14 @@ namespace SFA.DAS.EmployerFeedback.Web.StartupExtensions
         {
             //services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(GetExistingEmployerRequestQuery).Assembly));
 
-            //services.AddSingleton<IAuthorizationHandler, OwnerRoleAuthorizationHandler>();
-            //services.AddSingleton<IAuthorizationHandler, TransactorRoleAuthorizationHandler>();
-            //services.AddSingleton<IAuthorizationHandler, ViewerRoleAuthorizationHandler>();
-            //services.AddSingleton<IAuthorizationHandler, NoneRoleAuthorizationHandler>();
+            services.AddSingleton<IAuthorizationHandler, OwnerRoleAuthorizationHandler>();
+            services.AddSingleton<IAuthorizationHandler, TransactorRoleAuthorizationHandler>();
+            services.AddSingleton<IAuthorizationHandler, ViewerRoleAuthorizationHandler>();
+            services.AddSingleton<IAuthorizationHandler, NoneRoleAuthorizationHandler>();
             services.AddSingleton<IAuthorizationHandler, AccountActiveAuthorizationHandler>();
 
-            //services.AddTransient<IEmployerRoleAuthorizationService, EmployerRoleAuthorizationService>();
-            //services.AddTransient<IGovAuthEmployerAccountService, UserAccountsService>();
+            services.AddTransient<IEmployerRoleAuthorizationService, EmployerRoleAuthorizationService>();
+            services.AddTransient<IGovAuthEmployerAccountService, UserAccountsService>();
 
             services.AddTransient<ISessionStorageService, SessionStorageService>();
             services.AddTransient<ICacheStorageService, CacheStorageService>();
@@ -48,7 +52,7 @@ namespace SFA.DAS.EmployerFeedback.Web.StartupExtensions
             services.AddScoped<Http.MessageHandlers.ApimHeadersHandler>();
 
             services
-                .AddRestEaseClient<ICommitmentsOuterApi>(configuration.ApiBaseUrl)
+                .AddRestEaseClient<IEmployerFeedbackOuterApi>(configuration.ApiBaseUrl)
                 .AddHttpMessageHandler<Http.MessageHandlers.DefaultHeadersHandler>()
                 .AddHttpMessageHandler<Http.MessageHandlers.ApimHeadersHandler>()
                 .AddHttpMessageHandler<Http.MessageHandlers.LoggingMessageHandler>();

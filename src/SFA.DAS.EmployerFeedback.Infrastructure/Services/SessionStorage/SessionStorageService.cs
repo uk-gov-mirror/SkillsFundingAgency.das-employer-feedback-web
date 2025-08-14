@@ -13,7 +13,6 @@ namespace SFA.DAS.EmployerFeedback.Infrastructure.Services.SessionStorage
         {
             _httpContextAccessor = httpContextAccessor;
         }
-
         private T Get<T>(string key) where T : class
         {
             var value = _httpContextAccessor.HttpContext.Session.GetString(key);
