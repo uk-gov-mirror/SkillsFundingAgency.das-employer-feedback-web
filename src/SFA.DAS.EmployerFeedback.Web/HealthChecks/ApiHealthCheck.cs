@@ -20,7 +20,7 @@ namespace SFA.DAS.EmployerFeedback.Web.HealthChecks
 
         public async Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = new())
         {
-            var description = "Ping of Employer Request Apprentice Training outer API";
+            var description = "Ping of Employer Feedback Web outer API";
 
             try
             {
