@@ -9,7 +9,7 @@
 [![Confluence Page](https://img.shields.io/badge/Confluence-Project-blue)](https://skillsfundingagency.atlassian.net/wiki/spaces/NDL/pages/3867705345/AAN+Employer+Solution+Architecture)
 [![License](https://img.shields.io/badge/license-MIT-lightgrey.svg?longCache=true&style=flat-square)](https://en.wikipedia.org/wiki/MIT_License)
 
-This web solution is part of Request Apprentice Training (RAT) project. Here the employer users can search for apprentice training using the extended search facility and optionally create requests for training course.
+This web solution is part of Employer Feedback project. Here the employer users can search for apprentice training using the extended search facility and optionally create requests for training course.
 
 ## How It Works
 Users are expected to register themselves in the Employer portal. Once registered they will have access to extended search facilty. 
@@ -36,7 +36,7 @@ In the web project, if not exist already, add `AppSettings.Development.json` fil
   },
   "AllowedHosts": "*",
   "ConfigurationStorageConnectionString": "UseDevelopmentStorage=true;",
-  "SFA.DAS.EmployerFeedback.Web,SFA.DAS.Employer.Shared.UI,SFA.DAS.Encoding:EncodingConfig,SFA.DAS.Employer.GovSignIn",
+  "ConfigNames": "SFA.DAS.EmployerFeedback.Web,SFA.DAS.Employer.Shared.UI,SFA.DAS.Encoding:EncodingConfig,SFA.DAS.Employer.GovSignIn",
   "EnvironmentName": "LOCAL",
   "ResourceEnvironmentName": "LOCAL",
   "cdn": {

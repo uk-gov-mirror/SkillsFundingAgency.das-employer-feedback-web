@@ -1,4 +1,6 @@
-﻿namespace SFA.DAS.EmployerFeedback.Web.Controllers
+﻿//TODO remove this file when no longer needed
+
+namespace SFA.DAS.EmployerFeedback.Web.Models.Test
 {
     public class TestViewModel
     {

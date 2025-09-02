@@ -1,16 +1,7 @@
-﻿@page
-@model SFA.DAS.EmployerFeedback.Web.Controllers.TestViewModel
-@{
-    ViewBag.Title = "Test Page";
-    ViewData["Title"] = ViewBag.Title;
-}
-
+﻿<!--TODO remove this file when no longer needed-->
+@model SFA.DAS.EmployerFeedback.Web.Models.Test.TestViewModel
 <h1>Test Model Attributes</h1>
 <ul>
-    @foreach (var prop in Model.GetType().GetProperties())
-    {
-        <li>
-            <strong>@prop.Name</strong>: @prop.GetValue(Model)
-        </li>
-    }
+    <li>@Model.ProviderName</li></>
+    <li>@Model.ProviderId</li></>
 </ul>
