@@ -12,6 +12,11 @@ namespace SFA.DAS.EmployerFeedback.Web.StartupExtensions
         {
             services.AddAuthorization(options =>
             {
+                options.AddPolicy(PolicyNames.OwnerRole, policy =>
+                {
+                    policy.Requirements.Add(new OwnerRoleRequirement());
+                    policy.Requirements.Add(new AccountActiveRequirement());
+                });
                 options.AddPolicy(PolicyNames.TransactorRole, policy =>
                 {
                     policy.Requirements.Add(new TransactorRoleRequirement());
