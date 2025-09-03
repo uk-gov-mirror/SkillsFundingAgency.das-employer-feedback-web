@@ -1,192 +1,187 @@
-﻿using Microsoft.AspNetCore.Authentication;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using ESFA.DAS.EmployerFeedback.Web.Authentication;
+using ESFA.DAS.EmployerFeedback.Web.Configuration.Routing;
+using ESFA.DAS.EmployerFeedback.Web.Infrastructure;
+using ESFA.DAS.EmployerFeedback.Web.ViewModels;
+using ESFA.DAS.ProvideFeedback.Data.Repositories;
+using ESFA.DAS.ProvideFeedback.Domain.Entities.Models;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using RestEase;
-using SFA.DAS.Employer.Shared.UI;
-using SFA.DAS.EmployerFeedback.Domain.Interfaces;
-using SFA.DAS.EmployerFeedback.Web.Attributes;
-using SFA.DAS.EmployerFeedback.Web.Models;
-using SFA.DAS.EmployerFeedback.Web.Models.Home;
-using SFA.DAS.EmployerFeedback.Web.Models.Test;
-using SFA.DAS.EmployerFeedback.Web.StartupExtensions;
-using SFA.DAS.GovUK.Auth.Configuration;
+using SFA.DAS.Encoding;
 using SFA.DAS.GovUK.Auth.Models;
 using SFA.DAS.GovUK.Auth.Services;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Threading.Tasks;
 
-namespace SFA.DAS.EmployerFeedback.Web.Controllers
+namespace ESFA.DAS.EmployerFeedback.Web.Controllers
 {
-    [HideAccountNavigation(true)]
+    
     public class HomeController : Controller
     {
-        private readonly IConfiguration _config;
-        private readonly UrlBuilder _urlBuilder;
-        private readonly IHttpContextAccessor _contextAccessor;
+        private readonly IEmployerFeedbackRepository _employerEmailDetailsRepository;
+        private readonly IEncodingService _encodingService;
+        private readonly ISessionService _sessionService;
         private readonly ILogger<HomeController> _logger;
-        
+        private readonly IConfiguration _config;
         private readonly IStubAuthenticationService _stubAuthenticationService;
-        private readonly IEmployerFeedbackOuterApi _outerApi;
 
-        #region Routes
-        public const string DashboardStubRouteGet = nameof(DashboardStubRouteGet);
-        public const string OverviewStubRouteGet = nameof(OverviewStubRouteGet);
-        public const string ErrorRouteGet = nameof(ErrorRouteGet);
-        #endregion Routes
 
-        public HomeController(IConfiguration config, UrlBuilder urlBuilder, 
-            IHttpContextAccessor contextAccessor, ILogger<HomeController> logger, 
-            IStubAuthenticationService stubAuthenticationService, IEmployerFeedbackOuterApi outerApi)
+        public HomeController(
+            IEmployerFeedbackRepository employerEmailDetailsRepository,
+            ISessionService sessionService,
+            IEncodingService encodingService,
+            ILogger<HomeController> logger,
+            IConfiguration config,
+            IStubAuthenticationService stubAuthenticationService)
         {
-            _config = config;
-            _urlBuilder = urlBuilder;
-            _contextAccessor = contextAccessor;
+            _employerEmailDetailsRepository = employerEmailDetailsRepository;
+            _sessionService = sessionService;
+            _encodingService = encodingService;
             _logger = logger;
+            _config = config;
             _stubAuthenticationService = stubAuthenticationService;
-            _outerApi = outerApi;
         }
 
-        public IActionResult Index()
+        [Authorize(Policy = nameof(PolicyNames.HasEmployerAccount))]
+        [HttpGet]
+        [Route(RoutePrefixPaths.FeedbackRoutePath, Name = RouteNames.Landing_Get_New)]
+        public async Task<IActionResult> Index(StartFeedbackRequest request)
         {
-            _logger.LogInformation("Index called");
-            if (_config.IsRunningLocally() || _config.IsRunningInDev())
+            var idClaim = HttpContext.User.FindFirst(EmployerClaims.UserId);   //System.Security.Claims.ClaimTypes.NameIdentifier
+            var sessionSurvey = await _sessionService.Get<SurveyModel>(idClaim.Value);
+            if (sessionSurvey == null)
             {
-                return View();
+                return NotFound();
+            }
+            else
+            {
+                ViewData.Add("ProviderName", sessionSurvey.ProviderName);
             }
 
-            return Redirect(_urlBuilder.AccountsLink());
-        }
-
-
-
-        //TODO - REMOVE as this is test code!
-        [HttpGet()]
-        [Route("Test/{providerId}", Name = "Test")]
-        public async Task<IActionResult> Test([Path] long providerId)
-        {
-            _logger.LogInformation("Test called");
-            var result = await _outerApi.GetProviders(providerId);
-            if (_config.IsRunningLocally() || _config.IsRunningInDev())
-            {
-                if (result != null)
-                {
-                    return View(new TestViewModel
-                    {
-                        ProviderId = result.ProviderId,
-                        ProviderName = result.Name
-                    });
-                }
-            }
-            return NotFound();
-        }
-
-        [HttpGet("~/error/403")]
-        public IActionResult AccessDenied()
-        {
             return View();
         }
-
-        [Route("error", Name = ErrorRouteGet)]
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error(string errorMessage)
+        
+        [Authorize(Policy = nameof(PolicyNames.EmployerAuthenticated))]
+        [ServiceFilter(typeof(EnsureFeedbackNotSubmitted))]
+        [Route(RoutePrefixPaths.FeedbackFromEmailRoutePath, Name = RouteNames.Landing_Get)]
+        [HttpGet]
+        public async Task<IActionResult> Index(Guid uniqueCode)
         {
-            _logger.LogError(errorMessage);
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? _contextAccessor.HttpContext.TraceIdentifier, ErrorMessage = errorMessage });
+            var idClaim = HttpContext.User.FindFirst(EmployerClaims.UserId);    //System.Security.Claims.ClaimTypes.NameIdentifier
+
+            var employerEmailDetail = await _employerEmailDetailsRepository.GetEmployerInviteForUniqueCode(uniqueCode);
+
+            _logger.LogWarning("Landing Page GET hit");
+
+            if (employerEmailDetail == null)
+            {
+                _logger.LogWarning($"Attempt to use invalid unique code: {uniqueCode}");
+                return NotFound();
+            }
+
+            var providerAttributes = await _employerEmailDetailsRepository.GetAllAttributes();
+            if (providerAttributes == null)
+            {
+                _logger.LogError($"Unable to load Provider Attributes from the database.");
+                return RedirectToAction("Error", "Error");
+            }
+
+            var providerAttributesModel = providerAttributes.Select(s => new ProviderAttributeModel { Name = s.AttributeName });
+            var newSurveyModel = MapToNewSurveyModel(employerEmailDetail, providerAttributesModel);
+            newSurveyModel.UniqueCode = uniqueCode;
+            await _sessionService.Set(idClaim.Value, newSurveyModel);
+
+            var encodedAccountId = _encodingService.Encode(employerEmailDetail.AccountId, EncodingType.AccountId);
+            return RedirectToRoute(RouteNames.Landing_Get_New, new { encodedAccountId = encodedAccountId });
         }
 
-        [Route("signout", Name = "signout")]
+        [Route("signout", Name = RouteNames.Signout)]
         public new async Task<IActionResult> SignOut()
         {
-            var idToken = await _contextAccessor.HttpContext.GetTokenAsync("id_token");
+            var idToken = await HttpContext.GetTokenAsync("id_token");
 
-            var authenticationProperties = new AuthenticationProperties
-            {
-                RedirectUri = string.Empty,
-                AllowRefresh = true
-            };
-            
+            var authenticationProperties = new AuthenticationProperties();
             authenticationProperties.Parameters.Clear();
-            authenticationProperties.Parameters.Add("id_token", idToken);
-
-            List<string> authenticationSchemes = new List<string> { CookieAuthenticationDefaults.AuthenticationScheme };
-            if (!bool.TryParse(_config["StubAuth"], out bool stubAuth) || !stubAuth)
-                authenticationSchemes.Add(OpenIdConnectDefaults.AuthenticationScheme);
-
-            return SignOut(
-                authenticationProperties,
-                authenticationSchemes.ToArray());
+            authenticationProperties.Parameters.Add("id_token",idToken);
+            var schemes = new List<string>
+            {
+                CookieAuthenticationDefaults.AuthenticationScheme
+            };
+            _ = bool.TryParse(_config["StubAuth"], out var stubAuth);
+            if (!stubAuth)
+            {
+                schemes.Add(OpenIdConnectDefaults.AuthenticationScheme);
+            }
+            
+            return SignOut(authenticationProperties, schemes.ToArray());
         }
 
+        [AllowAnonymous]
         [Route("signoutcleanup")]
         public void SignOutCleanup()
         {
-            _contextAccessor.HttpContext.Response.Cookies.Delete("SFA.DAS.EmployerFeedback.Web.Auth");
+            Response.Cookies.Delete("SFA.DAS.ProvideFeedbackEmployer.Web.Auth");
         }
+
+        [AllowAnonymous]
+        [Route("ping")]
+        public IActionResult Ping()
+        {
+            return Ok();
+        }
+        
 #if DEBUG
         [AllowAnonymous()]
-        [Route("Dashboard-Stub", Name = DashboardStubRouteGet)]
-        public IActionResult DashboardStub()
-        {
-            _contextAccessor.HttpContext.Response.Cookies.Delete(GovUkConstants.StubAuthCookieName);
-            return NotFound(); // Temporarily returning NotFound to avoid redirecting to a non-existent route.
-            //return RedirectToRoute(EmployerRequestController.DashboardRouteGet, new { hashedAccountId = SignedInStubViewModel.HashedAccountIdPlaceholder });
-        }
-
-
-        [AllowAnonymous()]
-        [Route("Overview-Stub", Name= OverviewStubRouteGet)]
-        public IActionResult OverviewStub()
-        {
-            _contextAccessor.HttpContext.Response.Cookies.Delete(GovUkConstants.StubAuthCookieName);
-            return NotFound(); // Temporarily returning NotFound to avoid redirecting to a non-existent route.
-            //return RedirectToRoute(EmployerRequestController.OverviewEmployerRequestRouteGet, new { hashedAccountId = SignedInStubViewModel.HashedAccountIdPlaceholder, standardId=274, requestType=RequestType.Providers });
-        }
-
-        [AllowAnonymous()]
         [HttpGet]
-        [Route("SignIn-Stub", Name = "SignInStub")]
-        public IActionResult SigninStub(string returnUrl)
+        [Route("SignIn-Stub")]
+        public IActionResult SigninStub()
         {
-            var model = new SignInStubViewModel
-            {
-                StubId = _config["StubId"],
-                StubEmail = _config["StubEmail"],
-                ReturnUrl = returnUrl
-            };
-
-            return View(model);
+            return View("SigninStub", new List<string>{_config["StubId"],_config["StubEmail"]});
         }
-
+        
         [AllowAnonymous()]
         [HttpPost]
         [Route("SignIn-Stub")]
-        public async Task<IActionResult> SigninStubPost(SignInStubViewModel model)
+        public async Task<IActionResult> SigninStubPost()
         {
             var claims = await _stubAuthenticationService.GetStubSignInClaims(new StubAuthUserDetails
             {
-                Email = model.StubEmail,
-                Id = model.StubId
+                Email = _config["StubEmail"],
+                Id = _config["StubId"]
             });
 
             await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, claims,
                 new AuthenticationProperties());
 
-            return RedirectToRoute("SignedInStub", new { model.ReturnUrl});
+            return RedirectToRoute("Signed-in-stub");
         }
 
         [Authorize()]
         [HttpGet]
-        [Route("signed-in-stub", Name = "SignedInStub")]
-        public IActionResult SignedInStub(string returnUrl )
+        [Route("signed-in-stub", Name = "Signed-in-stub")]
+        public IActionResult SignedInStub()
         {
-            return View(new SignedInStubViewModel(_contextAccessor, returnUrl));
+            return View();
         }
 #endif
+
+        private SurveyModel MapToNewSurveyModel(EmployerSurveyInvite employerEmailDetail, IEnumerable<ProviderAttributeModel> providerAttributes)
+        {
+            return new SurveyModel
+            {
+                AccountId = employerEmailDetail.AccountId,
+                Ukprn = employerEmailDetail.Ukprn,
+                UserRef = employerEmailDetail.UserRef,
+                Submitted = employerEmailDetail.CodeBurntDate != null,
+                ProviderName = employerEmailDetail.ProviderName,
+                Attributes = providerAttributes.ToList()
+            };
+        }
     }
 }

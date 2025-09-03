@@ -1,44 +1,58 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Caching.Distributed;
 using Newtonsoft.Json;
-using SFA.DAS.EmployerFeedback.Infrastructure.Api.Types;
+using SFA.DAS.EmployerFeedback.Infrastructure.Configuration;
+using System;
 using System.Text;
+using System.Threading.Tasks;
+using static SFA.DAS.EmployerFeedback.Infrastructure.Services.SessionStorage.SessionStorageService;
 
 namespace SFA.DAS.EmployerFeedback.Infrastructure.Services.SessionStorage
 {
     public class SessionStorageService : ISessionStorageService
     {
-        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IDistributedCache _sessionCache;
+        private readonly string _environment;
+        private readonly int _slidingExpirationMinutes;
 
-        public SessionStorageService(IHttpContextAccessor httpContextAccessor)
+        public SessionStorageService(
+            IDistributedCache sessionCache,
+            EmployerFeedbackWebConfiguration configuration,
+            IWebHostEnvironment environment)
         {
-            _httpContextAccessor = httpContextAccessor;
-        }
-        private T Get<T>(string key) where T : class
-        {
-            var value = _httpContextAccessor.HttpContext.Session.GetString(key);
-
-            return string.IsNullOrWhiteSpace(value) ? default : JsonConvert.DeserializeObject<T>(value);
-        }
-
-        private void Set<T>(string key, T value) where T : class
-        {
-            var serializedValue = JsonConvert.SerializeObject(value);
-            _httpContextAccessor.HttpContext.Session.SetString(key, serializedValue);
+            _slidingExpirationMinutes = configuration.SlidingExpirationMinutes;
+            _sessionCache = sessionCache;
+            _environment = environment.EnvironmentName;
         }
 
-        private string Get(string key)
+        public async Task<T> Get<T>(string key)
         {
-            return _httpContextAccessor.HttpContext.Session.GetString(key);
+            var sessionObject = await GetString(key);
+            return string.IsNullOrWhiteSpace(sessionObject) ? default(T) : JsonConvert.DeserializeObject<T>(sessionObject);
         }
 
-        private void Set(string key, string stringValue)
+        public async Task<string> GetString(string key)
         {
-            _httpContextAccessor.HttpContext.Session.SetString(key, stringValue);
+            return await _sessionCache.GetStringAsync(_environment + "_" + key);
         }
 
-        private void Remove(string key)
+        public async Task Set(string key, object value)
         {
-            _httpContextAccessor.HttpContext.Session.Remove(key);
+            await _sessionCache.SetStringAsync(_environment + "_" + key, JsonConvert.SerializeObject(value), new DistributedCacheEntryOptions
+            {
+                SlidingExpiration = TimeSpan.FromMinutes(_slidingExpirationMinutes)
+            });
+        }
+
+        public async Task Remove(string key)
+        {
+            await _sessionCache.RemoveAsync(_environment + "_" + key);
+        }
+
+        public async Task<bool> ExistsAsync(string key)
+        {
+            return await GetString(key) != null;
         }
     }
 }
