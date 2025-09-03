@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
+﻿//TODO: Remove file during migration - used for testing connectivity to commitments api ONLY
 namespace SFA.DAS.EmployerFeedback.Infrastructure.Api.Responses
 {
     public class Provider
