@@ -38,7 +38,7 @@ namespace SFA.DAS.EmployerFeedback.Infrastructure.UnitTests.Services.User
         {
             // Arrange
             var userId = Guid.NewGuid().ToString();
-            _identity.AddClaim(new Claim(EmployerClaims.UserIdClaimTypeIdentifier, userId));
+            _identity.AddClaim(new Claim(EmployerClaims.UserId, userId));
 
             // Act
             var result = _userService.GetUserId();
@@ -58,7 +58,7 @@ namespace SFA.DAS.EmployerFeedback.Infrastructure.UnitTests.Services.User
             };
             
             var claimsJson = JsonConvert.SerializeObject(claimsData);
-            _identity.AddClaim(new Claim(EmployerClaims.UserAssociatedAccountsClaimsTypeIdentifier, claimsJson));
+            _identity.AddClaim(new Claim(EmployerClaims.AccountsClaimsTypeIdentifier, claimsJson));
 
             // Act
             var result = _userService.IsUserChangeAuthorized(accountId);
@@ -78,7 +78,7 @@ namespace SFA.DAS.EmployerFeedback.Infrastructure.UnitTests.Services.User
             };
             
             var claimsJson = JsonConvert.SerializeObject(claimsData);
-            _identity.AddClaim(new Claim(EmployerClaims.UserAssociatedAccountsClaimsTypeIdentifier, claimsJson));
+            _identity.AddClaim(new Claim(EmployerClaims.AccountsClaimsTypeIdentifier, claimsJson));
 
             // Act
             var result = _userService.IsUserChangeAuthorized(accountId);

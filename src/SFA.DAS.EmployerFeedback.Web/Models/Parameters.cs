@@ -7,9 +7,9 @@ namespace SFA.DAS.EmployerFeedback.Web.Models
     public class Parameters
     {
         [FromRoute]
-        public string HashedAccountId { get; set; }
+        public string EncodedAccountId { get; set; }
 
-        [AutoDecode(nameof(HashedAccountId), EncodingType.AccountId)]
+        [AutoDecode(nameof(EncodedAccountId), EncodingType.AccountId)]
         public long AccountId { get; set; }
     }
 }

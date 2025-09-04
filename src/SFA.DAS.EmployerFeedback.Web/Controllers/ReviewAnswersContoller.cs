@@ -1,30 +1,31 @@
-﻿using System;
-using System.Threading.Tasks;
-using ESFA.DAS.EmployerFeedback.Web.Authentication;
-using ESFA.DAS.EmployerFeedback.Web.Configuration.Routing;
-using ESFA.DAS.EmployerFeedback.Web.Infrastructure;
-using ESFA.DAS.EmployerFeedback.Web.Orchestrators;
-using ESFA.DAS.EmployerFeedback.Web.ViewModels;
+﻿using System.Threading.Tasks;
+using ESFA.DAS.EmployerProvideFeedback.Infrastructure;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
+using SFA.DAS.EmployerFeedback.Infrastructure;
+using SFA.DAS.EmployerFeedback.Infrastructure.Configuration;
+using SFA.DAS.EmployerFeedback.Infrastructure.Configuration.Routing;
+using SFA.DAS.EmployerFeedback.Infrastructure.Services.SessionStorage;
+using SFA.DAS.EmployerFeedback.Web.Authorization;
+using SFA.DAS.EmployerFeedback.Web.Models.Shared;
+using SFA.DAS.EmployerProvideFeedback.Orchestrators;
 
 namespace ESFA.DAS.EmployerFeedback.Web.Controllers
 {
-    [Authorize(Policy = nameof(PolicyNames.HasEmployerAccount))]
+    [Authorize(Policy = nameof(PolicyNames.ViewerRole))]
     [ServiceFilter(typeof(EnsureFeedbackNotSubmittedRecentlyAttribute))]
     [ServiceFilter(typeof(EnsureSessionExists))]
     [Route(RoutePrefixPaths.FeedbackRoutePath)]
     public class ReviewAnswersController : Controller
     {
-        private readonly ISessionService _sessionService;
+        private readonly ISessionStorageService _sessionService;
         private readonly ReviewAnswersOrchestrator _orchestrator;
-        private readonly ProvideFeedbackEmployerWebConfiguration _config;
+        private readonly EmployerFeedbackWebConfiguration _config;
 
         public ReviewAnswersController(
-            ISessionService sessionService
+            ISessionStorageService sessionService
             , ReviewAnswersOrchestrator orchestrator
-            , ProvideFeedbackEmployerWebConfiguration config
+            , EmployerFeedbackWebConfiguration config
             )
         {
             _sessionService = sessionService;

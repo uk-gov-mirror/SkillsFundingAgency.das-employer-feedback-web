@@ -1,18 +1,13 @@
-﻿@using Microsoft.Extensions.Configuration
+﻿@using Microsoft.Extensions.Options;
 @using SFA.DAS.Employer.Shared.UI.Models
-@using SFA.DAS.EmployerFeedback.Web.Authorization
-@using SFA.DAS.EmployerFeedback.Web.Extensions
-@using SFA.DAS.EmployerFeedback.Web.ViewDataKeys
-@inject IConfiguration Configuration
-
 @{
-    var accountId = ViewContext.RouteData.Values[RouteValueKeys.HashedAccountId] as string;
+    var _isErrorPage = ViewContext.View.Path.Contains("Error");
+
+    var accountId = ViewContext.RouteData.Values[RouteValueKeys.EncodedAccountId] as string;
     ViewBag.HideHeaderBorder = true;
-    var cookieBannerModel = new CookieBannerModel { AccountId = accountId };
     var footerModel = new FooterModel { AccountId = accountId, UsePrivacyV2 = true };
 
-    var hideHeader = (bool) ViewData[ViewDataKeys.HideAccountNavigation];
-    var hideNavigationLinks = !(bool) ViewData[ViewDataKeys.ShowNav];
+    var zendeskSectionId = Config.ZendeskSectionId;
 }
 
 <!DOCTYPE html>
@@ -33,28 +28,25 @@
 
     <!--[if !IE 8]><!-->
     <link href="css/main.css" rel="stylesheet" />
-    <link href="/css/app.css" rel="stylesheet" no-cdn />
+    <link href="/css/application.css" rel="stylesheet" no-cdn />
     <!--<![endif]-->
 
     <meta property="og:image" content="assets/images/govuk-opengraph-image.png">
+    @Html.Raw(JavaScriptSnippet.FullScript) <!-- AppInsights script -->
 </head>
-
 <body class="govuk-template__body">
     <partial name="_GoogleAnalytics" model="GoogleAnalyticsTag.Body" />
 
-    <script>
-        document.body.className += ' js-enabled' + ('noModule' in HTMLScriptElement.prototype ? ' govuk-frontend-supported' : '');
-    </script>
+    <script>document.body.className = document.body.className ? document.body.className + ' js-enabled' : 'js-enabled';</script>
 
     <a href="#main-content" class="govuk-skip-link">Skip to main content</a>
 
-    <partial name="_CookieBanner" model="@cookieBannerModel"></partial>
+    <partial name="_CookieBanner" />
 
     <partial name="_Header" />
-    @if ((accountId != null && !hideHeader) || (!hideHeader && hideNavigationLinks))
+    @if (accountId != null)
     {
-        <partial name="_Menu" model="@accountId" />
-    }
+<partial name="_Menu" model="@accountId" />}
 
     <div class="govuk-phase-banner govuk-width-container">
         <p class="govuk-phase-banner__content">
@@ -70,28 +62,43 @@
     <div class="govuk-width-container">
         @RenderBody()
     </div>
+
     <partial name="_Footer" model="@footerModel" />
-    <partial name="_GoogleAnalyticsInfo" />
 
-    @* These javascripts are not included in the project they are loaded from the cdn *@
-    <script type="module" src="/libs/govuk-frontend/govuk-frontend.min.js"></script>
-    <script type="module" cdnify>
-        import {
-            initAll
-        } from '@Configuration["cdn:url"]/libs/govuk-frontend/govuk-frontend.min.js'
-        initAll()
-    </script>
-    <script src="/libs/accessible-autocomplete/accessible-autocomplete.min.js"></script>
-    <script src="/libs/jquery/jquery.min.js"></script>
-    <script src="/js/das-all.min.js"></script>
-    <script src="/js/app.min.js"></script>
-
-    @* This javascript is included in the project it is not loaded from the cdn *@
-    <script src="/js/app.js" no-cdn></script>
-
+    <script src="libs/govuk-frontend/all.js"></script>
+    <script src="libs/jquery/jquery.min.js"></script>
+    <script src="js/das-all.js"></script>
+    <script src="js/app.min.js"></script>
+    <script src="/js/application.js" no-cdn></script>
     <script>
+        window.GOVUKFrontend.initAll();
         window.DASFrontend.initAll();
     </script>
-</body>
 
+    <script type="text/javascript">
+        window.zESettings = {
+            webWidget: {
+                contactForm: {
+                    attachments: false
+                },
+                chat: {
+                    talk: {
+                        nickname: "Vacancies"
+                    },
+                    menuOptions: {
+                        emailTranscript: false
+                    }
+                },
+                helpCenter: {
+                    filter: {
+                        section: "@zendeskSectionId"
+                    }
+                }
+            }
+        };
+    </script>
+    <script id="ze-snippet" src="https://static.zdassets.com/ekr/snippet.js?key=1b1ce288-39ea-4d40-a5e1-3a5e08aadd89"></script>
+    <script id="co-snippet" src="https://embed-euw1.rcrsv.io/h6255jcoYuIOGsFnsagb3xgrbKz9mHeBGjifWcngdcP05WZQu46kKykuID1LpD9d?zwwi=1"></script>
+
+</body>
 </html>

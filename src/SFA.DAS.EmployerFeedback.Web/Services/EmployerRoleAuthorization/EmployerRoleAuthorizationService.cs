@@ -11,6 +11,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using SFA.DAS.GovUK.Auth.Employer;
 using EmployerClaims = SFA.DAS.EmployerFeedback.Infrastructure.Configuration.EmployerClaims;
+using SFA.DAS.EmployerFeedback.Web.Configuration.Routing;
 
 namespace SFA.DAS.EmployerFeedback.Web.Services.EmployerRoleAuthorization
 {
@@ -29,13 +30,13 @@ namespace SFA.DAS.EmployerFeedback.Web.Services.EmployerRoleAuthorization
 
         public async Task<bool> IsEmployerAuthorized(ClaimsPrincipal user, UserRole minimumAllowedRole)
         {
-            if (!_httpContextAccessor.HttpContext.Request.RouteValues.ContainsKey(RouteValueKeys.HashedAccountId))
+            if (!_httpContextAccessor.HttpContext.Request.RouteValues.ContainsKey(RouteValueKeys.EncodedAccountId))
             {
                 return false;
             }
 
-            var accountIdFromUrl = _httpContextAccessor.HttpContext.Request.RouteValues[RouteValueKeys.HashedAccountId].ToString().ToUpper();
-            var associatedAccountsClaim = user.FindFirst(c => c.Type.Equals(EmployerClaims.UserAssociatedAccountsClaimsTypeIdentifier));
+            var accountIdFromUrl = _httpContextAccessor.HttpContext.Request.RouteValues[RouteValueKeys.EncodedAccountId].ToString().ToUpper();
+            var associatedAccountsClaim = user.FindFirst(c => c.Type.Equals(EmployerClaims.AccountsClaimsTypeIdentifier));
 
             if (associatedAccountsClaim?.Value == null)
                 return false;
@@ -79,7 +80,7 @@ namespace SFA.DAS.EmployerFeedback.Web.Services.EmployerRoleAuthorization
                 var employerUserAccountsAsJson = JsonConvert.SerializeObject(employerUserAccounts);
 
                 userIdClaim.Subject.RemoveClaim(associatedAccountsClaim);
-                associatedAccountsClaim = new Claim(EmployerClaims.UserAssociatedAccountsClaimsTypeIdentifier, employerUserAccountsAsJson, JsonClaimValueTypes.Json);
+                associatedAccountsClaim = new Claim(EmployerClaims.AccountsClaimsTypeIdentifier, employerUserAccountsAsJson, JsonClaimValueTypes.Json);
                 userIdClaim.Subject.AddClaim(associatedAccountsClaim);
 
                 if (!employerUserAccounts.ContainsKey(accountIdFromUrl))

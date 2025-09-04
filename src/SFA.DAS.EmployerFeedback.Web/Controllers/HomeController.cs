@@ -1,54 +1,62 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using ESFA.DAS.EmployerFeedback.Web.Authentication;
-using ESFA.DAS.EmployerFeedback.Web.Configuration.Routing;
-using ESFA.DAS.EmployerFeedback.Web.Infrastructure;
-using ESFA.DAS.EmployerFeedback.Web.ViewModels;
-using ESFA.DAS.ProvideFeedback.Data.Repositories;
-using ESFA.DAS.ProvideFeedback.Domain.Entities.Models;
-using Microsoft.AspNetCore.Authentication;
+﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using SFA.DAS.EmployerFeedback.Domain.Entities.Models;
+using SFA.DAS.EmployerFeedback.Infrastructure.Configuration;
+using SFA.DAS.EmployerFeedback.Infrastructure.Configuration.Routing;
+using SFA.DAS.EmployerFeedback.Infrastructure.Services.SessionStorage;
+using SFA.DAS.EmployerFeedback.Web.Authorization;
+using SFA.DAS.EmployerFeedback.Web.Models;
+using SFA.DAS.EmployerFeedback.Web.Models.Shared;
+using SFA.DAS.EmployerProvideFeedback.Infrastructure;
 using SFA.DAS.Encoding;
 using SFA.DAS.GovUK.Auth.Models;
 using SFA.DAS.GovUK.Auth.Services;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using System.Threading.Tasks;
 
-namespace ESFA.DAS.EmployerFeedback.Web.Controllers
+namespace SFA.DAS.EmployerFeedback.Web.Controllers
 {
-    
+    //TODO replace database calls with calls to outer API
     public class HomeController : Controller
     {
-        private readonly IEmployerFeedbackRepository _employerEmailDetailsRepository;
         private readonly IEncodingService _encodingService;
-        private readonly ISessionService _sessionService;
+        private readonly ISessionStorageService _sessionService;
         private readonly ILogger<HomeController> _logger;
         private readonly IConfiguration _config;
         private readonly IStubAuthenticationService _stubAuthenticationService;
+        private readonly IHttpContextAccessor _contextAccessor;
+
+        #region Routes
+        public const string ErrorRouteGet = nameof(ErrorRouteGet);
+        #endregion
 
 
         public HomeController(
-            IEmployerFeedbackRepository employerEmailDetailsRepository,
-            ISessionService sessionService,
+            ISessionStorageService sessionService,
             IEncodingService encodingService,
             ILogger<HomeController> logger,
             IConfiguration config,
-            IStubAuthenticationService stubAuthenticationService)
+            IStubAuthenticationService stubAuthenticationService,
+            IHttpContextAccessor contextAccessor)
         {
-            _employerEmailDetailsRepository = employerEmailDetailsRepository;
             _sessionService = sessionService;
             _encodingService = encodingService;
             _logger = logger;
             _config = config;
+            _contextAccessor = contextAccessor;
             _stubAuthenticationService = stubAuthenticationService;
         }
 
-        [Authorize(Policy = nameof(PolicyNames.HasEmployerAccount))]
+        [Authorize(Policy = nameof(PolicyNames.ViewerRole))]
         [HttpGet]
         [Route(RoutePrefixPaths.FeedbackRoutePath, Name = RouteNames.Landing_Get_New)]
         public async Task<IActionResult> Index(StartFeedbackRequest request)
@@ -67,38 +75,48 @@ namespace ESFA.DAS.EmployerFeedback.Web.Controllers
             return View();
         }
         
-        [Authorize(Policy = nameof(PolicyNames.EmployerAuthenticated))]
+        [Authorize(Policy = nameof(PolicyNames.IsAuthenticated))]
         [ServiceFilter(typeof(EnsureFeedbackNotSubmitted))]
         [Route(RoutePrefixPaths.FeedbackFromEmailRoutePath, Name = RouteNames.Landing_Get)]
         [HttpGet]
         public async Task<IActionResult> Index(Guid uniqueCode)
         {
-            var idClaim = HttpContext.User.FindFirst(EmployerClaims.UserId);    //System.Security.Claims.ClaimTypes.NameIdentifier
+            //FIXME - Replace call with outer API
+            //var idClaim = HttpContext.User.FindFirst(EmployerClaims.UserId);    //System.Security.Claims.ClaimTypes.NameIdentifier
 
-            var employerEmailDetail = await _employerEmailDetailsRepository.GetEmployerInviteForUniqueCode(uniqueCode);
+            //var employerEmailDetail = await _employerEmailDetailsRepository.GetEmployerInviteForUniqueCode(uniqueCode);
 
-            _logger.LogWarning("Landing Page GET hit");
+            //_logger.LogWarning("Landing Page GET hit");
 
-            if (employerEmailDetail == null)
-            {
-                _logger.LogWarning($"Attempt to use invalid unique code: {uniqueCode}");
-                return NotFound();
-            }
+            //if (employerEmailDetail == null)
+            //{
+            //    _logger.LogWarning($"Attempt to use invalid unique code: {uniqueCode}");
+            //    return NotFound();
+            //}
 
-            var providerAttributes = await _employerEmailDetailsRepository.GetAllAttributes();
-            if (providerAttributes == null)
-            {
-                _logger.LogError($"Unable to load Provider Attributes from the database.");
-                return RedirectToAction("Error", "Error");
-            }
+            //FIXME - Replace call with outer API - var providerAttributes = await _employerEmailDetailsRepository.GetAllAttributes();
+            //if (providerAttributes == null)
+            //{
+            //    _logger.LogError($"Unable to load Provider Attributes from the database.");
+            //    return RedirectToAction("Error", "Error");
+            //}
 
-            var providerAttributesModel = providerAttributes.Select(s => new ProviderAttributeModel { Name = s.AttributeName });
-            var newSurveyModel = MapToNewSurveyModel(employerEmailDetail, providerAttributesModel);
-            newSurveyModel.UniqueCode = uniqueCode;
-            await _sessionService.Set(idClaim.Value, newSurveyModel);
+            //var providerAttributesModel = providerAttributes.Select(s => new ProviderAttributeModel { Name = s.AttributeName });
+            //var newSurveyModel = MapToNewSurveyModel(employerEmailDetail, providerAttributesModel);
+            //newSurveyModel.UniqueCode = uniqueCode;
+            //await _sessionService.Set(idClaim.Value, newSurveyModel);
 
-            var encodedAccountId = _encodingService.Encode(employerEmailDetail.AccountId, EncodingType.AccountId);
-            return RedirectToRoute(RouteNames.Landing_Get_New, new { encodedAccountId = encodedAccountId });
+            //var encodedAccountId = _encodingService.Encode(employerEmailDetail.AccountId, EncodingType.AccountId);
+            //return RedirectToRoute(RouteNames.Landing_Get_New, new { encodedAccountId = encodedAccountId });
+            throw new NotImplementedException();
+        }
+
+        [Route("error", Name = ErrorRouteGet)]
+        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+        public IActionResult Error(string errorMessage)
+        {
+            _logger.LogError(errorMessage);
+            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? _contextAccessor.HttpContext.TraceIdentifier, ErrorMessage = errorMessage });
         }
 
         [Route("signout", Name = RouteNames.Signout)]

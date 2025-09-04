@@ -24,19 +24,19 @@ namespace SFA.DAS.EmployerFeedback.Web.Filters
 
         private static GaData PopulateGaData(ActionExecutingContext context)
         {
-            string hashedAccountId = null;
+            string EncodedAccountId = null;
 
-            var userId = context.HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals(EmployerClaims.UserIdClaimTypeIdentifier))?.Value;
+            var userId = context.HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals(EmployerClaims.UserId))?.Value;
 
             if (context.RouteData.Values.TryGetValue("AccountHashedId", out var accountHashedId))
             {
-                hashedAccountId = accountHashedId.ToString();
+                EncodedAccountId = accountHashedId.ToString();
             }
 
             return new GaData
             {
                 UserId = userId,
-                Acc = hashedAccountId
+                Acc = EncodedAccountId
             };
         }
     }

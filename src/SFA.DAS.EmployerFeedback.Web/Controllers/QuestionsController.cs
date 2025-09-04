@@ -1,27 +1,30 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using ESFA.DAS.EmployerFeedback.Web.Authentication;
-using ESFA.DAS.EmployerFeedback.Web.Configuration.Routing;
-using ESFA.DAS.EmployerFeedback.Web.Infrastructure;
-using ESFA.DAS.EmployerFeedback.Web.ViewModels;
+﻿using ESFA.DAS.EmployerProvideFeedback.Infrastructure;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using SFA.DAS.EmployerFeedback.Infrastructure;
+using SFA.DAS.EmployerFeedback.Infrastructure.Configuration;
+using SFA.DAS.EmployerFeedback.Infrastructure.Configuration.Routing;
+using SFA.DAS.EmployerFeedback.Infrastructure.Services.SessionStorage;
+using SFA.DAS.EmployerFeedback.Web.Authorization;
+using SFA.DAS.EmployerFeedback.Web.Models.Shared;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace ESFA.DAS.EmployerFeedback.Web.Controllers
 {
-    [Authorize(Policy = nameof(PolicyNames.HasEmployerAccount))]
+    [Authorize(Policy = nameof(PolicyNames.ViewerRole))]
     [ServiceFilter(typeof(EnsureFeedbackNotSubmittedRecentlyAttribute))]
     [ServiceFilter(typeof(EnsureSessionExists))]
     [Route(RoutePrefixPaths.FeedbackRoutePath)]
     public class QuestionsController : Controller
     {
         private const string ReturnUrlKey = "ReturnUrl";
-        private readonly ISessionService _sessionService;
+        private readonly ISessionStorageService _sessionService;
 
-        public QuestionsController(ISessionService sessionService)
+        public QuestionsController(ISessionStorageService sessionService)
         {
             _sessionService = sessionService;
         }

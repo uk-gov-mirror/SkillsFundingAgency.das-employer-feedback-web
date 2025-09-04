@@ -16,7 +16,7 @@ namespace SFA.DAS.EmployerFeedback.Web.Models.Home
     [ExcludeFromCodeCoverage]
     public class SignedInStubViewModel
     {
-        public const string HashedAccountIdPlaceholder = "{{hashedAccountId}}";
+        public const string EncodedAccountIdPlaceholder = "{{EncodedAccountId}}";
         private readonly ClaimsPrincipal _claimsPrinciple;
 
         public SignedInStubViewModel(IHttpContextAccessor httpContextAccessor, string returnUrl)
@@ -30,16 +30,16 @@ namespace SFA.DAS.EmployerFeedback.Web.Models.Home
 
         public string ReturnUrl { get; }
 
-        public bool HasHashedAccountIdPlaceholder()
+        public bool HasEncodedAccountIdPlaceholder()
         {
-            return Uri.UnescapeDataString(ReturnUrl).Contains(HashedAccountIdPlaceholder);
+            return Uri.UnescapeDataString(ReturnUrl).Contains(EncodedAccountIdPlaceholder);
         }
 
-        public string ReplaceHashedAccountIdPlaceholderUrl(string hashedAccountId)
+        public string ReplaceEncodedAccountIdPlaceholderUrl(string EncodedAccountId)
         {
             string replacedUrl = Regex.Replace(Uri.UnescapeDataString(ReturnUrl), 
-                HashedAccountIdPlaceholder, 
-                hashedAccountId, 
+                EncodedAccountIdPlaceholder, 
+                EncodedAccountId, 
                 RegexOptions.None, 
                 TimeSpan.FromMilliseconds(25));
 
@@ -48,7 +48,7 @@ namespace SFA.DAS.EmployerFeedback.Web.Models.Home
 
         public List<EmployerUserAccountItem> GetAccounts()
         {
-            var associatedAccountsClaim = _claimsPrinciple.Claims.FirstOrDefault(c => c.Type.Equals(EmployerClaims.UserAssociatedAccountsClaimsTypeIdentifier))?.Value;
+            var associatedAccountsClaim = _claimsPrinciple.Claims.FirstOrDefault(c => c.Type.Equals(EmployerClaims.AccountsClaimsTypeIdentifier))?.Value;
             if (string.IsNullOrEmpty(associatedAccountsClaim))
                 return new List<EmployerUserAccountItem>();
 

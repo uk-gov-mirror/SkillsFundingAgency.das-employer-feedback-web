@@ -1,12 +1,12 @@
-﻿using ESFA.DAS.EmployerFeedback.Web.Authentication;
-using ESFA.DAS.EmployerFeedback.Web.Configuration.Routing;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SFA.DAS.Employer.Shared.UI;
+using SFA.DAS.EmployerFeedback.Infrastructure.Configuration.Routing;
+using SFA.DAS.EmployerFeedback.Web.Authorization;
 
 namespace ESFA.DAS.EmployerFeedback.Web.Controllers
 {
-    [Authorize(Policy = nameof(PolicyNames.HasEmployerAccount))]
+    [Authorize(Policy = nameof(PolicyNames.ViewerRole))]
     public class FeedbackSubmittedController : Controller
     {
         private readonly UrlBuilder _urlBuilder;

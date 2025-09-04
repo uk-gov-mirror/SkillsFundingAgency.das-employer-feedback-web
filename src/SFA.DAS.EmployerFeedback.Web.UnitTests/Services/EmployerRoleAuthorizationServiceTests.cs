@@ -15,6 +15,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using SFA.DAS.GovUK.Auth.Employer;
 using EmployerClaims = SFA.DAS.EmployerFeedback.Infrastructure.Configuration.EmployerClaims;
+using SFA.DAS.EmployerFeedback.Web.Configuration.Routing;
 
 namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Services
 {
@@ -56,7 +57,7 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Services
             var claimsPrinciple = GetClaims("userId", "email", employerUserAccount);
 
             var httpContext = new DefaultHttpContext(new FeatureCollection());
-            httpContext.Request.RouteValues.Add(RouteValueKeys.HashedAccountId, employerUserAccount.AccountId.ToUpper());
+            httpContext.Request.RouteValues.Add(RouteValueKeys.EncodedAccountId, employerUserAccount.AccountId.ToUpper());
             httpContextAccessor.Setup(x => x.HttpContext).Returns(httpContext);
 
             // Act
@@ -92,7 +93,7 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Services
             var claimsPrinciple = GetClaims(userId, email, employerUserAccount);
 
             var httpContext = new DefaultHttpContext(new FeatureCollection());
-            httpContext.Request.RouteValues.Add(RouteValueKeys.HashedAccountId, accountId.ToUpper());
+            httpContext.Request.RouteValues.Add(RouteValueKeys.EncodedAccountId, accountId.ToUpper());
             httpContextAccessor.Setup(x => x.HttpContext).Returns(httpContext);
 
             // Act
@@ -132,7 +133,7 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Services
             var claimsPrinciple = GetClaims(userId, email, employerUserAccount);
 
             var httpContext = new DefaultHttpContext(new FeatureCollection());
-            httpContext.Request.RouteValues.Add(RouteValueKeys.HashedAccountId, accountId.ToUpper());
+            httpContext.Request.RouteValues.Add(RouteValueKeys.EncodedAccountId, accountId.ToUpper());
             httpContextAccessor.Setup(x => x.HttpContext).Returns(httpContext);
 
             // Act
@@ -176,7 +177,7 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Services
             employerUserAccount.Role = "Owner";
 
             var employerAccounts = new Dictionary<string, EmployerUserAccountItem> { { employerUserAccount.AccountId, employerUserAccount } };
-            var employerAccountClaim = new Claim("Not_UserAssociatedAccountsClaimsTypeIdentifier", JsonConvert.SerializeObject(employerAccounts));
+            var employerAccountClaim = new Claim("Not_AccountsClaimsTypeIdentifier", JsonConvert.SerializeObject(employerAccounts));
             var claimsPrinciple = new ClaimsPrincipal(new[] { new ClaimsIdentity(new[]
             {
                 employerAccountClaim,
@@ -185,7 +186,7 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Services
             });
 
             var httpContext = new DefaultHttpContext(new FeatureCollection());
-            httpContext.Request.RouteValues.Add(RouteValueKeys.HashedAccountId, employerUserAccount.AccountId);
+            httpContext.Request.RouteValues.Add(RouteValueKeys.EncodedAccountId, employerUserAccount.AccountId);
             httpContextAccessor.Setup(x => x.HttpContext).Returns(httpContext);
 
             //Act
@@ -207,7 +208,7 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Services
             employerUserAccount.Role = "Owner";
 
             var employerAccounts = new Dictionary<string, EmployerUserAccountItem> { { employerUserAccount.AccountId, employerUserAccount } };
-            var employerAccountClaim = new Claim(EmployerClaims.UserAssociatedAccountsClaimsTypeIdentifier, JsonConvert.SerializeObject(employerAccounts));
+            var employerAccountClaim = new Claim(EmployerClaims.AccountsClaimsTypeIdentifier, JsonConvert.SerializeObject(employerAccounts));
             var claimsPrinciple = new ClaimsPrincipal(new[] { new ClaimsIdentity(new[]
             {
                 employerAccountClaim,
@@ -216,7 +217,7 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Services
             });
 
             var httpContext = new DefaultHttpContext(new FeatureCollection());
-            httpContext.Request.RouteValues.Add(RouteValueKeys.HashedAccountId, accountId.ToUpper());
+            httpContext.Request.RouteValues.Add(RouteValueKeys.EncodedAccountId, accountId.ToUpper());
             httpContextAccessor.Setup(x => x.HttpContext).Returns(httpContext);
 
             //Act
@@ -238,7 +239,7 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Services
             employerUserAccount.Role = "Owner";
 
             var employerAccounts = new Dictionary<string, EmployerUserAccountItem> { { employerUserAccount.AccountId, employerUserAccount } };
-            var employerAccountClaim = new Claim(EmployerClaims.UserAssociatedAccountsClaimsTypeIdentifier, JsonConvert.SerializeObject(employerAccounts));
+            var employerAccountClaim = new Claim(EmployerClaims.AccountsClaimsTypeIdentifier, JsonConvert.SerializeObject(employerAccounts));
             var claimsPrinciple = new ClaimsPrincipal(new[] { new ClaimsIdentity(new[]
             {
                 employerAccountClaim,
@@ -247,7 +248,7 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Services
             });
 
             var httpContext = new DefaultHttpContext(new FeatureCollection());
-            httpContext.Request.RouteValues.Add(RouteValueKeys.HashedAccountId, accountId.ToUpper());
+            httpContext.Request.RouteValues.Add(RouteValueKeys.EncodedAccountId, accountId.ToUpper());
             httpContextAccessor.Setup(x => x.HttpContext).Returns(httpContext);
 
             //Act
@@ -260,7 +261,7 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Services
         private ClaimsPrincipal GetClaims(string userId, string email, EmployerUserAccountItem employerUserAccount)
         {
             var employerAccounts = new Dictionary<string, EmployerUserAccountItem> { { employerUserAccount.AccountId, employerUserAccount } };
-            var employerAccountClaim = new Claim(EmployerClaims.UserAssociatedAccountsClaimsTypeIdentifier, JsonConvert.SerializeObject(employerAccounts));
+            var employerAccountClaim = new Claim(EmployerClaims.AccountsClaimsTypeIdentifier, JsonConvert.SerializeObject(employerAccounts));
 
             return new ClaimsPrincipal(new[] { new ClaimsIdentity(new[]
             {

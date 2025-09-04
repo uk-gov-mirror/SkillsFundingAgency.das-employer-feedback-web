@@ -1,41 +1,38 @@
-﻿using ESFA.DAS.EmployerFeedback.Web.Infrastructure;
-using ESFA.DAS.EmployerFeedback.Web.Paging;
-using ESFA.DAS.EmployerFeedback.Web.Services;
-using ESFA.DAS.EmployerFeedback.Web.ViewModels;
-using ESFA.DAS.ProvideFeedback.Data.Repositories;
-using ESFA.DAS.ProvideFeedback.Domain.Entities.Models;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using SFA.DAS.Employer.Shared.UI;
+using SFA.DAS.EmployerFeedback.Domain.Entities.Models;
+using SFA.DAS.EmployerFeedback.Infrastructure.Configuration;
+using SFA.DAS.EmployerFeedback.Infrastructure.Services.SessionStorage;
+using SFA.DAS.EmployerFeedback.Web.Authorization;
+using SFA.DAS.EmployerFeedback.Web.Models.Shared;
+using SFA.DAS.EmployerFeedback.Web.Paging;
+using SFA.DAS.EmployerFeedback.Web.ViewModels;
+using SFA.DAS.EmployerProvideFeedback.Services;
 using SFA.DAS.Encoding;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using ESFA.DAS.EmployerFeedback.Web.Authentication;
 
-namespace ESFA.DAS.EmployerFeedback.Web.Controllers
+namespace SFA.DAS.EmployerFeedback.Web.Controllers
 {
-    [Authorize(Policy = nameof(PolicyNames.HasEmployerAccount))]
+    [Authorize(Policy = nameof(PolicyNames.ViewerRole))]
     public class ProviderController : Controller
     {
-        private readonly IEmployerFeedbackRepository _employerEmailDetailsRepository;
-        private readonly ISessionService _sessionService;
+        private readonly ISessionStorageService _sessionService;
         private readonly ITrainingProviderService _trainingProviderService;
         private readonly ILogger<ProviderController> _logger;
         private readonly IEncodingService _encodingService;
         private readonly UrlBuilder _urlBuilder;
 
-        public ProviderController(
-            IEmployerFeedbackRepository employerEmailDetailsRepository
-            , ISessionService sessionService
-            , ITrainingProviderService trainingProviderService
-            , IEncodingService encodingService
-            , ILogger<ProviderController> logger
-            , UrlBuilder urlBuilder
+        public ProviderController(ISessionStorageService sessionService,
+            ITrainingProviderService trainingProviderService,
+            IEncodingService encodingService, 
+            ILogger<ProviderController> logger, 
+            UrlBuilder urlBuilder
             )
         {
-            _employerEmailDetailsRepository = employerEmailDetailsRepository;
             _sessionService = sessionService;
             _trainingProviderService = trainingProviderService;
             _encodingService = encodingService;
@@ -148,61 +145,65 @@ namespace ESFA.DAS.EmployerFeedback.Web.Controllers
         [HttpPost]
         [Route("/{encodedAccountId}/providers/{providerId}")]
         public async Task<IActionResult> ProviderConfirmed(ProviderSearchConfirmationViewModel postedModel)
-        {            
-            if(!postedModel.Confirmed.HasValue)
-            {
-                ModelState.AddModelError("Confirmation", "Please choose an option");
-                return View("ConfirmProvider", postedModel);
-            }
+        {
+            //FIXME - Replace with outer API call
+            //if (!postedModel.Confirmed.HasValue)
+            //{
+            //    ModelState.AddModelError("Confirmation", "Please choose an option");
+            //    return View("ConfirmProvider", postedModel);
+            //}
 
-            if(!postedModel.Confirmed.Value)
-            {
-                return RedirectToAction("Index");
-            }
+            //if(!postedModel.Confirmed.Value)
+            //{
+            //    return RedirectToAction("Index");
+            //}
 
-            var providerAttributes = await _employerEmailDetailsRepository.GetAllAttributes();
-            if (providerAttributes == null)
-            {
-                _logger.LogError($"Unable to load Provider Attributes from the database.");
-                return RedirectToAction("Error", "Error");
-            }
 
-            var providerAttributesModel = providerAttributes.Select(s => new ProviderAttributeModel { Name = s.AttributeName }).ToList();
+            //var providerAttributes = await _employerEmailDetailsRepository.GetAllAttributes();
+            //if (providerAttributes == null)
+            //{
+            //    _logger.LogError($"Unable to load Provider Attributes from the database.");
+            //    return RedirectToAction("Error", "Error");
+            //}
 
-            var idClaim = HttpContext.User.FindFirst(EmployerClaims.UserId);
-            if(null == idClaim)
-            {
-                _logger.LogError($"User id not found in user claims.");
-                return RedirectToAction("Error", "Error");
-            }
+            //var providerAttributesModel = providerAttributes.Select(s => new ProviderAttributeModel { Name = s.AttributeName }).ToList();
 
-            var newSurveyModel = new SurveyModel
-            {
-                AccountId = _encodingService.Decode(postedModel.EncodedAccountId, EncodingType.AccountId),
-                Ukprn = postedModel.ProviderId,
-                UserRef = new Guid(idClaim?.Value), 
-                Submitted = false, //employerEmailDetail.CodeBurntDate != null,
-                ProviderName = postedModel.ProviderName,
-                Attributes = providerAttributesModel
-            };
+            //var idClaim = HttpContext.User.FindFirst(EmployerClaims.UserId);
+            //if(null == idClaim)
+            //{
+            //    _logger.LogError($"User id not found in user claims.");
+            //    return RedirectToAction("Error", "Error");
+            //}
 
-            await _sessionService.Set(idClaim.Value, newSurveyModel);
+            //var newSurveyModel = new SurveyModel
+            //{
+            //    AccountId = _encodingService.Decode(postedModel.EncodedAccountId, EncodingType.AccountId),
+            //    Ukprn = postedModel.ProviderId,
+            //    UserRef = new Guid(idClaim?.Value), 
+            //    Submitted = false, //employerEmailDetail.CodeBurntDate != null,
+            //    ProviderName = postedModel.ProviderName,
+            //    Attributes = providerAttributesModel
+            //};
 
-            // Make sure the user exists.
-            var emailAddressClaim = HttpContext.User.FindFirst(EmployerClaims.EmailAddress);
-            var firstNameClaim = HttpContext.User.FindFirst(EmployerClaims.GivenName);
-            var user = new User()
-            {
-                UserRef = new Guid(idClaim?.Value),
-                EmailAddress = emailAddressClaim?.Value,
-                FirstName = firstNameClaim?.Value,
-            };
-            await _employerEmailDetailsRepository.UpsertIntoUsers(user);
+            //await _sessionService.Set(idClaim.Value, newSurveyModel);
 
-            // Make sure the provider exists and is active.
-            await _trainingProviderService.UpsertTrainingProvider(newSurveyModel.Ukprn, newSurveyModel.ProviderName);
+            //// Make sure the user exists.
+            //var emailAddressClaim = HttpContext.User.FindFirst(EmployerClaims.EmailAddress);
+            //var firstNameClaim = HttpContext.User.FindFirst(EmployerClaims.GivenName);
+            //var user = new User()
+            //{
+            //    UserRef = new Guid(idClaim?.Value),
+            //    EmailAddress = emailAddressClaim?.Value,
+            //    FirstName = firstNameClaim?.Value,
+            //};
 
-            return RedirectToAction("Index", "Home");
+            ////await _employerEmailDetailsRepository.UpsertIntoUsers(user);
+
+            //// Make sure the provider exists and is active.
+            //await _trainingProviderService.UpsertTrainingProvider(newSurveyModel.Ukprn, newSurveyModel.ProviderName);
+
+            //return RedirectToAction("Index", "Home");
+            throw new NotImplementedException();
         }
     }
 }

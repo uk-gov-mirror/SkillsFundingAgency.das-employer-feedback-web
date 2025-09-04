@@ -42,15 +42,16 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Controllers
             _contextAccessorMock = new Mock<IHttpContextAccessor>();
             _loggerMock = new Mock<ILogger<HomeController>>();
             _stubAuthServiceMock = new Mock<IStubAuthenticationService>();
+            
             _outerApiMock = new Mock<IEmployerFeedbackOuterApi>();
 
             _sut = new HomeController(
                 _configMock.Object,
                 _urlBuilderMock.Object,
-                _contextAccessorMock.Object,
                 _loggerMock.Object,
                 _stubAuthServiceMock.Object,
-                _outerApiMock.Object
+                _outerApiMock.Object,
+                _contextAccessorMock.Object
             );
         }
 

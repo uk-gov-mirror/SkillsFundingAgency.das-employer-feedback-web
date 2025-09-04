@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
-namespace ESFA.DAS.EmployerFeedback.Web.Controllers
+namespace SFA.DAS.EmployerFeedback.Web.Controllers
 {
     public class ErrorController : Controller
     {

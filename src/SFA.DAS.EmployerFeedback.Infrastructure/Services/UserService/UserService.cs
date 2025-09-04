@@ -22,17 +22,17 @@ namespace SFA.DAS.EmployerFeedback.Infrastructure.Services.UserService
 
         public string GetUserId()
         {
-            return GetUserClaimAsString(EmployerClaims.UserIdClaimTypeIdentifier);
+            return GetUserClaimAsString(EmployerClaims.UserId);
         }
 
         public string GetUserDisplayName()
         {
-            return GetUserClaimAsString(EmployerClaims.UserDisplayNameClaimTypeIdentifier);
+            return GetUserClaimAsString(EmployerClaims.UserDisplayName);
         }
 
         public bool IsUserChangeAuthorized(string accountId)
         {
-            var result = TryGetUserClaimValue(EmployerClaims.UserAssociatedAccountsClaimsTypeIdentifier, out var associatedAccountsClaim);
+            var result = TryGetUserClaimValue(EmployerClaims.AccountsClaimsTypeIdentifier, out var associatedAccountsClaim);
             if (!result)
             {
                 return false;
@@ -63,7 +63,7 @@ namespace SFA.DAS.EmployerFeedback.Infrastructure.Services.UserService
 
         public IEnumerable<string> GetUserOwnerTransactorAccountIds()
         {
-            var result = TryGetUserClaimValue(EmployerClaims.UserAssociatedAccountsClaimsTypeIdentifier, out var associatedAccountsClaim);
+            var result = TryGetUserClaimValue(EmployerClaims.AccountsClaimsTypeIdentifier, out var associatedAccountsClaim);
             if (!result)
             {
                 return [];
