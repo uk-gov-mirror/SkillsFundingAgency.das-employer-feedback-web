@@ -9,22 +9,15 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Extensions\**" />
     <Compile Remove="StartupExtensions\**" />
     <Compile Remove="TagHelpers\**" />
     <Compile Remove="ValidatorInteceptors\**" />
-    <EmbeddedResource Remove="Extensions\**" />
     <EmbeddedResource Remove="StartupExtensions\**" />
     <EmbeddedResource Remove="TagHelpers\**" />
     <EmbeddedResource Remove="ValidatorInteceptors\**" />
-    <None Remove="Extensions\**" />
     <None Remove="StartupExtensions\**" />
     <None Remove="TagHelpers\**" />
     <None Remove="ValidatorInteceptors\**" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Compile Include="Extensions\StringExtensionsTests.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -50,12 +43,6 @@
     <ProjectReference Include="..\SFA.DAS.EmployerFeedback.Infrastructure\SFA.DAS.EmployerFeedback.Infrastructure.csproj" />
     <ProjectReference Include="..\SFA.DAS.EmployerFeedback.TestHelper\SFA.DAS.EmployerFeedback.TestHelper.csproj" />
     <ProjectReference Include="..\SFA.DAS.EmployerFeedback.Web\SFA.DAS.EmployerFeedback.Web.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Models\" />
-    <Folder Include="Orchestrators\" />
-    <Folder Include="Validators\" />
   </ItemGroup>
 
 </Project>

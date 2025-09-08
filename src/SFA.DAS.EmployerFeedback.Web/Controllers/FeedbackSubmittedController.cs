@@ -4,7 +4,7 @@ using SFA.DAS.Employer.Shared.UI;
 using SFA.DAS.EmployerFeedback.Infrastructure.Configuration.Routing;
 using SFA.DAS.EmployerFeedback.Web.Authorization;
 
-namespace ESFA.DAS.EmployerFeedback.Web.Controllers
+namespace SFA.DAS.EmployerFeedback.Web.Controllers
 {
     [Authorize(Policy = nameof(PolicyNames.ViewerRole))]
     public class FeedbackSubmittedController : Controller

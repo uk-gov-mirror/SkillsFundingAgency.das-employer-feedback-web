@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc.Filters;
 using SFA.DAS.EmployerFeedback.Infrastructure.Configuration;
 
-namespace ESFA.DAS.EmployerProvideFeedback.Infrastructure
+namespace SFA.DAS.EmployerFeedback.Infrastructure
 {
     public class EnsureFeedbackNotSubmittedRecentlyAttribute : ActionFilterAttribute
     {
