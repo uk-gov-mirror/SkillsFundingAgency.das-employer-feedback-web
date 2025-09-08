@@ -16,4 +16,8 @@
     <ProjectReference Include="..\SFA.DAS.EmployerFeedback.Infrastructure\SFA.DAS.EmployerFeedback.Infrastructure.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Commands\" />
+  </ItemGroup>
+
 </Project>
