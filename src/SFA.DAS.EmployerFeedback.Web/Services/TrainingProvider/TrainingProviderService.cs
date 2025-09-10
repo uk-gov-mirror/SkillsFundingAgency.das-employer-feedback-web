@@ -1,4 +1,7 @@
-﻿using SFA.DAS.EmployerFeedback.Infrastructure.Configuration;
+﻿using Microsoft.AspNetCore.Authentication;
+using SFA.DAS.EmployerFeedback.Domain.Entities.Models;
+using SFA.DAS.EmployerFeedback.Infrastructure.Api.OuterApi;
+using SFA.DAS.EmployerFeedback.Infrastructure.Configuration;
 using SFA.DAS.EmployerFeedback.Web.Models.Shared;
 using SFA.DAS.EmployerFeedback.Web.Paging;
 using SFA.DAS.EmployerProvideFeedback.Paging;
@@ -23,17 +26,17 @@ namespace SFA.DAS.EmployerProvideFeedback.Services
 
     public class TrainingProviderService : ITrainingProviderService
     {
-        //FIXME - replace ICommitmentService with outer API call
-        //private readonly ICommitmentService _commitmentService;
         private readonly IEncodingService _encodingService;
         private readonly EmployerFeedbackWebConfiguration _config;
+        private readonly IEmployerFeedbackOuterApi _employerFeedbackOuterApi;
 
         private const string NOT_YET_SUBMITTED = "Not yet submitted";
 
-        public TrainingProviderService(IEncodingService encodingService, EmployerFeedbackWebConfiguration config)
+        public TrainingProviderService(IEncodingService encodingService, EmployerFeedbackWebConfiguration config, IEmployerFeedbackOuterApi employerFeedbackOuterApi)
         {
             _encodingService = encodingService;
             _config = config;
+            _employerFeedbackOuterApi = employerFeedbackOuterApi;
         }
 
         public async Task<ProviderSearchViewModel> GetTrainingProviderSearchViewModel(
@@ -117,42 +120,37 @@ namespace SFA.DAS.EmployerProvideFeedback.Services
 
         public async Task<ProviderSearchConfirmationViewModel> GetTrainingProviderConfirmationViewModel(string encodedAccountId, long providerId)
         {
-            //FIXME - Replace with outer API call
-            //var response = await _commitmentService.GetProvider(providerId);
+            var response = await _employerFeedbackOuterApi.GetProvider(providerId);
 
-            //if(null == response)
-            //{
-            //    return null;
-            //}
+            if (null == response)
+            {
+                return null;
+            }
 
-            //var model = new ProviderSearchConfirmationViewModel();
-            //model.ProviderId = response.ProviderId;
-            //model.ProviderName = response.Name;
+            var model = new ProviderSearchConfirmationViewModel();
+            model.ProviderId = response.ProviderId;
+            model.ProviderName = response.Name;
 
-            //return model;
-            throw new NotImplementedException();
+            return model;
         }
 
         public async Task UpsertTrainingProvider(long providerId, string providerName)
         {
-            //FIXME - should be replaced with a call to the outer api to upsert
-            //await _employerFeedbackRepository.UpsertIntoProviders(new Provider[] { new Provider() { Ukprn = providerId, ProviderName = providerName } });
-            throw new NotImplementedException();
+            await _employerFeedbackOuterApi.UpsertIntoProviders(new Provider[] { new Provider() { Ukprn = providerId, ProviderName = providerName } });
         }
 
         private async Task<List<ProviderSearchViewModel.EmployerTrainingProvider>> SelectAllProvidersForAccount(long accountId)
         {
-            //FIXME - Replace with outer API call
             // Select all 
-            //var apprenticeshipsResponse = await _commitmentService.GetApprenticeships(accountId);
+            var apprenticeshipsResponse = await _employerFeedbackOuterApi.GetApprenticeships(accountId);
 
-            //var providers = apprenticeshipsResponse.Apprenticeships.GroupBy(p => p.ProviderId)
-            //    .Select(a => new ProviderSearchViewModel.EmployerTrainingProvider()
-            //    {
-            //        ProviderId = a.First().ProviderId,
-            //        ProviderName = a.First().ProviderName
-            //    })
-            //    .ToList();
+            var providers = apprenticeshipsResponse.Apprenticeships.GroupBy(p => p.ProviderId)
+                .Select(a => new ProviderSearchViewModel.EmployerTrainingProvider()
+                {
+                    ProviderId = a.First().ProviderId,
+                    ProviderName = a.First().ProviderName
+                })
+                .ToList();
 
             //return providers;
             throw new NotImplementedException(); 
@@ -160,29 +158,27 @@ namespace SFA.DAS.EmployerProvideFeedback.Services
 
         private async Task AugmentProviderRecordsWithFeedbackStatus(long accountId, List<ProviderSearchViewModel.EmployerTrainingProvider> providers)
         {
-            //FIXME - Replace with outer API call
-            //var employerFeedback = await _employerFeedbackRepository.GetAllFeedbackAndResultFromEmployer(accountId);
-            //foreach (var provider in providers)
-            //{
-            //    var feedBackForProvider = employerFeedback.FirstOrDefault(fp => fp.Ukprn == provider.ProviderId);
-            //    if (null == feedBackForProvider)
-            //    {
-            //        provider.FeedbackStatus = NOT_YET_SUBMITTED;
-            //        provider.DateSubmitted = null;
-            //    }
-            //    else
-            //    {
-            //        provider.FeedbackStatus = "Submitted";
-            //        provider.DateSubmitted = feedBackForProvider.DateTimeCompleted;
-            //    }
+            var employerFeedback = await _employerFeedbackOuterApi.SubmitEmployerFeedback(new EmployerFeedbackResult { FeedbackId = accountId});
+            foreach (var provider in providers)
+            {
+                var feedBackForProvider = employerFeedback.FirstOrDefault(fp => fp.Ukprn == provider.ProviderId);
+                if (null == feedBackForProvider)
+                {
+                    provider.FeedbackStatus = NOT_YET_SUBMITTED;
+                    provider.DateSubmitted = null;
+                }
+                else
+                {
+                    provider.FeedbackStatus = "Submitted";
+                    provider.DateSubmitted = feedBackForProvider.DateTimeCompleted;
+                }
 
-            //    provider.CanSubmitFeedback = true;
-            //    if (provider.DateSubmitted.HasValue && (DateTime.UtcNow - provider.DateSubmitted.Value).TotalDays < _config.FeedbackWaitPeriodDays)
-            //    {
-            //        provider.CanSubmitFeedback = false;
-            //    }
-            //}
-            throw new NotImplementedException();
+                provider.CanSubmitFeedback = true;
+                if (provider.DateSubmitted.HasValue && (DateTime.UtcNow - provider.DateSubmitted.Value).TotalDays < _config.FeedbackWaitPeriodDays)
+                {
+                    provider.CanSubmitFeedback = false;
+                }
+            }
         }
 
         private IQueryable<ProviderSearchViewModel.EmployerTrainingProvider> ApplyProviderNameFilter(IQueryable<ProviderSearchViewModel.EmployerTrainingProvider> providers, string providerName)

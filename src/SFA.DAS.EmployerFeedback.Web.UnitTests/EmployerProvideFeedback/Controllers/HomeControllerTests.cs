@@ -12,6 +12,7 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
 using SFA.DAS.EmployerFeedback.Domain.Entities.Models;
+using SFA.DAS.EmployerFeedback.Infrastructure.Api.OuterApi;
 using SFA.DAS.EmployerFeedback.Infrastructure.Configuration;
 using SFA.DAS.EmployerFeedback.Infrastructure.Services.SessionStorage;
 using SFA.DAS.EmployerFeedback.Web.Controllers;
@@ -31,8 +32,9 @@ namespace UnitTests.EmployerProvideFeedback.Controllers
         private Mock<ILogger<HomeController>> _loggerMock;
         private Mock<IHttpContextAccessor> _httpContextAccessorMock;
         private Mock<IConfiguration> _configurationMock;
-        private Mock<IStubAuthenticationService> _stubAuthenticationServiceMock;    
-        private List<ProviderAttributeModel> _providerAttributes;
+        private Mock<IStubAuthenticationService> _stubAuthenticationServiceMock;
+        private Mock<IEmployerFeedbackOuterApi> _employerFeedbackOuterApiMock;
+        private List<SFA.DAS.EmployerFeedback.Web.Models.Shared.ProviderAttributeModel> _providerAttributes;
         private IFixture _fixture;
         
         private EmployerSurveyInvite _employerEmailDetail;
@@ -50,7 +52,7 @@ namespace UnitTests.EmployerProvideFeedback.Controllers
                 UserRef = Guid.NewGuid(),
                 ProviderName = _employerEmailDetail.ProviderName,
             };
-            _providerAttributes = _fixture.Build<ProviderAttributeModel>()
+            _providerAttributes = _fixture.Build<SFA.DAS.EmployerFeedback.Web.Models.Shared.ProviderAttributeModel>()
                 .With(x => x.Good, false)
                 .With(x => x.Bad, false)
                 .CreateMany(10)
@@ -60,10 +62,11 @@ namespace UnitTests.EmployerProvideFeedback.Controllers
             _sessionServiceMock.Setup(m => m.Get<SurveyModel>(It.IsAny<string>())).Returns(Task.FromResult(_surveyModel));
             _encodingServiceMock = new Mock<IEncodingService>();
             _httpContextAccessorMock = new Mock<IHttpContextAccessor>();
+            _employerFeedbackOuterApiMock = new Mock<IEmployerFeedbackOuterApi>();
 
             _loggerMock = new Mock<ILogger<HomeController>>();
 
-            _controller = new HomeController(_sessionServiceMock.Object, _encodingServiceMock.Object, _loggerMock.Object, _configurationMock.Object, _stubAuthenticationServiceMock.Object, _httpContextAccessorMock.Object);
+            _controller = new HomeController(_sessionServiceMock.Object, _encodingServiceMock.Object, _loggerMock.Object, _configurationMock.Object, _stubAuthenticationServiceMock.Object, _httpContextAccessorMock.Object, _employerFeedbackOuterApiMock.Object);
 
             _controller.ControllerContext = new ControllerContext
             {
@@ -80,17 +83,17 @@ namespace UnitTests.EmployerProvideFeedback.Controllers
         [Test]
         public async Task UniqueCode_Invalid_ShouldRedirect_ToError()
         {
-            //FIXME - Replace repository code with outer API
+
             // Arrange
-            //var uniqueCode = Guid.NewGuid();
-            //_employerEmailDetailsRepoMock.Setup(m => m.GetEmployerInviteForUniqueCode(uniqueCode))
-            //    .ReturnsAsync((EmployerSurveyInvite)null);
+            var uniqueCode = Guid.NewGuid();
+            _employerFeedbackOuterApiMock.Setup(m => m.GetEmployerInviteForUniqueCode(uniqueCode))
+                .ReturnsAsync((EmployerSurveyInvite)null);
 
-            //// Act
-            //var result = await _controller.Index(uniqueCode);
+            // Act
+            var result = await _controller.Index(uniqueCode);
 
-            //// Assert
-            //result.Should().BeOfType<NotFoundResult>();
+            // Assert
+            result.Should().BeOfType<NotFoundResult>();
             Assert.Fail();
         }
 
@@ -124,7 +127,6 @@ namespace UnitTests.EmployerProvideFeedback.Controllers
         [Test]
         public async Task EmailEntryPoint_Should_Create_AccountId()
         {
-            //FIXME - Replace repository code with outer API
             // Arrange
             var uniqueCode = Guid.NewGuid();
 
@@ -133,7 +135,7 @@ namespace UnitTests.EmployerProvideFeedback.Controllers
 
             // Assert
             Assert.Fail();
-            //_employerEmailDetailsRepoMock.Verify(m => m.GetEmployerInviteForUniqueCode(uniqueCode), Times.Once);
+            _employerFeedbackOuterApiMock.Verify(m => m.GetEmployerInviteForUniqueCode(uniqueCode), Times.Once);
         }
 
         [Test]

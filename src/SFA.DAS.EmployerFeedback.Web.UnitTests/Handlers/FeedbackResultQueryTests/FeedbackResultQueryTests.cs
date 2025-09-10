@@ -10,6 +10,7 @@ using NUnit.Framework;
 using SFA.DAS.EmployerFeedback.Application.Commands;
 using SFA.DAS.EmployerFeedback.Application.Queries;
 using SFA.DAS.EmployerFeedback.Domain.Entities.Models;
+using SFA.DAS.EmployerFeedback.Infrastructure.Api.OuterApi;
 using SFA.DAS.EmployerFeedback.Infrastructure.Api.Responses;
 
 namespace UnitTests.Api
@@ -17,22 +18,23 @@ namespace UnitTests.Api
     public class FeedbackResultQueryTests
     {
         private readonly Mock<ILogger<FeedbackResultQueryHandler>> mockLogger;
+        private readonly Mock<IEmployerFeedbackOuterApi> employerFeedbackOuterApi;
         private readonly FeedbackResultQueryHandler handler;
 
         public FeedbackResultQueryTests()
         {
             mockLogger = new Mock<ILogger<FeedbackResultQueryHandler>>();
-            handler = new FeedbackResultQueryHandler(mockLogger.Object);
+            employerFeedbackOuterApi = new Mock<IEmployerFeedbackOuterApi>();
+            handler = new FeedbackResultQueryHandler(employerFeedbackOuterApi.Object, mockLogger.Object);
         }
 
         [Test]
         public async Task WhenQueryingFeedbackResult_IfNullReturnsEmptyCollection()
         {
-            //FIXME - replace with outer API call (mock)
             // Arrange
-            //mockRepository
-            //    .Setup(s => s.GetFeedbackResultSummary(123))
-            //    .ReturnsAsync((IEnumerable<EmployerFeedbackResultSummary>)null);
+            employerFeedbackOuterApi
+                .Setup(s => s.GetFeedbackResultSummary(123))
+                .ReturnsAsync((IEnumerable<EmployerFeedbackResultSummary>)null);
 
             // Act
             var response = await handler.Handle(new FeedbackResultQuery { Ukprn = 123 }, new CancellationToken());
@@ -48,11 +50,10 @@ namespace UnitTests.Api
         [Test]
         public async Task WhenQueryingFeedbackResult_IfNoFeedbackReturnsEmptyCollection()
         {
-            //FIXME - replace with outer API call (mock)
             // Arrange
-            //mockRepository
-            //    .Setup(s => s.GetFeedbackResultSummary(456))
-            //    .ReturnsAsync(new List<EmployerFeedbackResultSummary>());
+            employerFeedbackOuterApi
+                .Setup(s => s.GetFeedbackResultSummary(456))
+                .ReturnsAsync(new List<EmployerFeedbackResultSummary>());
 
             // Act
             var response = await handler.Handle(new FeedbackResultQuery { Ukprn = 456 }, new CancellationToken());
@@ -68,14 +69,13 @@ namespace UnitTests.Api
         [Test]
         public async Task WhenQueryingFeedbackResult_IfFeedbackExistsReturnsConvertedModel()
         {
-            //FIXME - replace with outer API call (mock)
             // Arrange
             var summaries = new Fixture().CreateMany<EmployerFeedbackResultSummary>(1).ToList();
             summaries[0].Ukprn = 789;
-            
-            //mockRepository
-            //    .Setup(s => s.GetFeedbackResultSummary(789))
-            //    .ReturnsAsync(summaries);
+
+            employerFeedbackOuterApi
+                .Setup(s => s.GetFeedbackResultSummary(789))
+                .ReturnsAsync(summaries);
 
             // Act
             var response = await handler.Handle(new FeedbackResultQuery { Ukprn = 789 }, new CancellationToken());

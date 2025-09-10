@@ -18,6 +18,7 @@ using SFA.DAS.EmployerFeedback.Infrastructure.Services.SessionStorage;
 using SFA.DAS.EmployerFeedback.Web.Controllers;
 using SFA.DAS.Encoding;
 using SFA.DAS.EmployerFeedback.Infrastructure;
+using SFA.DAS.EmployerFeedback.Infrastructure.Api.OuterApi;
 
 namespace UnitTests.EmployerProvideFeedback.Infrastructure
 {
@@ -28,6 +29,7 @@ namespace UnitTests.EmployerProvideFeedback.Infrastructure
         private readonly Mock<IEncodingService> _encodingServiceMock;
         private readonly Mock<ILogger<HomeController>> _loggerMock;
         private readonly Mock<IConfiguration> _configurationMock = new Mock<IConfiguration>();
+        private readonly Mock<IEmployerFeedbackOuterApi> _employerFeedbackOuterApi = new Mock<IEmployerFeedbackOuterApi>();
 
         public EnsureFeedbackNotSubmittedRecentlyAttributeTests()
         {
@@ -41,7 +43,9 @@ namespace UnitTests.EmployerProvideFeedback.Infrastructure
                             _loggerMock.Object,
                             _configurationMock.Object,
                             null,
-                            null);
+                            null,
+                            _employerFeedbackOuterApi.Object);
+
             var context = new DefaultHttpContext()
             {
                 User = new ClaimsPrincipal(new ClaimsIdentity(new Claim[]
@@ -87,7 +91,7 @@ namespace UnitTests.EmployerProvideFeedback.Infrastructure
                _controller);
             context.ActionArguments.Add("uniqueCode", Guid.NewGuid());
 
-            var ensureSession = new EnsureFeedbackNotSubmittedRecentlyAttribute(config);
+            var ensureSession = new EnsureFeedbackNotSubmittedRecentlyAttribute(_employerFeedbackOuterApi.Object,config);
 
             // Act
             ensureSession.OnActionExecuting(context);
@@ -137,7 +141,7 @@ namespace UnitTests.EmployerProvideFeedback.Infrastructure
                _controller);
             context.ActionArguments.Add("uniqueCode", Guid.NewGuid());
 
-            var ensureSession = new EnsureFeedbackNotSubmittedRecentlyAttribute(config);
+            var ensureSession = new EnsureFeedbackNotSubmittedRecentlyAttribute(_employerFeedbackOuterApi.Object,config);
 
             // Act
             ensureSession.OnActionExecuting(context);

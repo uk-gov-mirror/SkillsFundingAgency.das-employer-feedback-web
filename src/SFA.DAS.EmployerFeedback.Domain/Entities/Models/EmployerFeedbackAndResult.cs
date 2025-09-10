@@ -2,7 +2,7 @@
 
 namespace SFA.DAS.EmployerFeedback.Domain.Entities.Models
 {
-    public class EmployerFeedbackAndResult : EmployerFeedback
+    public class EmployerFeedbackAndResult : EmployerFeedbackResponse
     {
         public DateTime? DateTimeCompleted { get; set; }
     }

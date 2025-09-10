@@ -4,8 +4,7 @@ using System.Linq;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
-using SFA.DAS.EmployerFeedback.Infrastructure.Api.Types;
-using SFA.DAS.EmployerFeedback.Infrastructure.Services.UserAccounts;
+using SFA.DAS.EmployerFeedback.Domain.Types;
 using SFA.DAS.GovUK.Auth.Employer;
 using EmployerClaims = SFA.DAS.EmployerFeedback.Infrastructure.Configuration.EmployerClaims;
 

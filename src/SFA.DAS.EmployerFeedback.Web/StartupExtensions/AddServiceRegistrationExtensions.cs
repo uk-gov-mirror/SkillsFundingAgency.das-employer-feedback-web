@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
 using RestEase.HttpClientFactory;
-using SFA.DAS.EmployerFeedback.Domain.Interfaces;
 using SFA.DAS.EmployerFeedback.Infrastructure.Configuration;
 using SFA.DAS.EmployerFeedback.Infrastructure.Services.CacheStorage;
 using SFA.DAS.EmployerFeedback.Infrastructure.Services.SessionStorage;
@@ -15,6 +14,7 @@ using SFA.DAS.GovUK.Auth.Authentication;
 using SFA.DAS.Http.Configuration;
 using System.Diagnostics.CodeAnalysis;
 using SFA.DAS.GovUK.Auth.Employer;
+using SFA.DAS.EmployerFeedback.Infrastructure.Api.OuterApi;
 
 namespace SFA.DAS.EmployerFeedback.Web.StartupExtensions
 {

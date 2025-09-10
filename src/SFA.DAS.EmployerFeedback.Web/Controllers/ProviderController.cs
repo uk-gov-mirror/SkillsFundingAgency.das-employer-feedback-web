@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using SFA.DAS.Employer.Shared.UI;
 using SFA.DAS.EmployerFeedback.Domain.Entities.Models;
+using SFA.DAS.EmployerFeedback.Infrastructure.Api.OuterApi;
 using SFA.DAS.EmployerFeedback.Infrastructure.Configuration;
 using SFA.DAS.EmployerFeedback.Infrastructure.Services.SessionStorage;
 using SFA.DAS.EmployerFeedback.Web.Authorization;
@@ -24,12 +25,14 @@ namespace SFA.DAS.EmployerFeedback.Web.Controllers
         private readonly ITrainingProviderService _trainingProviderService;
         private readonly ILogger<ProviderController> _logger;
         private readonly IEncodingService _encodingService;
+        private readonly IEmployerFeedbackOuterApi _employerFeedbackOuterApi;
         private readonly UrlBuilder _urlBuilder;
 
         public ProviderController(ISessionStorageService sessionService,
             ITrainingProviderService trainingProviderService,
             IEncodingService encodingService, 
-            ILogger<ProviderController> logger, 
+            ILogger<ProviderController> logger,
+            IEmployerFeedbackOuterApi employerFeedbackOuterApi,
             UrlBuilder urlBuilder
             )
         {
@@ -37,6 +40,7 @@ namespace SFA.DAS.EmployerFeedback.Web.Controllers
             _trainingProviderService = trainingProviderService;
             _encodingService = encodingService;
             _logger = logger;
+            _employerFeedbackOuterApi = employerFeedbackOuterApi;
             _urlBuilder = urlBuilder;
         }
 
@@ -146,64 +150,60 @@ namespace SFA.DAS.EmployerFeedback.Web.Controllers
         [Route("/{encodedAccountId}/providers/{providerId}")]
         public async Task<IActionResult> ProviderConfirmed(ProviderSearchConfirmationViewModel postedModel)
         {
-            //FIXME - Replace with outer API call
-            //if (!postedModel.Confirmed.HasValue)
-            //{
-            //    ModelState.AddModelError("Confirmation", "Please choose an option");
-            //    return View("ConfirmProvider", postedModel);
-            //}
+            if (!postedModel.Confirmed.HasValue)
+            {
+                ModelState.AddModelError("Confirmation", "Please choose an option");
+                return View("ConfirmProvider", postedModel);
+            }
 
-            //if(!postedModel.Confirmed.Value)
-            //{
-            //    return RedirectToAction("Index");
-            //}
+            if (!postedModel.Confirmed.Value)
+            {
+                return RedirectToAction("Index");
+            }
 
 
-            //var providerAttributes = await _employerEmailDetailsRepository.GetAllAttributes();
-            //if (providerAttributes == null)
-            //{
-            //    _logger.LogError($"Unable to load Provider Attributes from the database.");
-            //    return RedirectToAction("Error", "Error");
-            //}
+            var providerAttributes = await _employerFeedbackOuterApi.GetAllAttributes();
+            if (providerAttributes == null)
+            {
+                _logger.LogError($"Unable to load Provider Attributes from the database.");
+                return RedirectToAction("Error", "Error");
+            }
 
-            //var providerAttributesModel = providerAttributes.Select(s => new ProviderAttributeModel { Name = s.AttributeName }).ToList();
+            var providerAttributesModel = providerAttributes.Select(s => new Models.Shared.ProviderAttributeModel { Name = s.AttributeName }).ToList();
 
-            //var idClaim = HttpContext.User.FindFirst(EmployerClaims.UserId);
-            //if(null == idClaim)
-            //{
-            //    _logger.LogError($"User id not found in user claims.");
-            //    return RedirectToAction("Error", "Error");
-            //}
+            var idClaim = HttpContext.User.FindFirst(EmployerClaims.UserId);
+            if (null == idClaim)
+            {
+                _logger.LogError($"User id not found in user claims.");
+                return RedirectToAction("Error", "Error");
+            }
 
-            //var newSurveyModel = new SurveyModel
-            //{
-            //    AccountId = _encodingService.Decode(postedModel.EncodedAccountId, EncodingType.AccountId),
-            //    Ukprn = postedModel.ProviderId,
-            //    UserRef = new Guid(idClaim?.Value), 
-            //    Submitted = false, //employerEmailDetail.CodeBurntDate != null,
-            //    ProviderName = postedModel.ProviderName,
-            //    Attributes = providerAttributesModel
-            //};
+            var newSurveyModel = new SurveyModel
+            {
+                AccountId = _encodingService.Decode(postedModel.EncodedAccountId, EncodingType.AccountId),
+                Ukprn = postedModel.ProviderId,
+                UserRef = new Guid(idClaim?.Value),
+                Submitted = false, //employerEmailDetail.CodeBurntDate != null,
+                ProviderName = postedModel.ProviderName,
+                Attributes = providerAttributesModel
+            };
 
-            //await _sessionService.Set(idClaim.Value, newSurveyModel);
+            await _sessionService.Set(idClaim.Value, newSurveyModel);
 
-            //// Make sure the user exists.
-            //var emailAddressClaim = HttpContext.User.FindFirst(EmployerClaims.EmailAddress);
-            //var firstNameClaim = HttpContext.User.FindFirst(EmployerClaims.GivenName);
-            //var user = new User()
-            //{
-            //    UserRef = new Guid(idClaim?.Value),
-            //    EmailAddress = emailAddressClaim?.Value,
-            //    FirstName = firstNameClaim?.Value,
-            //};
+            // Make sure the user exists.
+            var emailAddressClaim = HttpContext.User.FindFirst(EmployerClaims.EmailAddress);
+            var firstNameClaim = HttpContext.User.FindFirst(EmployerClaims.GivenName);
+            var user = new User()
+            {
+                UserRef = new Guid(idClaim?.Value),
+                EmailAddress = emailAddressClaim?.Value,
+                FirstName = firstNameClaim?.Value,
+            };
 
-            ////await _employerEmailDetailsRepository.UpsertIntoUsers(user);
+            // Make sure the provider exists and is active.
+            await _trainingProviderService.UpsertTrainingProvider(newSurveyModel.Ukprn, newSurveyModel.ProviderName);
 
-            //// Make sure the provider exists and is active.
-            //await _trainingProviderService.UpsertTrainingProvider(newSurveyModel.Ukprn, newSurveyModel.ProviderName);
-
-            //return RedirectToAction("Index", "Home");
-            throw new NotImplementedException();
+            return RedirectToAction("Index", "Home");
         }
     }
 }

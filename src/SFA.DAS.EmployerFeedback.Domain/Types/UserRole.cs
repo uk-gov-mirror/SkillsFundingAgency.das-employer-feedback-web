@@ -1,5 +1,5 @@
-﻿namespace SFA.DAS.EmployerFeedback.Infrastructure.Api.Types
-{
+﻿namespace SFA.DAS.EmployerFeedback.Domain.Types
+{ 
     public enum UserRole
     {
         None = 0,

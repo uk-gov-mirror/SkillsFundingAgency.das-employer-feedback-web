@@ -2,9 +2,9 @@
 
 namespace SFA.DAS.EmployerFeedback.Domain.Entities.Models
 {
-    public class ProviderAttributeModel
+    public class ProviderAttribute
     {
         public long AttributeId { get; set; }
-        public string AttributeName { get; set; }
+        public int AttributeValue { get; set; }
     }
 }

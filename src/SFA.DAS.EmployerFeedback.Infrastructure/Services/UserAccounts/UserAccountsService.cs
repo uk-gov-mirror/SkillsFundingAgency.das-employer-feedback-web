@@ -3,7 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using RestEase;
-using SFA.DAS.EmployerFeedback.Domain.Interfaces;
+using SFA.DAS.EmployerFeedback.Infrastructure.Api.OuterApi;
 using SFA.DAS.GovUK.Auth.Employer;
 
 namespace SFA.DAS.EmployerFeedback.Infrastructure.Services.UserAccounts

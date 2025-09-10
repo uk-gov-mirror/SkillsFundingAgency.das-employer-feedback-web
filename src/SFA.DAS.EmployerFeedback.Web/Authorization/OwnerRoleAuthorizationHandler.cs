@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using SFA.DAS.EmployerFeedback.Infrastructure.Api.Types;
+using SFA.DAS.EmployerFeedback.Domain.Types;
 using SFA.DAS.EmployerFeedback.Web.Services.EmployerRoleAuthorization;
 using System.Threading.Tasks;
 

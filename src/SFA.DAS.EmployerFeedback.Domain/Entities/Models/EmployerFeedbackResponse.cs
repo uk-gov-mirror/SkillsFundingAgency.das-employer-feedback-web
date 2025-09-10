@@ -2,7 +2,7 @@
 
 namespace SFA.DAS.EmployerFeedback.Domain.Entities.Models
 {
-    public class EmployerFeedback
+    public class EmployerFeedbackResponse
     {
         public long FeedbackId { get; set; }
         public Guid UserRef { get; set; }

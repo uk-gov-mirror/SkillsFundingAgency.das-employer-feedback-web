@@ -3,7 +3,7 @@ using SFA.DAS.EmployerFeedback.Infrastructure.Api.OuterApi;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
-using SFA.DAS.EmployerFeedback.Domain.Interfaces;
+using SFA.DAS.EmployerFeedback.Domain;
 using SFA.DAS.EmployerFeedback.Infrastructure.Api.Responses;
 using SFA.DAS.GovUK.Auth.Employer;
 using SFA.DAS.Testing.AutoFixture;

@@ -1,20 +1,19 @@
-﻿using SFA.DAS.EmployerFeedback.Domain.Types;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace SFA.DAS.EmployerFeedback.Domain.Entities.Models
 {
-    public class EmployerFeedbackResult
+    public class EmployerFeedbackViewModel
     {
         public Guid Id { get; set; }
         public long FeedbackId { get; set; }
+        public long Ukprn { get; set; }
         public DateTime DateTimeCompleted { get; set; }
-
-        public DateTime SubmittedDate { get; set; }
-
-        public FeedbackSource FeedbackSource { get; set; }
-
         public string ProviderRating { get; set; }
-        public ICollection<ProviderAttribute> ProviderAttributes { get; set; }
+        public string AttributeName { get; set; }
+        public int AttributeValue { get; set; }
     }
 }

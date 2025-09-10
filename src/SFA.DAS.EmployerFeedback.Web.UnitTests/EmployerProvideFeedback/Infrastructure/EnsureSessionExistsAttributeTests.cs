@@ -12,6 +12,7 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
 using SFA.DAS.EmployerFeedback.Infrastructure;
+using SFA.DAS.EmployerFeedback.Infrastructure.Api.OuterApi;
 using SFA.DAS.EmployerFeedback.Infrastructure.Configuration;
 using SFA.DAS.EmployerFeedback.Infrastructure.Configuration.Routing;
 using SFA.DAS.EmployerFeedback.Infrastructure.Services.SessionStorage;
@@ -28,6 +29,7 @@ namespace UnitTests.EmployerProvideFeedback.Infrastructure
         private readonly Mock<ILogger<HomeController>> _controllerLoggerMock;
         private readonly Mock<ILogger<EnsureSessionExists>> _loggerMock;
         private readonly Mock<IConfiguration> _configurationMock = new Mock<IConfiguration>();
+        private readonly Mock<IEmployerFeedbackOuterApi> _employerFeedbackOuterAPI = new Mock<IEmployerFeedbackOuterApi>();
 
         public EnsureSessionExistsAttributeTests()
         {
@@ -42,7 +44,8 @@ namespace UnitTests.EmployerProvideFeedback.Infrastructure
                             _controllerLoggerMock.Object,
                             _configurationMock.Object,
                             null,
-                            null);
+                            null,
+                            _employerFeedbackOuterAPI.Object);
             var context = new DefaultHttpContext()
             {
                 User = new ClaimsPrincipal(new ClaimsIdentity(new Claim[]

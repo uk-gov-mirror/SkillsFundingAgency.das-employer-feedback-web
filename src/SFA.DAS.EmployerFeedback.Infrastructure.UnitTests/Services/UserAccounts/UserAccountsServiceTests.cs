@@ -4,7 +4,6 @@ using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using RestEase;
-using SFA.DAS.EmployerFeedback.Domain.Interfaces;
 using SFA.DAS.EmployerFeedback.Infrastructure.Api.Responses;
 using SFA.DAS.EmployerFeedback.Infrastructure.Services.UserAccounts;
 using SFA.DAS.Testing.AutoFixture;
@@ -13,6 +12,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using SFA.DAS.GovUK.Auth.Employer;
+using SFA.DAS.EmployerFeedback.Infrastructure.Api.OuterApi;
 
 namespace SFA.DAS.EmployerFeedback.Infrastructure.UnitTests.Services.UserAccounts
 {

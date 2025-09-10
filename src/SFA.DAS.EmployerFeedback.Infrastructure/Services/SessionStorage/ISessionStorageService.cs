@@ -1,5 +1,4 @@
-﻿using SFA.DAS.EmployerFeedback.Infrastructure.Api.Types;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 
 namespace SFA.DAS.EmployerFeedback.Infrastructure.Services.SessionStorage
 {

@@ -9,6 +9,7 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
 using SFA.DAS.Employer.Shared.UI;
+using SFA.DAS.EmployerFeedback.Infrastructure.Api.OuterApi;
 using SFA.DAS.EmployerFeedback.Infrastructure.Configuration;
 using SFA.DAS.EmployerFeedback.Infrastructure.Services.SessionStorage;
 using SFA.DAS.EmployerFeedback.Web.Controllers;
@@ -27,6 +28,7 @@ namespace UnitTests.EmployerProvideFeedback.Controllers
         private Mock<ITrainingProviderService> _trainingProviderServiceMock;
         private Mock<IEncodingService> _encodingServiceMock;
         private Mock<ILogger<ProviderController>> _loggerMock;
+        private Mock<IEmployerFeedbackOuterApi> _employerFeedbackOuterApiMock;
         private SurveyModel _surveyModel;
         private UrlBuilder _urlBuilder;
 
@@ -63,12 +65,14 @@ namespace UnitTests.EmployerProvideFeedback.Controllers
             _encodingServiceMock = new Mock<IEncodingService>();
             _loggerMock = new Mock<ILogger<ProviderController>>();
             _urlBuilder = new UrlBuilder("LOCAL");
+            _employerFeedbackOuterApiMock = new Mock<IEmployerFeedbackOuterApi>();
 
             _controller = new ProviderController(
                 _sessionServiceMock.Object,
                 _trainingProviderServiceMock.Object,
                 _encodingServiceMock.Object,
                 _loggerMock.Object,
+                _employerFeedbackOuterApiMock.Object,
                 _urlBuilder);
 
             var context = new DefaultHttpContext
