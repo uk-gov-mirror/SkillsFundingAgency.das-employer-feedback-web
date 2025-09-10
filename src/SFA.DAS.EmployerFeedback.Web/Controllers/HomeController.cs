@@ -129,24 +129,6 @@ namespace SFA.DAS.EmployerFeedback.Web.Controllers
             _contextAccessor.HttpContext.Response.Cookies.Delete("SFA.DAS.EmployerFeedback.Web.Auth");
         }
 #if DEBUG
-        [AllowAnonymous()]
-        [Route("Dashboard-Stub", Name = DashboardStubRouteGet)]
-        public IActionResult DashboardStub()
-        {
-            _contextAccessor.HttpContext.Response.Cookies.Delete(GovUkConstants.StubAuthCookieName);
-            return NotFound(); // Temporarily returning NotFound to avoid redirecting to a non-existent route.
-            //return RedirectToRoute(EmployerRequestController.DashboardRouteGet, new { hashedAccountId = SignedInStubViewModel.HashedAccountIdPlaceholder });
-        }
-
-
-        [AllowAnonymous()]
-        [Route("Overview-Stub", Name= OverviewStubRouteGet)]
-        public IActionResult OverviewStub()
-        {
-            _contextAccessor.HttpContext.Response.Cookies.Delete(GovUkConstants.StubAuthCookieName);
-            return NotFound(); // Temporarily returning NotFound to avoid redirecting to a non-existent route.
-            //return RedirectToRoute(EmployerRequestController.OverviewEmployerRequestRouteGet, new { hashedAccountId = SignedInStubViewModel.HashedAccountIdPlaceholder, standardId=274, requestType=RequestType.Providers });
-        }
 
         [AllowAnonymous()]
         [HttpGet]
