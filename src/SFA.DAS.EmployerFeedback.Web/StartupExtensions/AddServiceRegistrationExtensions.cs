@@ -58,7 +58,6 @@ namespace SFA.DAS.EmployerFeedback.Web.StartupExtensions
             // Encoding Service
             services.AddSingleton<IEncodingService, EncodingService>();
             services.AddTransient<IGovAuthEmployerAccountService, EmployerAccountService>();
-            services.AddHttpClient<IOuterApiClient, OuterApiClient>();
 
             return services;
         }

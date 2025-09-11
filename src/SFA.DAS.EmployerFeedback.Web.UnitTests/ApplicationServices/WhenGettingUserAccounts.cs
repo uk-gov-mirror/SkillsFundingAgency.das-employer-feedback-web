@@ -3,13 +3,11 @@ using SFA.DAS.EmployerFeedback.Infrastructure.Api.OuterApi;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
-using SFA.DAS.EmployerFeedback.Domain;
 using SFA.DAS.EmployerFeedback.Infrastructure.Api.Responses;
 using SFA.DAS.GovUK.Auth.Employer;
 using SFA.DAS.Testing.AutoFixture;
 using System;
 using System.Linq;
-using System.Net;
 using System.Threading.Tasks;
 using SFA.DAS.EmployerFeedback.Infrastructure.Api.Requests;
 using SFA.DAS.EmployerFeedback.Infrastructure.Services.EmployerAccount;
@@ -23,15 +21,16 @@ namespace UnitTests.ApplicationServices
             string email,
             string userId,
             UserAccountsDetails response,
-            [Frozen] Mock<IOuterApiClient> apiClient,
+            [Frozen] Mock<IEmployerFeedbackOuterApi> apiClient,
             EmployerAccountService service)
         {
             // Arrange
-            var expectedRequest = new GetUserAccountsRequest(userId, email);
-            apiClient.Setup(x =>
-                    x.Get<UserAccountsDetails>(
-                        It.Is<GetUserAccountsRequest>(c => c.GetUrl.Equals(expectedRequest.GetUrl))))
-                .ReturnsAsync(new ApiResponse<UserAccountsDetails>(response, HttpStatusCode.OK, ""));
+            var expectedRequest = new GetUserAccountsRequest {
+                _userId = userId,
+                _email = email 
+            };
+            apiClient.Setup(x => x.GetUserAccounts(userId, email))
+                .ReturnsAsync(response);
 
             // Act
             var actual = await service.GetUserAccounts(userId, email);
@@ -48,10 +47,10 @@ namespace UnitTests.ApplicationServices
                         EmployerName = c.EmployerName,
                     }).ToList()
                     : [],
-                FirstName = response.FirstName,
-                IsSuspended = response.IsSuspended,
-                LastName = response.LastName,
-                EmployerUserId = response.EmployerUserId,
+                response.FirstName,
+                response.IsSuspended,
+                response.LastName,
+                response.EmployerUserId,
             });
         }
     }

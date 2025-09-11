@@ -45,4 +45,8 @@
     <ProjectReference Include="..\SFA.DAS.EmployerFeedback.Web\SFA.DAS.EmployerFeedback.Web.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="OuterApi\" />
+  </ItemGroup>
+
 </Project>

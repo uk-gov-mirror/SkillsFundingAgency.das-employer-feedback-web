@@ -12,7 +12,7 @@ namespace SFA.DAS.EmployerFeedback.Infrastructure.Api.OuterApi
     public interface IEmployerFeedbackOuterApi
     {
 
-        [Get("/accountusers/{userId}/accounts?email={_email}")]
+        [Get("/accountusers/{userId}/accounts")]
         Task<UserAccountsDetails> GetUserAccounts([Path] string userId, [Query] string email);
 
         [Post("/employerfeebackresult")]
@@ -21,11 +21,8 @@ namespace SFA.DAS.EmployerFeedback.Infrastructure.Api.OuterApi
         [Get("/attributes")]
         Task<IEnumerable<FeedbackQuestionAttribute>> GetAllAttributes();
 
-        [Get("/employerfeedback/{guid}")]
-        Task<EmployerSurveyInvite> GetEmployerInviteForUniqueCode([Path] Guid guid);
-
-        [Get("/employerfeedback?accountid={id}&userref={UUID}")]
-        Task<ProviderFeedback> GetAllProviderFeedbackAndResult([Query] long id, [Query] Guid userRef);
+        [Get("/employerfeedback")]
+        Task<ProviderFeedback> GetAllProviderFeedbackAndResult([Query("accountid")] long id, [Query("userref")] Guid userRef);
 
         [Get("/employerfeedback/iscodeburnt")]
         Task<bool> IsCodeBurnt(Guid emailCode);
@@ -58,10 +55,10 @@ namespace SFA.DAS.EmployerFeedback.Infrastructure.Api.OuterApi
         Task<IEnumerable<EmployerFeedbackViewModel>> GetEmployerFeedback();
 
         [Get("/employerfeedback/getfeedbackresultsummaryannual/{ukprn}")]
-        Task<IEnumerable<EmployerFeedbackResultSummary>> GetFeedbackResultSummaryAnnual([Query] long ukprn);
+        Task<IEnumerable<EmployerFeedbackResultSummary>> GetFeedbackResultSummaryAnnual([Path] long ukprn);
 
         [Get("/employerfeedback/getfeedbackresultsummary/{ukprn}")]
-        Task<IEnumerable<EmployerFeedbackResultSummary>> GetFeedbackResultSummary(long ukprn);
+        Task<IEnumerable<EmployerFeedbackResultSummary>> GetFeedbackResultSummary([Path] long ukprn);
 
 
         [Get("/cohorts/accountIds")]
@@ -70,14 +67,14 @@ namespace SFA.DAS.EmployerFeedback.Infrastructure.Api.OuterApi
         [Get("/providers/{providerId}")]
         Task<GetProviderResponse> GetProvider([Path] long providerId);
 
-        [Get("apprenticeships/?accountId={accountId}&pageNumber=0&pageItemCount={int.MaxValue}")]
-        Task<GetApprenticeshipsResponse> GetApprenticeships([Query] long accountId);
+        [Get("apprenticeships/")]
+        Task<GetApprenticeshipsResponse> GetApprenticeships([Query] long accountId, [Query("pageNumber")] int pageNumber = 0, [Query("pageItemCount")] int pageItemCount = int.MaxValue);
 
 
         [Get("/employerfeedback/allstartsummary/{timePeriod}")]
         Task<IEnumerable<ProviderStarsSummary>> GetAllStarsSummary([Path] string timePeriod);
 
-        [Get("/employerfeedback/feedbackresultsummary?academicYear={academicYear}&ukprn={ukprn}")]
-        Task<IEnumerable<EmployerFeedbackResultSummary>> GetFeedbackResultSummaryForAcademicYear([Query] long ukPrn, [Query] string academicYear);
+        [Get("/employerfeedback/feedbackresultsummary")]
+        Task<IEnumerable<EmployerFeedbackResultSummary>> GetFeedbackResultSummaryForAcademicYear([Query("ukprn")] long ukPrn, [Query("academicYear")] string academicYear);
     }
 }

@@ -79,41 +79,6 @@ namespace SFA.DAS.EmployerFeedback.Web.Controllers
             return View();
         }
         
-        [Authorize(Policy = nameof(PolicyNames.IsAuthenticated))]
-        [ServiceFilter(typeof(EnsureFeedbackNotSubmitted))]
-        [Route(RoutePrefixPaths.FeedbackFromEmailRoutePath, Name = RouteNames.Landing_Get)]
-        [HttpGet]
-        public async Task<IActionResult> Index(Guid uniqueCode)
-        {
-            var idClaim = HttpContext.User.FindFirst(EmployerClaims.UserId);    //System.Security.Claims.ClaimTypes.NameIdentifier
-
-            // Need to find out what this is calling from the old land
-            var employerEmailDetail = await _employerFeedbackOuterApi.GetEmployerInviteForUniqueCode(uniqueCode);
-
-            _logger.LogWarning("Landing Page GET hit");
-
-            if (employerEmailDetail == null)
-            {
-                _logger.LogWarning($"Attempt to use invalid unique code: {uniqueCode}");
-                return NotFound();
-            }
-
-            var providerAttributes = await _employerFeedbackOuterApi.GetAllAttributes();
-            if (providerAttributes == null)
-            {
-                _logger.LogError($"Unable to load Provider Attributes from the database.");
-                return RedirectToAction("Error", "Error");
-            }
-
-            var providerAttributesModel = providerAttributes.Select(s => new Models.Shared.ProviderAttributeModel { Name = s.AttributeName });
-            var newSurveyModel = MapToNewSurveyModel(employerEmailDetail, providerAttributesModel);
-            newSurveyModel.UniqueCode = uniqueCode;
-            await _sessionService.Set(idClaim.Value, newSurveyModel);
-
-            var encodedAccountId = _encodingService.Encode(employerEmailDetail.AccountId, EncodingType.AccountId);
-            return RedirectToRoute(RouteNames.Landing_Get_New, new { encodedAccountId = encodedAccountId });
-            throw new NotImplementedException();
-        }
 
         [Route("error", Name = ErrorRouteGet)]
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
