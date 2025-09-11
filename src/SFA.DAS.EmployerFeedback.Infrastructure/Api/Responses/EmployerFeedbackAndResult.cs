@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SFA.DAS.EmployerFeedback.Domain.Entities.Models
+namespace SFA.DAS.EmployerFeedback.Infrastructure.Api.Responses
 {
     public class EmployerFeedbackAndResult : EmployerFeedbackResponse
     {

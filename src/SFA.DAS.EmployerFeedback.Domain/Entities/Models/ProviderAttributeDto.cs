@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SFA.DAS.EmployerFeedback.Infrastructure.Api.Responses
+namespace SFA.DAS.EmployerFeedback.Domain.Entities.Models
 {
     using Newtonsoft.Json;
 

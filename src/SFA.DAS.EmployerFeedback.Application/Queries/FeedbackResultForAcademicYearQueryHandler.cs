@@ -3,7 +3,6 @@ using Microsoft.Extensions.Logging;
 using SFA.DAS.EmployerFeedback.Application.Queries;
 using SFA.DAS.EmployerFeedback.Domain.Entities.Models;
 using SFA.DAS.EmployerFeedback.Infrastructure.Api.OuterApi;
-using SFA.DAS.EmployerFeedback.Infrastructure.Api.Responses;
 
 namespace SFA.DAS.EmployerFeedback.Application.Commands
 {

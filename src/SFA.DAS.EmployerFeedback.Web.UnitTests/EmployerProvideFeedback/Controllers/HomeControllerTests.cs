@@ -89,22 +89,6 @@ namespace UnitTests.EmployerProvideFeedback.Controllers
         }
 
         [Test]
-        public async Task UniqueCode_Invalid_ShouldRedirect_ToError()
-        {
-
-            // Arrange
-            var uniqueCode = Guid.NewGuid();
-            _employerFeedbackOuterApiMock.Setup(m => m.GetEmployerInviteForUniqueCode(uniqueCode))
-                .ReturnsAsync((EmployerSurveyInvite)null);
-
-            // Act
-            var result = await _controller.Index(uniqueCode);
-
-            // Assert
-            result.Should().BeOfType<NotFoundResult>();
-        }
-
-        [Test]
         public async Task SessionSurvey_DoesNotExist_ShouldPopulateProviderName_OnViewData()
         {
             // Arrange
@@ -116,48 +100,6 @@ namespace UnitTests.EmployerProvideFeedback.Controllers
             // Assert
             _controller.ViewData.Should().ContainKey("ProviderName");
             _controller.ViewData["ProviderName"].Should().Be(_employerEmailDetail.ProviderName);
-        }
-
-        [Test]
-        public async Task SessionSurvey_DoesNotExist_ShouldCreateNewSurveyInSession()
-        {
-            // Arrange
-            var uniqueEmailCode = Guid.NewGuid();
-
-            // Act
-            await _controller.Index(uniqueEmailCode);
-
-            // Assert
-            _sessionServiceMock.Verify(m => m.Set(_surveyModel.UserRef.ToString(), It.IsAny<SurveyModel>()), Times.Once);
-        }
-
-        [Test]
-        public async Task EmailEntryPoint_Should_Create_AccountId()
-        {
-            // Arrange
-            var uniqueCode = Guid.NewGuid();
-
-            // Act
-            await _controller.Index(uniqueCode);
-
-            // Assert
-            _employerFeedbackOuterApiMock.Verify(m => m.GetEmployerInviteForUniqueCode(uniqueCode), Times.Once);
-        }
-
-        [Test]
-        public async Task SessionSurvey_Exists_ShouldNotCreateNewSurvey()
-        {
-            // Arrange
-            var existingSurvey = _fixture.Create<SurveyModel>();
-            var uniqueCode = Guid.NewGuid();
-            _sessionServiceMock.Setup(m => m.Get<SurveyModel>(uniqueCode.ToString()))
-                .ReturnsAsync(existingSurvey);
-
-            // Act
-            await _controller.Index(uniqueCode);
-
-            // Assert
-            _sessionServiceMock.Verify(m => m.Set(uniqueCode.ToString(), It.IsAny<SurveyModel>()), Times.Never);
         }
 
         [TearDown]

@@ -53,7 +53,7 @@ namespace UnitTests.Services
                 var testAccountIdEncoded = "MANYTEST1";
                 _encodingServiceMock.Setup(m => m.Decode(testAccountIdEncoded, EncodingType.AccountId)).Returns(testAccountId);
                 var _employerFeedbackOuterApiMock = new Mock<IEmployerFeedbackOuterApi>();
-                _employerFeedbackOuterApiMock.Setup(m => m.GetApprenticeships(testAccountId))
+                _employerFeedbackOuterApiMock.Setup(m => m.GetApprenticeships(testAccountId,0,int.MaxValue))
                     .ReturnsAsync(new GetApprenticeshipsResponse { Apprenticeships = providers });
 
                 ITrainingProviderService sut = new TrainingProviderService(

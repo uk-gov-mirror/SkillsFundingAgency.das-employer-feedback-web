@@ -2,9 +2,8 @@
 using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
-using SFA.DAS.EmployerFeedback.Domain.Entities.Models;
 using SFA.DAS.EmployerFeedback.Infrastructure.Api.OuterApi;
-using SFA.DAS.EmployerFeedback.Infrastructure.Api.Requests;
+using SFA.DAS.EmployerFeedback.Infrastructure.Api.Responses;
 using SFA.DAS.EmployerFeedback.Web.Models.Shared;
 using SFA.DAS.EmployerProvideFeedback.Orchestrators;
 using System;

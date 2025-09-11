@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using Newtonsoft.Json;
 
 
-namespace SFA.DAS.EmployerFeedback.Infrastructure.Api.Responses
+namespace SFA.DAS.EmployerFeedback.Domain.Entities.Models
 {
     [Serializable]
     public class EmployerFeedbackAnnualResultDto 

@@ -11,6 +11,9 @@ namespace SFA.DAS.EmployerFeedback.Infrastructure.Api.OuterApi
 {
     public interface IEmployerFeedbackOuterApi
     {
+        [Get("/employerfeedback/{guid}")]
+        Task<EmployerSurveyInvite> GetEmployerInviteForUniqueCode([Path] Guid guid);
+
 
         [Get("/accountusers/{userId}/accounts")]
         Task<UserAccountsDetails> GetUserAccounts([Path] string userId, [Query] string email);

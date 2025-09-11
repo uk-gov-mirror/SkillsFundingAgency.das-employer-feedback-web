@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
 using MediatR;
-using SFA.DAS.EmployerFeedback.Infrastructure.Api.Responses;
 using SFA.DAS.EmployerFeedback.Application.Queries;
 using SFA.DAS.EmployerFeedback.Domain.Entities.Models;
 using SFA.DAS.EmployerFeedback.Infrastructure.Api.OuterApi;

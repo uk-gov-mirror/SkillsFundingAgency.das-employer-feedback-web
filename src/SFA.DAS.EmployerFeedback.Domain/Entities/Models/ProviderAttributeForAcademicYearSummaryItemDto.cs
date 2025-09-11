@@ -3,7 +3,7 @@ using System;
 using Newtonsoft.Json;
 
 
-namespace SFA.DAS.EmployerFeedback.Infrastructure.Api.Responses
+namespace SFA.DAS.EmployerFeedback.Domain.Entities.Models
 {
     /// <summary>
     /// Strength and Weakness counts of a Provider

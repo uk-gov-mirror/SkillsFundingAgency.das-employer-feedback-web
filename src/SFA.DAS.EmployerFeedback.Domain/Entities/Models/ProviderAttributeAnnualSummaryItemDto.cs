@@ -3,19 +3,19 @@ using System;
 using Newtonsoft.Json;
 
 
-namespace SFA.DAS.EmployerFeedback.Infrastructure.Api.Responses
+namespace SFA.DAS.EmployerFeedback.Domain.Entities.Models
 {
     /// <summary>
     /// Strength and Weakness counts of a Provider
     /// </summary>
     [Serializable]
-    public class ProviderAttributeSummaryItemDto
+    public class ProviderAttributeAnnualSummaryItemDto
     {
         [JsonProperty(PropertyName = "name")]
         public string Name { get; set; }
 
         [JsonProperty(PropertyName = "strength")]
-        public int Strength{ get; set; }
+        public int Strength { get; set; }
 
         [JsonProperty(PropertyName = "weakness")]
         public int Weakness { get; set; }

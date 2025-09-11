@@ -1,4 +1,4 @@
-﻿namespace SFA.DAS.EmployerFeedback.Infrastructure.Api.Responses
+﻿namespace SFA.DAS.EmployerFeedback.Domain.Entities.Models
 {
     using System;
     using System.Collections.Generic;

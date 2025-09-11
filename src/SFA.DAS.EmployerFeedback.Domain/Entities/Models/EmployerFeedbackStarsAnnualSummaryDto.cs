@@ -1,12 +1,11 @@
-﻿
-using System;
+﻿using System;
+using System.Collections.Generic;
 using Newtonsoft.Json;
 
-
-namespace SFA.DAS.EmployerFeedback.Infrastructure.Api.Responses
+namespace SFA.DAS.EmployerFeedback.Domain.Entities.Models
 {
     [Serializable]
-    public class EmployerFeedbackStarsSummaryDto
+    public class EmployerFeedbackStarsAnnualSummaryDto
     {
         [JsonProperty(PropertyName = "ukprn", Order = int.MinValue)]
         public long Ukprn { get; set; }
@@ -17,7 +16,10 @@ namespace SFA.DAS.EmployerFeedback.Infrastructure.Api.Responses
         [JsonProperty(PropertyName = "reviewCount", Order = int.MinValue)]
         public int ReviewCount { get; set; }
 
-        [JsonProperty(PropertyName = "timeperiod", Order = int.MinValue)]
+        [JsonProperty(PropertyName = "timeperiod")]
         public string TimePeriod { get; set; }
+
+        [JsonProperty(PropertyName = "providerAttribute")]
+        public IEnumerable<ProviderAttributeAnnualSummaryItemDto> ProviderAttribute { get; set; }
     }
 }
