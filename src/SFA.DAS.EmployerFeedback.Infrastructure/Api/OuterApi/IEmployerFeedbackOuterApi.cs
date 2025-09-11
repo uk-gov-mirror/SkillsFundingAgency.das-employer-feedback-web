@@ -15,7 +15,7 @@ namespace SFA.DAS.EmployerFeedback.Infrastructure.Api.OuterApi
         [Get("/accountusers/{userId}/accounts?email={_email}")]
         Task<UserAccountsDetails> GetUserAccounts([Path] string userId, [Query] string email);
 
-        [Post("/employerfeeback")]
+        [Post("/employerfeebackresult")]
         Task<IEnumerable<EmployerFeedbackAndResult>> SubmitEmployerFeedback(EmployerFeedbackResult request);
 
         [Get("/attributes")]
