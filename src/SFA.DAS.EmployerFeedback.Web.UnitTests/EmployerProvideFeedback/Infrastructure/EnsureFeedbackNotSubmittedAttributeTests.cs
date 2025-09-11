@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using FluentAssertions;
+﻿using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Abstractions;
@@ -8,10 +6,13 @@ using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Routing;
 using Moq;
 using NUnit.Framework;
+using SFA.DAS.EmployerFeedback.Domain.Entities.Models;
 using SFA.DAS.EmployerFeedback.Infrastructure.Api.OuterApi;
 using SFA.DAS.EmployerFeedback.Infrastructure.Configuration.Routing;
 using SFA.DAS.EmployerProvideFeedback.Infrastructure;
 using SFA.DAS.Encoding;
+using System;
+using System.Collections.Generic;
 
 namespace UnitTests.EmployerProvideFeedback.Infrastructure
 {
@@ -24,10 +25,14 @@ namespace UnitTests.EmployerProvideFeedback.Infrastructure
         public EnsureFeedbackNotSubmittedAttributeTests()
         {
             _controllerMock = new Mock<Controller>();
-            _controllerMock.Setup(mock => mock.RedirectToRoute(It.IsAny<string>(), It.IsAny<object>())).Returns(new RedirectToRouteResult(RouteNames.FeedbackAlreadySubmitted, new { encodedAccountId = "ABCDEF" }));
-            _encodingServiceMock = new Mock<IEncodingService>();
-            _encodingServiceMock.Setup(m => m.Encode(It.IsAny<long>(), EncodingType.AccountId)).Returns("ABCDEF");
             _employerFeedbackOuterApi = new Mock<IEmployerFeedbackOuterApi>();
+            _encodingServiceMock = new Mock<IEncodingService>();
+            
+            _controllerMock.Setup(mock => mock.RedirectToRoute(It.IsAny<string>(), It.IsAny<object>())).Returns(new RedirectToRouteResult(RouteNames.FeedbackAlreadySubmitted, new { encodedAccountId = "ABCDEF" }));
+            _encodingServiceMock.Setup(m => m.Encode(It.IsAny<long>(), EncodingType.AccountId)).Returns("ABCDEF");
+            _employerFeedbackOuterApi.Setup(mock => mock.IsCodeBurnt(It.IsAny<Guid>())).ReturnsAsync(true);
+            _employerFeedbackOuterApi.Setup(mock => mock.GetEmployerInviteForUniqueCode(It.IsAny<Guid>())).ReturnsAsync(new EmployerSurveyInvite());
+
         }
 
         [Test]

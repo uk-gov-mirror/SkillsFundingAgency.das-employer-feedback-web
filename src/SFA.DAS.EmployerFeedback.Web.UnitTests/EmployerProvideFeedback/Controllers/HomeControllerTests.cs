@@ -47,22 +47,30 @@ namespace UnitTests.EmployerProvideFeedback.Controllers
         {
             _fixture = new Fixture();
             _employerEmailDetail = _fixture.Create<EmployerSurveyInvite>();
+            
             _surveyModel = new SurveyModel
             {
                 UserRef = Guid.NewGuid(),
                 ProviderName = _employerEmailDetail.ProviderName,
             };
+            
             _providerAttributes = _fixture.Build<SFA.DAS.EmployerFeedback.Web.Models.Shared.ProviderAttributeModel>()
                 .With(x => x.Good, false)
                 .With(x => x.Bad, false)
                 .CreateMany(10)
                 .ToList();
 
+            _employerFeedbackOuterApiMock = new Mock<IEmployerFeedbackOuterApi>();
+            _employerFeedbackOuterApiMock.Setup(m => m.GetEmployerInviteForUniqueCode(It.IsAny<Guid>()))
+                .Returns(Task.FromResult(_employerEmailDetail));
+
             _sessionServiceMock = new Mock<ISessionStorageService>();
             _sessionServiceMock.Setup(m => m.Get<SurveyModel>(It.IsAny<string>())).Returns(Task.FromResult(_surveyModel));
+
             _encodingServiceMock = new Mock<IEncodingService>();
             _httpContextAccessorMock = new Mock<IHttpContextAccessor>();
-            _employerFeedbackOuterApiMock = new Mock<IEmployerFeedbackOuterApi>();
+            _stubAuthenticationServiceMock = new Mock<IStubAuthenticationService>();
+            _configurationMock = new Mock<IConfiguration>();
 
             _loggerMock = new Mock<ILogger<HomeController>>();
 
@@ -94,7 +102,6 @@ namespace UnitTests.EmployerProvideFeedback.Controllers
 
             // Assert
             result.Should().BeOfType<NotFoundResult>();
-            Assert.Fail();
         }
 
         [Test]
@@ -134,7 +141,6 @@ namespace UnitTests.EmployerProvideFeedback.Controllers
             await _controller.Index(uniqueCode);
 
             // Assert
-            Assert.Fail();
             _employerFeedbackOuterApiMock.Verify(m => m.GetEmployerInviteForUniqueCode(uniqueCode), Times.Once);
         }
 

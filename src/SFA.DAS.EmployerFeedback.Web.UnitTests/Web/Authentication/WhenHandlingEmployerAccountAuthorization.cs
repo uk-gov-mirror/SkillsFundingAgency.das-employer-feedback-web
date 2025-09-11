@@ -11,14 +11,15 @@ using Moq;
 using Newtonsoft.Json;
 using NUnit.Framework;
 using SFA.DAS.EmployerFeedback.Infrastructure.Api.Responses;
+using SFA.DAS.EmployerFeedback.Infrastructure.Configuration;
+using SFA.DAS.EmployerFeedback.Web.Authorization;
+using SFA.DAS.EmployerFeedback.Web.Configuration.Routing;
 using SFA.DAS.GovUK.Auth.Employer;
 using SFA.DAS.Testing.AutoFixture;
 using EmployerClaims = SFA.DAS.EmployerFeedback.Infrastructure.Configuration.EmployerClaims;
 
 namespace UnitTests.Web.Authentication
 {
-    // Need to figure out how this works
-    //FIXME - Add EmployerAccountRequirement and EmployerAccountAuthorizationHandler to the Web project (or equivalent)
     public class WhenHandlingEmployerAccountAuthorization
     {
         [Test(Description = "Once decided on correct roles for actions, only Owner should work")]
@@ -87,7 +88,7 @@ namespace UnitTests.Web.Authentication
             EmployerUserAccountItem serviceResponse,
             [Frozen] Mock<IHttpContextAccessor> httpContextAccessor,
             [Frozen] Mock<IGovAuthEmployerAccountService> employerAccountService,
-            [Frozen] Mock<IOptions<ProvideFeedbackEmployerWebConfiguration>> configuration,
+            [Frozen] Mock<IOptions<EmployerFeedbackWebConfiguration>> configuration,
             EmployerAccountAuthorizationHandler authorizationHandler)
         {
             //Arrange
@@ -238,7 +239,7 @@ namespace UnitTests.Web.Authentication
             EmployerIdentifier employerIdentifier,
             EmployerAccountRequirement requirement,
             [Frozen] Mock<IHttpContextAccessor> httpContextAccessor,
-            [Frozen] Mock<IOptions<ProvideFeedbackEmployerWebConfiguration>> provideFeedbackEmployerConfiguration,
+            [Frozen] Mock<IOptions<EmployerFeedbackWebConfiguration>> provideFeedbackEmployerConfiguration,
             EmployerAccountAuthorizationHandler authorizationHandler)
         {
             //Arrange

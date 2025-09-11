@@ -152,8 +152,7 @@ namespace SFA.DAS.EmployerProvideFeedback.Services
                 })
                 .ToList();
 
-            //return providers;
-            throw new NotImplementedException(); 
+            return providers;
         }
 
         private async Task AugmentProviderRecordsWithFeedbackStatus(long accountId, List<ProviderSearchViewModel.EmployerTrainingProvider> providers)

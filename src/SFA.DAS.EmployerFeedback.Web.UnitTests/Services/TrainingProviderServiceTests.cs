@@ -14,7 +14,7 @@ namespace UnitTests.Services
     public class TrainingProviderServiceTests
     {
         private static readonly Mock<IEncodingService> _encodingServiceMock = new();
-        private static readonly Mock<IEmployerFeedbackOuterApi> _employerFeedbackOuterApiMock;
+        private static readonly Mock<IEmployerFeedbackOuterApi> _employerFeedbackOuterApiMock = new();
         private static readonly EmployerFeedbackWebConfiguration _config = new()
         {
             FeedbackWaitPeriodDays = 21,

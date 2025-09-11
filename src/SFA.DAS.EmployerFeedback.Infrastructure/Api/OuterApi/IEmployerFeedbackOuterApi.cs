@@ -1,12 +1,15 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
 using RestEase;
+using SFA.DAS.CommitmentsV2.Api.Types.Responses;
 using SFA.DAS.EmployerFeedback.Domain.Entities.Models;
 using SFA.DAS.EmployerFeedback.Infrastructure.Api.Requests;
 using SFA.DAS.EmployerFeedback.Infrastructure.Api.Responses;
 using System;
 using System.Collections.Generic;
+using System.Net.Http;
 using System.Threading.Tasks;
-using SFA.DAS.CommitmentsV2.Api.Types.Responses;
 
 
 namespace SFA.DAS.EmployerFeedback.Infrastructure.Api.OuterApi
@@ -25,7 +28,7 @@ namespace SFA.DAS.EmployerFeedback.Infrastructure.Api.OuterApi
         Task<IEnumerable<EmployerFeedbackAndResult>> SubmitEmployerFeedback(EmployerFeedbackResult request);
 
         [Get("/attributes")]
-        Task<List<ProviderAttributeModel>> GetAllAttributes();
+        Task<IEnumerable<FeedbackQuestionAttribute>> GetAllAttributes();
 
         [Get("/employerfeedback/{guid}")]
         Task<EmployerSurveyInvite> GetEmployerInviteForUniqueCode([Path] Guid guid);
@@ -44,10 +47,10 @@ namespace SFA.DAS.EmployerFeedback.Infrastructure.Api.OuterApi
 
         [Get("/employerfeedback/record")]
 
-        Task<EmployerFeedbackResponse> GetEmployerFeedbackRecord(EmployerFeedbackRequest request);
+        Task<EmployerFeedbackResponse> GetEmployerFeedbackRecord(Guid userRef, long accountId, long ukprn);
 
         [Put("/employerfeedback/upsert")]
-        Task<long> UpsertIntoFeedback(EmployerFeedbackRequest request);
+        Task<long> UpsertIntoFeedback(Guid userRef, long accountId, long ukprn);
 
         [Get("/employerfeedback/uniquesurveycode/{feedbackId}")]
         Task<Guid?> GetUniqueSurveyCodeFromFeedbackId([Path]long feedbackId);
@@ -56,15 +59,22 @@ namespace SFA.DAS.EmployerFeedback.Infrastructure.Api.OuterApi
         Task SetCodeBurntDate(Guid value);
         
         Task UpsertIntoProviders(Domain.Entities.Models.Provider[] providers);
-        
-        Task<GetProviderResponse> GetProvider(long providerId);
 
-        Task<GetApprenticeshipsResponse> GetApprenticeships(long accountId);
+        [Get("/cohorts/accountIds")]
+        Task<GetAllCohortAccountIdsResponse> GetAllCohortAccountIds();
+
+
+        [Get("/providers/{providerId}")]
+        Task<GetProviderResponse> GetProvider([Path]long providerId);
+
+        [Get("apprenticeships/?accountId={accountId}&pageNumber=0&pageItemCount={int.MaxValue}")]
+
+        Task<GetApprenticeshipsResponse> GetApprenticeships([Query]long accountId);
 
         Task<IEnumerable<EmployerFeedbackViewModel>> GetEmployerFeedback();
         Task<IEnumerable<EmployerFeedbackResultSummary>> GetFeedbackResultSummaryAnnual(long ukprn);
         Task<IEnumerable<EmployerFeedbackResultSummary>> GetFeedbackResultSummary(long ukprn);
         Task<IEnumerable<ProviderStarsSummary>> GetAllStarsSummary(string timePeriod);
-        Task<IEnumerable<EmployerFeedbackResultSummary>> GetFeedbackResultSummaryForAcademicYear(long ukPrn , int academicYear);
+        Task<IEnumerable<EmployerFeedbackResultSummary>> GetFeedbackResultSummaryForAcademicYear(long ukPrn , string academicYear);
     }
 }

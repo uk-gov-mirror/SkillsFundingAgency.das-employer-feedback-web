@@ -29,13 +29,14 @@ namespace UnitTests.EmployerProvideFeedback.Infrastructure
         private readonly Mock<IEncodingService> _encodingServiceMock;
         private readonly Mock<ILogger<HomeController>> _loggerMock;
         private readonly Mock<IConfiguration> _configurationMock = new Mock<IConfiguration>();
-        private readonly Mock<IEmployerFeedbackOuterApi> _employerFeedbackOuterApi = new Mock<IEmployerFeedbackOuterApi>();
+        private readonly Mock<IEmployerFeedbackOuterApi> _employerFeedbackOuterApi;
 
         public EnsureFeedbackNotSubmittedRecentlyAttributeTests()
         {
             _sessionServiceMock = new Mock<ISessionStorageService>();
             _encodingServiceMock = new Mock<IEncodingService>();
             _loggerMock = new Mock<ILogger<HomeController>>();
+            _employerFeedbackOuterApi = new Mock<IEmployerFeedbackOuterApi>();
 
             _controller = new HomeController(
                             _sessionServiceMock.Object,
@@ -71,12 +72,10 @@ namespace UnitTests.EmployerProvideFeedback.Infrastructure
             };
 
 
-            // FIXME - Replace repository code with outer API
-            //var sessionServiceMock = new Mock<IEmployerFeedbackRepository>();
-            //sessionServiceMock.Setup(mock => mock.IsCodeBurnt(It.IsAny<Guid>())).ReturnsAsync(true);
+            _employerFeedbackOuterApi.Setup(mock => mock.IsCodeBurnt(It.IsAny<Guid>())).ReturnsAsync(true);
 
             // Set feedback given 5 days ago
-            //sessionServiceMock.Setup(mock => mock.GetCodeBurntDate(It.IsAny<Guid>())).ReturnsAsync(DateTime.Now.AddDays(-5));
+            _employerFeedbackOuterApi.Setup(mock => mock.GetCodeBurntDate(It.IsAny<Guid>())).ReturnsAsync(DateTime.Now.AddDays(-5));
 
             var httpContext = new DefaultHttpContext();
             var context = new ActionExecutingContext(
@@ -95,8 +94,6 @@ namespace UnitTests.EmployerProvideFeedback.Infrastructure
 
             // Act
             ensureSession.OnActionExecuting(context);
-
-            Assert.Fail();
 
             // Assert
             context
@@ -122,12 +119,10 @@ namespace UnitTests.EmployerProvideFeedback.Infrastructure
                 FeedbackWaitPeriodDays = 10
             };
 
-            //var sessionServiceMock = new Mock<IEmployerFeedbackRepository>();
-            //sessionServiceMock.Setup(mock => mock.IsCodeBurnt(It.IsAny<Guid>())).ReturnsAsync(true);
-            //// Set feedback given 15 days ago
-            //sessionServiceMock.Setup(mock => mock.GetCodeBurntDate(It.IsAny<Guid>())).ReturnsAsync(DateTime.Now.AddDays(-15));
-
-            Assert.Fail();
+            var sessionServiceMock = new Mock<IEmployerFeedbackOuterApi>();
+            _employerFeedbackOuterApi.Setup(mock => mock.IsCodeBurnt(It.IsAny<Guid>())).ReturnsAsync(true);
+            // Set feedback given 15 days ago
+            _employerFeedbackOuterApi.Setup(mock => mock.GetCodeBurntDate(It.IsAny<Guid>())).ReturnsAsync(DateTime.Now.AddDays(-15));
 
             var context = new ActionExecutingContext(
                 new ActionContext

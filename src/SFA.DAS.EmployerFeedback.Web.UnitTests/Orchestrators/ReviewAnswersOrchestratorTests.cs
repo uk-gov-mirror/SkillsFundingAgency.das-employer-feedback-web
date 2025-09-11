@@ -18,14 +18,14 @@ namespace UnitTests.Orchestrators
         private ReviewAnswersOrchestrator _orchestrator;
         private Mock<ILogger<ReviewAnswersOrchestrator>> _logger;
         private Mock<EmployerFeedbackResponse> _employerFeedback;
-        private Mock<IEmployerFeedbackOuterApi> _employerFeedbackOuterAPI;
+        private Mock<IEmployerFeedbackOuterApi> _employerFeedbackOuterApi;
 
         [SetUp]
         public void SetUp()
         {
             _logger = new Mock<ILogger<ReviewAnswersOrchestrator>>();
-            _employerFeedbackOuterAPI = new Mock<IEmployerFeedbackOuterApi>();
-            _orchestrator = new ReviewAnswersOrchestrator(_employerFeedbackOuterAPI.Object, _logger.Object);
+            _employerFeedbackOuterApi = new Mock<IEmployerFeedbackOuterApi>();
+            _orchestrator = new ReviewAnswersOrchestrator(_employerFeedbackOuterApi.Object, _logger.Object);
             _employerFeedback = new Mock<EmployerFeedbackResponse>();
         }
         
@@ -34,22 +34,15 @@ namespace UnitTests.Orchestrators
         public async Task WhenUsingEmailJourney_ThenBurnDateIsSet(SurveyModel surveyModel)
         {
             _employerFeedback.Object.FeedbackId = 1;
-            var employerFeedbackRequest = new EmployerFeedbackRequest
-            {
-                Ukprn = surveyModel.Ukprn,
-                AccountId = surveyModel.AccountId,
-                UserRef = surveyModel.UserRef
-            };
             
-            _employerFeedbackOuterAPI.Setup(x =>
-                x.GetEmployerFeedbackRecord(employerFeedbackRequest))
+            _employerFeedbackOuterApi.Setup(x =>
+                x.GetEmployerFeedbackRecord(surveyModel.UserRef, surveyModel.AccountId, surveyModel.Ukprn   ))
                 .ReturnsAsync(_employerFeedback.Object);
 
             await _orchestrator.SubmitConfirmedEmployerFeedback(surveyModel);
 
-            _employerFeedbackOuterAPI.Verify(x => x.SetCodeBurntDate(It.IsAny<Guid>()), Times.Once);
-            _employerFeedbackOuterAPI.Verify(x => x.GetUniqueSurveyCodeFromFeedbackId(It.IsAny<long>()), Times.Never);
-            throw new NotImplementedException();
+            _employerFeedbackOuterApi.Verify(x => x.SetCodeBurntDate(It.IsAny<Guid>()), Times.Once);
+            _employerFeedbackOuterApi.Verify(x => x.GetUniqueSurveyCodeFromFeedbackId(It.IsAny<long>()), Times.Never);
         }
 
         [Test, AutoData]
@@ -59,18 +52,11 @@ namespace UnitTests.Orchestrators
             surveyModel.UniqueCode = null;
             _employerFeedback.Object.FeedbackId = 1;
 
-            var employerFeedbackRequest = new EmployerFeedbackRequest
-            {
-                Ukprn = surveyModel.Ukprn,
-                AccountId = surveyModel.AccountId,
-                UserRef = surveyModel.UserRef
-            };
-
-            _employerFeedbackOuterAPI.Setup(x =>
-                x.GetEmployerFeedbackRecord(employerFeedbackRequest))
+            _employerFeedbackOuterApi.Setup(x =>
+                x.GetEmployerFeedbackRecord(surveyModel.UserRef, surveyModel.AccountId, surveyModel.Ukprn))
                 .ReturnsAsync(_employerFeedback.Object);
 
-            _employerFeedbackOuterAPI.Setup(x =>
+            _employerFeedbackOuterApi.Setup(x =>
                 x.GetUniqueSurveyCodeFromFeedbackId(_employerFeedback.Object.FeedbackId))
                 .ReturnsAsync(Guid.NewGuid());
 
@@ -78,9 +64,8 @@ namespace UnitTests.Orchestrators
             await _orchestrator.SubmitConfirmedEmployerFeedback(surveyModel);
 
             // Assert
-            _employerFeedbackOuterAPI.Verify(x => x.SetCodeBurntDate(It.IsAny<Guid>()), Times.Once);
-            _employerFeedbackOuterAPI.Verify(x => x.GetUniqueSurveyCodeFromFeedbackId(It.IsAny<long>()), Times.Once);
-            throw new NotImplementedException();
+            _employerFeedbackOuterApi.Verify(x => x.SetCodeBurntDate(It.IsAny<Guid>()), Times.Once);
+            _employerFeedbackOuterApi.Verify(x => x.GetUniqueSurveyCodeFromFeedbackId(It.IsAny<long>()), Times.Once);
         }
 
         [Test, AutoData]
@@ -90,18 +75,11 @@ namespace UnitTests.Orchestrators
             surveyModel.UniqueCode = null;
             _employerFeedback.Object.FeedbackId = 1;
 
-            var employerFeedbackRequest = new EmployerFeedbackRequest
-            {
-                Ukprn = surveyModel.Ukprn,
-                AccountId = surveyModel.AccountId,
-                UserRef = surveyModel.UserRef
-            };
-
-            _employerFeedbackOuterAPI.Setup(x =>
-                x.GetEmployerFeedbackRecord(employerFeedbackRequest))
+            _employerFeedbackOuterApi.Setup(x =>
+                x.GetEmployerFeedbackRecord(surveyModel.UserRef, surveyModel.AccountId, surveyModel.Ukprn))
                 .ReturnsAsync(_employerFeedback.Object);
 
-            _employerFeedbackOuterAPI.Setup(x =>
+            _employerFeedbackOuterApi.Setup(x =>
                 x.GetUniqueSurveyCodeFromFeedbackId(_employerFeedback.Object.FeedbackId))
                 .ReturnsAsync(Guid.Empty);
 
@@ -109,9 +87,8 @@ namespace UnitTests.Orchestrators
             await _orchestrator.SubmitConfirmedEmployerFeedback(surveyModel);
 
             // Assert
-            _employerFeedbackOuterAPI.Verify(x => x.SetCodeBurntDate(It.IsAny<Guid>()), Times.Never);
-            _employerFeedbackOuterAPI.Verify(x => x.GetUniqueSurveyCodeFromFeedbackId(It.IsAny<long>()), Times.Once);
-            throw new NotImplementedException();
+            _employerFeedbackOuterApi.Verify(x => x.SetCodeBurntDate(It.IsAny<Guid>()), Times.Never);
+            _employerFeedbackOuterApi.Verify(x => x.GetUniqueSurveyCodeFromFeedbackId(It.IsAny<long>()), Times.Once);
         }
     }
 }

@@ -25,18 +25,12 @@ namespace SFA.DAS.EmployerProvideFeedback.Orchestrators
 
         public async Task SubmitConfirmedEmployerFeedback(SurveyModel surveyModel)
         {
-            var employerFeedbackRequest = new EmployerFeedbackRequest
-            {
-                AccountId = surveyModel.AccountId,
-                Ukprn = surveyModel.Ukprn,
-                UserRef = surveyModel.UserRef
-            };
 
-            var employerFeedback = await _employerFeedbackOuterApi.GetEmployerFeedbackRecord(employerFeedbackRequest);
+            var employerFeedback = await _employerFeedbackOuterApi.GetEmployerFeedbackRecord(surveyModel.UserRef, surveyModel.AccountId, surveyModel.Ukprn);
             long feedbackId = 0;
             if (null == employerFeedback)
             {
-                feedbackId = await _employerFeedbackOuterApi.UpsertIntoFeedback(employerFeedbackRequest);
+                feedbackId = await _employerFeedbackOuterApi.UpsertIntoFeedback(surveyModel.UserRef, surveyModel.AccountId, surveyModel.Ukprn);
             }
             else
             {
