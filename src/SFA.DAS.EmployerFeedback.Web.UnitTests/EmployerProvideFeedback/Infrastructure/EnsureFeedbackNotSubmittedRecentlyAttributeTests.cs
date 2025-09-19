@@ -72,10 +72,7 @@ namespace UnitTests.EmployerProvideFeedback.Infrastructure
             };
 
 
-            _employerFeedbackOuterApi.Setup(mock => mock.IsCodeBurnt(It.IsAny<Guid>())).ReturnsAsync(true);
-
             // Set feedback given 5 days ago
-            _employerFeedbackOuterApi.Setup(mock => mock.GetCodeBurntDate(It.IsAny<Guid>())).ReturnsAsync(DateTime.Now.AddDays(-5));
 
             var httpContext = new DefaultHttpContext();
             var context = new ActionExecutingContext(
@@ -120,9 +117,7 @@ namespace UnitTests.EmployerProvideFeedback.Infrastructure
             };
 
             var sessionServiceMock = new Mock<IEmployerFeedbackOuterApi>();
-            _employerFeedbackOuterApi.Setup(mock => mock.IsCodeBurnt(It.IsAny<Guid>())).ReturnsAsync(true);
             // Set feedback given 15 days ago
-            _employerFeedbackOuterApi.Setup(mock => mock.GetCodeBurntDate(It.IsAny<Guid>())).ReturnsAsync(DateTime.Now.AddDays(-15));
 
             var context = new ActionExecutingContext(
                 new ActionContext

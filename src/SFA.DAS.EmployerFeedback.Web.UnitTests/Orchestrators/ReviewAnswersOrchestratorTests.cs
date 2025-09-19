@@ -32,62 +32,65 @@ namespace UnitTests.Orchestrators
         [Test, AutoData]
         public async Task WhenUsingEmailJourney_ThenBurnDateIsSet(SurveyModel surveyModel)
         {
-            _employerFeedback.Object.FeedbackId = 1;
-            
-            _employerFeedbackOuterApi.Setup(x =>
-                x.GetEmployerFeedbackRecord(surveyModel.UserRef, surveyModel.AccountId, surveyModel.Ukprn   ))
-                .ReturnsAsync(_employerFeedback.Object);
+            throw new NotImplementedException();
+            //_employerFeedback.Object.FeedbackId = 1;
 
-            await _orchestrator.SubmitConfirmedEmployerFeedback(surveyModel);
+            //_employerFeedbackOuterApi.Setup(x =>
+            //    x.GetEmployerFeedbackRecord(surveyModel.UserRef, surveyModel.AccountId, surveyModel.Ukprn   ))
+            //    .ReturnsAsync(_employerFeedback.Object);
 
-            _employerFeedbackOuterApi.Verify(x => x.SetCodeBurntDate(It.IsAny<Guid>()), Times.Once);
-            _employerFeedbackOuterApi.Verify(x => x.GetUniqueSurveyCodeFromFeedbackId(It.IsAny<long>()), Times.Never);
+            //await _orchestrator.SubmitConfirmedEmployerFeedback(surveyModel);
+
+            //_employerFeedbackOuterApi.Verify(x => x.SetCodeBurntDate(It.IsAny<Guid>()), Times.Once);
+            //_employerFeedbackOuterApi.Verify(x => x.GetUniqueSurveyCodeFromFeedbackId(It.IsAny<long>()), Times.Never);
         }
 
         [Test, AutoData]
         public async Task WhenUsingAdHocJourney_ThenBurnDateIsSet(SurveyModel surveyModel)
         {
-            // Arrange
-            surveyModel.UniqueCode = null;
-            _employerFeedback.Object.FeedbackId = 1;
+            throw new NotImplementedException();
+            //// Arrange
+            //surveyModel.UniqueCode = null;
+            //_employerFeedback.Object.FeedbackId = 1;
 
-            _employerFeedbackOuterApi.Setup(x =>
-                x.GetEmployerFeedbackRecord(surveyModel.UserRef, surveyModel.AccountId, surveyModel.Ukprn))
-                .ReturnsAsync(_employerFeedback.Object);
+            //_employerFeedbackOuterApi.Setup(x =>
+            //    x.GetEmployerFeedbackRecord(surveyModel.UserRef, surveyModel.AccountId, surveyModel.Ukprn))
+            //    .ReturnsAsync(_employerFeedback.Object);
 
-            _employerFeedbackOuterApi.Setup(x =>
-                x.GetUniqueSurveyCodeFromFeedbackId(_employerFeedback.Object.FeedbackId))
-                .ReturnsAsync(Guid.NewGuid());
+            //_employerFeedbackOuterApi.Setup(x =>
+            //    x.GetUniqueSurveyCodeFromFeedbackId(_employerFeedback.Object.FeedbackId))
+            //    .ReturnsAsync(Guid.NewGuid());
 
-            // Act
-            await _orchestrator.SubmitConfirmedEmployerFeedback(surveyModel);
+            //// Act
+            //await _orchestrator.SubmitConfirmedEmployerFeedback(surveyModel);
 
-            // Assert
-            _employerFeedbackOuterApi.Verify(x => x.SetCodeBurntDate(It.IsAny<Guid>()), Times.Once);
-            _employerFeedbackOuterApi.Verify(x => x.GetUniqueSurveyCodeFromFeedbackId(It.IsAny<long>()), Times.Once);
+            //// Assert
+            //_employerFeedbackOuterApi.Verify(x => x.SetCodeBurntDate(It.IsAny<Guid>()), Times.Once);
+            //_employerFeedbackOuterApi.Verify(x => x.GetUniqueSurveyCodeFromFeedbackId(It.IsAny<long>()), Times.Once);
         }
 
         [Test, AutoData]
         public async Task WhenUsingAdHocJourney_AndNoSurveyInvite_NoBurnDateSet(SurveyModel surveyModel)
         {
+            throw new NotImplementedException();
             // Arrange
-            surveyModel.UniqueCode = null;
-            _employerFeedback.Object.FeedbackId = 1;
+            //surveyModel.UniqueCode = null;
+            //_employerFeedback.Object.FeedbackId = 1;
 
-            _employerFeedbackOuterApi.Setup(x =>
-                x.GetEmployerFeedbackRecord(surveyModel.UserRef, surveyModel.AccountId, surveyModel.Ukprn))
-                .ReturnsAsync(_employerFeedback.Object);
+            //_employerFeedbackOuterApi.Setup(x =>
+            //    x.GetEmployerFeedbackRecord(surveyModel.UserRef, surveyModel.AccountId, surveyModel.Ukprn))
+            //    .ReturnsAsync(_employerFeedback.Object);
 
-            _employerFeedbackOuterApi.Setup(x =>
-                x.GetUniqueSurveyCodeFromFeedbackId(_employerFeedback.Object.FeedbackId))
-                .ReturnsAsync(Guid.Empty);
+            //_employerFeedbackOuterApi.Setup(x =>
+            //    x.GetUniqueSurveyCodeFromFeedbackId(_employerFeedback.Object.FeedbackId))
+            //    .ReturnsAsync(Guid.Empty);
 
-            // Act
-            await _orchestrator.SubmitConfirmedEmployerFeedback(surveyModel);
+            //// Act
+            //await _orchestrator.SubmitConfirmedEmployerFeedback(surveyModel);
 
-            // Assert
-            _employerFeedbackOuterApi.Verify(x => x.SetCodeBurntDate(It.IsAny<Guid>()), Times.Never);
-            _employerFeedbackOuterApi.Verify(x => x.GetUniqueSurveyCodeFromFeedbackId(It.IsAny<long>()), Times.Once);
+            //// Assert
+            //_employerFeedbackOuterApi.Verify(x => x.SetCodeBurntDate(It.IsAny<Guid>()), Times.Never);
+            //_employerFeedbackOuterApi.Verify(x => x.GetUniqueSurveyCodeFromFeedbackId(It.IsAny<long>()), Times.Once);
         }
     }
 }

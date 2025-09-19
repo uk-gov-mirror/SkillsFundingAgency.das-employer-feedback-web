@@ -25,60 +25,60 @@ namespace SFA.DAS.EmployerProvideFeedback.Orchestrators
 
         public async Task SubmitConfirmedEmployerFeedback(SurveyModel surveyModel)
         {
+            throw new NotImplementedException();
+            //var employerFeedback = await _employerFeedbackOuterApi.GetEmployerFeedbackRecord(surveyModel.UserRef, surveyModel.AccountId, surveyModel.Ukprn);
+            //long feedbackId = 0;
+            //if (null == employerFeedback)
+            //{
+            //    feedbackId = await _employerFeedbackOuterApi.UpsertIntoFeedback(surveyModel.UserRef, surveyModel.AccountId, surveyModel.Ukprn);
+            //}
+            //else
+            //{
+            //    feedbackId = employerFeedback.FeedbackId;
+            //}
 
-            var employerFeedback = await _employerFeedbackOuterApi.GetEmployerFeedbackRecord(surveyModel.UserRef, surveyModel.AccountId, surveyModel.Ukprn);
-            long feedbackId = 0;
-            if (null == employerFeedback)
-            {
-                feedbackId = await _employerFeedbackOuterApi.UpsertIntoFeedback(surveyModel.UserRef, surveyModel.AccountId, surveyModel.Ukprn);
-            }
-            else
-            {
-                feedbackId = employerFeedback.FeedbackId;
-            }
+            //if (feedbackId == default(long))
+            //{
+            //    throw new InvalidOperationException($"Unable to find or create feedback record");
+            //}
 
-            if (feedbackId == default(long))
-            {
-                throw new InvalidOperationException($"Unable to find or create feedback record");
-            }
+            //try
+            //{
+            //    var providerAttributes = await ConvertSurveyToProviderAttributes(surveyModel);
 
-            try
-            {
-                var providerAttributes = await ConvertSurveyToProviderAttributes(surveyModel);
+            //    var feedbackSource = FeedbackSource.AdHoc;
+            //    if (surveyModel.UniqueCode.HasValue)
+            //    {
+            //        feedbackSource = FeedbackSource.Email;
+            //    }
 
-                var feedbackSource = FeedbackSource.AdHoc;
-                if (surveyModel.UniqueCode.HasValue)
-                {
-                    feedbackSource = FeedbackSource.Email;
-                }
+            //    EmployerFeedbackResult employerFeedbackResult = new EmployerFeedbackResult {
+            //        FeedbackId = feedbackId,
+            //        ProviderRating = surveyModel.Rating.Value.GetDisplayName(),
+            //        SubmittedDate = DateTime.UtcNow,
+            //        FeedbackSource = feedbackSource,
+            //        ProviderAttributes = providerAttributes.ToList()
+            //    };
 
-                EmployerFeedbackResult employerFeedbackResult = new EmployerFeedbackResult {
-                    FeedbackId = feedbackId,
-                    ProviderRating = surveyModel.Rating.Value.GetDisplayName(),
-                    SubmittedDate = DateTime.UtcNow,
-                    FeedbackSource = feedbackSource,
-                    ProviderAttributes = providerAttributes.ToList()
-                };
-
-                var employerFeedbackResultId =
-                    await _employerFeedbackOuterApi.SubmitEmployerFeedback(employerFeedbackResult);
-                if (null != surveyModel.UniqueCode && surveyModel.UniqueCode.HasValue)
-                {
-                    // Email journey.
-                    await _employerFeedbackOuterApi.SetCodeBurntDate(surveyModel.UniqueCode.Value);
-                }
-                else
-                {
-                    // Ad Hoc journey
-                    Guid? uniqueSurveyCode = await _employerFeedbackOuterApi.GetUniqueSurveyCodeFromFeedbackId(feedbackId);
-                    if (uniqueSurveyCode != Guid.Empty)
-                        await _employerFeedbackOuterApi.SetCodeBurntDate(uniqueSurveyCode.Value);
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Failed to submit feedback");
-            }
+            //    var employerFeedbackResultId =
+            //        await _employerFeedbackOuterApi.SubmitEmployerFeedback(employerFeedbackResult);
+            //    if (null != surveyModel.UniqueCode && surveyModel.UniqueCode.HasValue)
+            //    {
+            //        // Email journey.
+            //        await _employerFeedbackOuterApi.SetCodeBurntDate(surveyModel.UniqueCode.Value);
+            //    }
+            //    else
+            //    {
+            //        // Ad Hoc journey
+            //        Guid? uniqueSurveyCode = await _employerFeedbackOuterApi.GetUniqueSurveyCodeFromFeedbackId(feedbackId);
+            //        if (uniqueSurveyCode != Guid.Empty)
+            //            await _employerFeedbackOuterApi.SetCodeBurntDate(uniqueSurveyCode.Value);
+            //    }
+            //}
+            //catch (Exception ex)
+            //{
+            //    _logger.LogError(ex, "Failed to submit feedback");
+            //}
         }
 
         private async Task<IEnumerable<ProviderAttribute>> ConvertSurveyToProviderAttributes(SurveyModel surveyModel)

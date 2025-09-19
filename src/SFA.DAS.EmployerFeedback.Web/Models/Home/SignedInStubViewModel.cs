@@ -1,10 +1,8 @@
 ﻿using Microsoft.AspNetCore.Http;
-using SFA.DAS.EmployerFeedback.Infrastructure.Services.UserAccounts;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using System.Net;
 using System.Security.Claims;
 using System.Text.Json;
 using System.Text.RegularExpressions;

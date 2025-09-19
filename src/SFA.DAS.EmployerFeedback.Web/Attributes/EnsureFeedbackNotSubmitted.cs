@@ -21,16 +21,17 @@ namespace SFA.DAS.EmployerProvideFeedback.Infrastructure
 
         public override void OnActionExecuting(ActionExecutingContext context)
         {
-            var uniqueCode = (Guid)context.ActionArguments["uniqueCode"];
+            throw new NotImplementedException();
+            //var uniqueCode = (Guid)context.ActionArguments["uniqueCode"];
 
-            var isCodeBurnt = _employerFeedbackOuterApi.IsCodeBurnt(uniqueCode).Result;
-            if (isCodeBurnt)
-            {
-                var employerEmailDetail = _employerFeedbackOuterApi.GetEmployerInviteForUniqueCode(uniqueCode).GetAwaiter().GetResult();
-                var encodedAccountId = _encodingService.Encode(employerEmailDetail.AccountId, EncodingType.AccountId);
-                var controller = context.Controller as Controller;
-                context.Result = controller.RedirectToRoute(RouteNames.FeedbackAlreadySubmitted, new { encodedAccountId = encodedAccountId });
-            }
+            //var isCodeBurnt = _employerFeedbackOuterApi.IsCodeBurnt(uniqueCode).Result;
+            //if (isCodeBurnt)
+            //{
+            //    var employerEmailDetail = _employerFeedbackOuterApi.GetEmployerInviteForUniqueCode(uniqueCode).GetAwaiter().GetResult();
+            //    var encodedAccountId = _encodingService.Encode(employerEmailDetail.AccountId, EncodingType.AccountId);
+            //    var controller = context.Controller as Controller;
+            //    context.Result = controller.RedirectToRoute(RouteNames.FeedbackAlreadySubmitted, new { encodedAccountId = encodedAccountId });
+            //}
         }
     }
 }

@@ -120,39 +120,41 @@ namespace SFA.DAS.EmployerProvideFeedback.Services
 
         public async Task<ProviderSearchConfirmationViewModel> GetTrainingProviderConfirmationViewModel(string encodedAccountId, long providerId)
         {
-            var response = await _employerFeedbackOuterApi.GetProvider(providerId);
+            throw new NotImplementedException();
+            //var response = await _employerFeedbackOuterApi.GetProvider(providerId);
 
-            if (null == response)
-            {
-                return null;
-            }
+            //if (null == response)
+            //{
+            //    return null;
+            //}
 
-            var model = new ProviderSearchConfirmationViewModel();
-            model.ProviderId = response.ProviderId;
-            model.ProviderName = response.Name;
+            //var model = new ProviderSearchConfirmationViewModel();
+            //model.ProviderId = response.ProviderId;
+            //model.ProviderName = response.Name;
 
-            return model;
+            //return model;
         }
 
         public async Task UpsertTrainingProvider(long providerId, string providerName)
         {
-            await _employerFeedbackOuterApi.UpsertIntoProviders(new Provider[] { new Provider() { Ukprn = providerId, ProviderName = providerName } });
+            //await _employerFeedbackOuterApi.UpsertIntoProviders(new Provider[] { new Provider() { Ukprn = providerId, ProviderName = providerName } });
         }
 
         private async Task<List<ProviderSearchViewModel.EmployerTrainingProvider>> SelectAllProvidersForAccount(long accountId)
         {
+            throw new NotImplementedException();
             // Select all 
-            var apprenticeshipsResponse = await _employerFeedbackOuterApi.GetApprenticeships(accountId);
+            //var apprenticeshipsResponse = await _employerFeedbackOuterApi.GetApprenticeships(accountId);
 
-            var providers = apprenticeshipsResponse.Apprenticeships.GroupBy(p => p.ProviderId)
-                .Select(a => new ProviderSearchViewModel.EmployerTrainingProvider()
-                {
-                    ProviderId = a.First().ProviderId,
-                    ProviderName = a.First().ProviderName
-                })
-                .ToList();
+            //var providers = apprenticeshipsResponse.Apprenticeships.GroupBy(p => p.ProviderId)
+            //    .Select(a => new ProviderSearchViewModel.EmployerTrainingProvider()
+            //    {
+            //        ProviderId = a.First().ProviderId,
+            //        ProviderName = a.First().ProviderName
+            //    })
+            //    .ToList();
 
-            return providers;
+            //return providers;
         }
 
         private async Task AugmentProviderRecordsWithFeedbackStatus(long accountId, List<ProviderSearchViewModel.EmployerTrainingProvider> providers)

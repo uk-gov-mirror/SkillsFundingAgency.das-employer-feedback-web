@@ -35,7 +35,7 @@
         public async Task WhenQueryingFeedback_IfNullReturnsEmptyCollection()
         {
             // Arrange
-            employerFeedbackOuterApi.Setup(s => s.GetEmployerFeedback()).ReturnsAsync((IEnumerable<EmployerFeedbackViewModel>)null);
+            //employerFeedbackOuterApi.Setup(s => s.GetEmployerFeedback()).ReturnsAsync((IEnumerable<EmployerFeedbackViewModel>)null);
 
             // Act
             var response = await handler.Handle(new FeedbackQuery(), new CancellationToken());
@@ -48,7 +48,7 @@
         public async Task WhenQueryingFeedback_IfNoFeedbackReturnsEmptyCollection()
         {
             // Arrange
-            employerFeedbackOuterApi.Setup(s => s.GetEmployerFeedback()).ReturnsAsync(new List<EmployerFeedbackViewModel>());
+            //employerFeedbackOuterApi.Setup(s => s.GetEmployerFeedback()).ReturnsAsync(new List<EmployerFeedbackViewModel>());
 
             // Act
             var response = await handler.Handle(new FeedbackQuery(), new CancellationToken());
@@ -63,7 +63,7 @@
             // Arrange
             var fixture = new Fixture();
             var feedback = fixture.CreateMany<EmployerFeedbackViewModel>(150);
-            employerFeedbackOuterApi.Setup(s => s.GetEmployerFeedback()).ReturnsAsync(feedback);
+            //employerFeedbackOuterApi.Setup(s => s.GetEmployerFeedback()).ReturnsAsync(feedback);
 
             // Act
             var response = await handler.Handle(new FeedbackQuery(), new CancellationToken());
@@ -91,7 +91,7 @@
                 f.ProviderRating = providerRating;
                 f.DateTimeCompleted = dateTimeCompleted;
             }
-            employerFeedbackOuterApi.Setup(s => s.GetEmployerFeedback()).ReturnsAsync(feedback);
+            //employerFeedbackOuterApi.Setup(s => s.GetEmployerFeedback()).ReturnsAsync(feedback);
 
             // Act
             var response = await handler.Handle(new FeedbackQuery(), new CancellationToken());

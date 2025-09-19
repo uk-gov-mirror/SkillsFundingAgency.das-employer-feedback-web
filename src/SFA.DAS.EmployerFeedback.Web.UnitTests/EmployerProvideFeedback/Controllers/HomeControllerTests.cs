@@ -61,8 +61,6 @@ namespace UnitTests.EmployerProvideFeedback.Controllers
                 .ToList();
 
             _employerFeedbackOuterApiMock = new Mock<IEmployerFeedbackOuterApi>();
-            _employerFeedbackOuterApiMock.Setup(m => m.GetEmployerInviteForUniqueCode(It.IsAny<Guid>()))
-                .Returns(Task.FromResult(_employerEmailDetail));
 
             _sessionServiceMock = new Mock<ISessionStorageService>();
             _sessionServiceMock.Setup(m => m.Get<SurveyModel>(It.IsAny<string>())).Returns(Task.FromResult(_surveyModel));
