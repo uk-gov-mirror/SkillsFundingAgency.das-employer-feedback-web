@@ -27,6 +27,9 @@ namespace SFA.DAS.EmployerFeedback.Infrastructure.Api.OuterApi
         [Get("/employerfeedback/healthcheck")]
         Task<string> HealthCheck();
 
+        [Get("/accountusers/{userId}/accounts")]
+        Task<UserAccountsDetails> GetUserAccounts([Path] string userId, [Query] string email);
+
         [Get("/employerfeedback/getfeedbackresultsummaryannual/{ukprn}")]
         Task<IEnumerable<EmployerFeedbackResultSummary>> GetFeedbackResultSummaryAnnual([Path] long ukprn);
 
