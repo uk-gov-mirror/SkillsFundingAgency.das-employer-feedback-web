@@ -20,27 +20,21 @@ namespace SFA.DAS.EmployerFeedback.Infrastructure
 
         public override void OnActionExecuting(ActionExecutingContext context)
         {
-            throw new NotImplementedException();
-            //if (context.ActionArguments.ContainsKey("uniqueCode"))
-            //{
-            //    var uniqueCode = (Guid)context.ActionArguments["uniqueCode"];
+            if (context.ActionArguments.ContainsKey("userref") && context.ActionArguments.ContainsKey("accountId") && context.ActionArguments.ContainsKey("providerId"))
+            {
+                var providerFeedback = _employerFeedbackOuterApi
+                    .GetTrainingProviderSearch((long)context.ActionArguments["accountId"], (Guid)context.ActionArguments["userref"])
+                    .GetAwaiter()
+                    .GetResult()
+                    .Providers
+                    .Find(x => x.Ukprn == (long)context.ActionArguments["providerId"]);
 
-            //    var isCodeBurnt = _employerFeedbackOuterApi.IsCodeBurnt(uniqueCode).Result;
-            //    if (isCodeBurnt)
-            //    {
-            //        var dateCodeBurnt = _employerFeedbackOuterApi.GetCodeBurntDate(uniqueCode).GetAwaiter().GetResult();
-            //        if (dateCodeBurnt.HasValue)
-            //        {
-            //            var daysSinceFeedback = DateTime.Now - dateCodeBurnt.Value;
-            //            if (daysSinceFeedback.TotalDays > _config.FeedbackWaitPeriodDays)
-            //            {
-            //                return;
-            //            }
-            //        }
-            //        var controller = context.Controller as Controller;
-            //        context.Result = controller.RedirectToRoute(RouteNames.FeedbackAlreadySubmitted);
-            //    }
-            //}
+                if (providerFeedback.HasCompleted)
+                {
+                    var controller = context.Controller as Controller;
+                    context.Result = controller.RedirectToRoute(RouteNames.FeedbackAlreadySubmitted);
+                }
+            }
         }
     }
 }
