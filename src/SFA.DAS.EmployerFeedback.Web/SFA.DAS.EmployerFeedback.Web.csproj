@@ -44,4 +44,8 @@
     <ProjectReference Include="..\SFA.DAS.EmployerFeedback.Web.Types\SFA.DAS.EmployerFeedback.Web.Types.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Orchestrators\" />
+  </ItemGroup>
+
 </Project>

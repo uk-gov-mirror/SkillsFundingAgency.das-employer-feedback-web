@@ -14,7 +14,6 @@ using SFA.DAS.EmployerFeedback.Web.Attributes;
 using SFA.DAS.EmployerFeedback.Web.Authorization;
 using SFA.DAS.EmployerFeedback.Web.Services.EmployerRoleAuthorization;
 using SFA.DAS.EmployerProvideFeedback.Infrastructure;
-using SFA.DAS.EmployerProvideFeedback.Orchestrators;
 using SFA.DAS.EmployerProvideFeedback.Services;
 using SFA.DAS.Encoding;
 using SFA.DAS.GovUK.Auth.Authentication;
@@ -50,7 +49,6 @@ namespace SFA.DAS.EmployerFeedback.Web.StartupExtensions
             services.AddTransient<EnsureFeedbackNotSubmitted>();
             services.AddTransient<EnsureFeedbackNotSubmittedRecentlyAttribute>();
             services.AddTransient<EnsureSessionExists>();
-            services.AddTransient<ReviewAnswersOrchestrator>();
             services.AddTransient<ITrainingProviderService, TrainingProviderService>();
 
             // Encoding Service
