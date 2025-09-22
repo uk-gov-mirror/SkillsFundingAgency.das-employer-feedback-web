@@ -8,6 +8,7 @@ namespace SFA.DAS.EmployerFeedback.Web.Models.Shared
     public class ProviderSearchViewModel
     {
         public long AccountId { get; set; }
+        public Guid UserRef { get; set; }
         public string EncodedAccountId { get; set; }
 
 

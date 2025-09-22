@@ -9,6 +9,7 @@ using SFA.DAS.EmployerFeedback.Infrastructure.Services.CacheStorage;
 using SFA.DAS.EmployerFeedback.Infrastructure.Services.EmployerAccount;
 using SFA.DAS.EmployerFeedback.Infrastructure.Services.SessionStorage;
 using SFA.DAS.EmployerFeedback.Infrastructure.Services.UserAccounts;
+using SFA.DAS.EmployerFeedback.Infrastructure.Services.UserService;
 using SFA.DAS.EmployerFeedback.Web.Attributes;
 using SFA.DAS.EmployerFeedback.Web.Authorization;
 using SFA.DAS.EmployerFeedback.Web.Services.EmployerRoleAuthorization;
@@ -55,6 +56,7 @@ namespace SFA.DAS.EmployerFeedback.Web.StartupExtensions
             // Encoding Service
             services.AddSingleton<IEncodingService, EncodingService>();
             services.AddTransient<IGovAuthEmployerAccountService, EmployerAccountService>();
+            services.AddTransient<IUserService, UserService>();
 
             return services;
         }

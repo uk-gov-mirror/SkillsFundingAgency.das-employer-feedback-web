@@ -17,9 +17,8 @@ namespace SFA.DAS.EmployerProvideFeedback.Services
     {
         Task<ProviderSearchViewModel> GetTrainingProviderSearchViewModel(string encodedAccountId, string selectedProviderName, string selectedFeedbackStatus, int pageSize, int pageIndex, string sortColumn, string sortDirection);
 
-        Task<ProviderSearchConfirmationViewModel> GetTrainingProviderConfirmationViewModel(string encodedAccountId, long providerId);
+        Task<ProviderSearchConfirmationViewModel> GetTrainingProviderConfirmationViewModel(long accountId, Guid userref, long providerId);
 
-        Task UpsertTrainingProvider(long providerId, string providerName);
     }
 
 
@@ -58,7 +57,7 @@ namespace SFA.DAS.EmployerProvideFeedback.Services
 
             // Select all the providers for this employer.
 
-            var providers = await SelectAllProvidersForAccount(model.AccountId);
+            var providers = await SelectAllProvidersForAccount(model.AccountId, model.UserRef);
 
             // Augment the provider records with feedback data. Urgh.
             // We need to do this so that the date filtering will work.
@@ -118,43 +117,38 @@ namespace SFA.DAS.EmployerProvideFeedback.Services
             return model;
         }
 
-        public async Task<ProviderSearchConfirmationViewModel> GetTrainingProviderConfirmationViewModel(string encodedAccountId, long providerId)
+        public async Task<ProviderSearchConfirmationViewModel> GetTrainingProviderConfirmationViewModel(long accountId, Guid userref, long providerId)
         {
-            throw new NotImplementedException();
-            //var response = await _employerFeedbackOuterApi.GetProvider(providerId);
+            var response = await _employerFeedbackOuterApi.GetTrainingProviderSearch(accountId, userref);
 
-            //if (null == response)
-            //{
-            //    return null;
-            //}
+            if (null == response)
+            {
+                return null;
+            }
 
-            //var model = new ProviderSearchConfirmationViewModel();
-            //model.ProviderId = response.ProviderId;
-            //model.ProviderName = response.Name;
+            var provider  = response.Providers.FirstOrDefault(p => p.Ukprn == providerId);
 
-            //return model;
+            var model = new ProviderSearchConfirmationViewModel();
+            model.ProviderId = provider.Ukprn;
+            model.ProviderName = provider.ProviderName;
+
+            return model;
         }
 
-        public async Task UpsertTrainingProvider(long providerId, string providerName)
+        private async Task<List<ProviderSearchViewModel.EmployerTrainingProvider>> SelectAllProvidersForAccount(long accountId, Guid userref)
         {
-            //await _employerFeedbackOuterApi.UpsertIntoProviders(new Provider[] { new Provider() { Ukprn = providerId, ProviderName = providerName } });
-        }
-
-        private async Task<List<ProviderSearchViewModel.EmployerTrainingProvider>> SelectAllProvidersForAccount(long accountId)
-        {
-            throw new NotImplementedException();
             // Select all 
-            //var apprenticeshipsResponse = await _employerFeedbackOuterApi.GetApprenticeships(accountId);
+            var apprenticeshipsResponse = await _employerFeedbackOuterApi.GetTrainingProviderSearch(accountId, userref);
 
-            //var providers = apprenticeshipsResponse.Apprenticeships.GroupBy(p => p.ProviderId)
-            //    .Select(a => new ProviderSearchViewModel.EmployerTrainingProvider()
-            //    {
-            //        ProviderId = a.First().ProviderId,
-            //        ProviderName = a.First().ProviderName
-            //    })
-            //    .ToList();
+            var providers = apprenticeshipsResponse.Providers.GroupBy(p => p.Ukprn)
+                .Select(a => new ProviderSearchViewModel.EmployerTrainingProvider()
+                {
+                    ProviderId = a.First().Ukprn,
+                    ProviderName = a.First().ProviderName
+                })
+                .ToList();
 
-            //return providers;
+            return providers;
         }
 
         private async Task AugmentProviderRecordsWithFeedbackStatus(long accountId, List<ProviderSearchViewModel.EmployerTrainingProvider> providers)

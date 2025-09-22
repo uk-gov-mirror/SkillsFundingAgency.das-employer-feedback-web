@@ -18,8 +18,8 @@ namespace SFA.DAS.EmployerFeedback.Infrastructure.Api.OuterApi
         [Post("/employerfeebackresult")]
         Task<IEnumerable<EmployerFeedbackAndResult>> SubmitEmployerFeedback(EmployerFeedbackResult request);
 
-        [Get("/employerfeedback?accountid={id}&userref={UUID}")]
-        Task<ProviderFeedback> GetTrainingProviderSearch([Query("accountid")] long id, [Query("userref")] Guid userRef);
+        [Get("/employerfeedback")]
+        Task<GetProviderFeedback> GetTrainingProviderSearch([Query(Name = "accountid")] long id, [Query("userref")] Guid userRef);
 
         [Get("/ping")]
         Task Ping();
@@ -30,20 +30,5 @@ namespace SFA.DAS.EmployerFeedback.Infrastructure.Api.OuterApi
         [Get("/accountusers/{userId}/accounts")]
         Task<UserAccountsDetails> GetUserAccounts([Path] string userId, [Query] string email);
 
-        [Get("/employerfeedback/getfeedbackresultsummaryannual/{ukprn}")]
-        Task<IEnumerable<EmployerFeedbackResultSummary>> GetFeedbackResultSummaryAnnual([Path] long ukprn);
-
-        [Get("/employerfeedback/getfeedbackresultsummary/{ukprn}")]
-        Task<IEnumerable<EmployerFeedbackResultSummary>> GetFeedbackResultSummary([Path] long ukprn);
-
-
-        [Get("/cohorts/accountIds")]
-        Task<GetAllCohortAccountIdsResponse> GetAllCohortAccountIds();
-
-        [Get("/employerfeedback/allstartsummary/{timePeriod}")]
-        Task<IEnumerable<ProviderStarsSummary>> GetAllStarsSummary([Path] string timePeriod);
-
-        [Get("/employerfeedback/feedbackresultsummary")]
-        Task<IEnumerable<EmployerFeedbackResultSummary>> GetFeedbackResultSummaryForAcademicYear([Query("ukprn")] long ukPrn, [Query("academicYear")] string academicYear);
     }
 }

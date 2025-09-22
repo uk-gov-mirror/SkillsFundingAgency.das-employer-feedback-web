@@ -141,7 +141,16 @@ namespace SFA.DAS.EmployerFeedback.Web.Controllers
         [Route("/{encodedAccountId}/providers/{providerId}")]
         public async Task<IActionResult> ConfirmProvider(string encodedAccountId, long providerId)
         {
-            var model = await _trainingProviderService.GetTrainingProviderConfirmationViewModel(encodedAccountId, providerId);
+            var idClaim = HttpContext.User.FindFirst(EmployerClaims.UserId);
+            if (null == idClaim)
+            {
+                _logger.LogError($"User id not found in user claims.");
+                return RedirectToAction("Error", "Error");
+            }
+
+            var accountId = _encodingService.Decode(encodedAccountId, EncodingType.AccountId); // validate the account id
+
+            var model = await _trainingProviderService.GetTrainingProviderConfirmationViewModel(accountId, new Guid(idClaim?.Value), providerId);
 
             return View(model);
         }
@@ -189,19 +198,6 @@ namespace SFA.DAS.EmployerFeedback.Web.Controllers
             };
 
             await _sessionService.Set(idClaim.Value, newSurveyModel);
-
-            // Make sure the user exists.
-            var emailAddressClaim = HttpContext.User.FindFirst(EmployerClaims.EmailAddress);
-            var firstNameClaim = HttpContext.User.FindFirst(EmployerClaims.GivenName);
-            var user = new User()
-            {
-                UserRef = new Guid(idClaim?.Value),
-                EmailAddress = emailAddressClaim?.Value,
-                FirstName = firstNameClaim?.Value,
-            };
-
-            // Make sure the provider exists and is active.
-            await _trainingProviderService.UpsertTrainingProvider(newSurveyModel.Ukprn, newSurveyModel.ProviderName);
 
             return RedirectToAction("Index", "Home");
         }

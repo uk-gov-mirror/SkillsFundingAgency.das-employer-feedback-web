@@ -5,10 +5,10 @@ namespace SFA.DAS.EmployerFeedback.Domain.Entities.Models
 {
     public class GetProviderFeedback
     {
-        public Guid AccountID { get; set; }
+        public long AccountId { get; set; }
 
         public string AccountName { get; set; }
 
-        public List<ProviderFeedback> providers { get; set; } = new List<ProviderFeedback>();
+        public List<ProviderFeedback> Providers { get; set; } = new List<ProviderFeedback>();
     }
 }

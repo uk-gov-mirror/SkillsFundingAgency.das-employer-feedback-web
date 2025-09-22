@@ -76,6 +76,7 @@ namespace UnitTests.Services
             {
                 // Arrange
                 var testAccountId = 2;
+                var testUserRef = new System.Guid();
                 var testAccountIdEncoded = "CONFIRMATIONMODELTEST1";
                 _encodingServiceMock.Setup(m => m.Decode(testAccountIdEncoded, EncodingType.AccountId)).Returns(testAccountId);
 
@@ -85,7 +86,7 @@ namespace UnitTests.Services
                     _employerFeedbackOuterApiMock.Object);
 
                 // Act
-                var model = await sut.GetTrainingProviderConfirmationViewModel(testAccountIdEncoded, 1);
+                var model = await sut.GetTrainingProviderConfirmationViewModel(testAccountId, testUserRef, 1);
 
                 // Assert
                 model.Should().NotBeNull();
