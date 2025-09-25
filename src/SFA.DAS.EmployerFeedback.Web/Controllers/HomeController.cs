@@ -13,6 +13,7 @@ using SFA.DAS.EmployerFeedback.Infrastructure.Configuration.Routing;
 using SFA.DAS.EmployerFeedback.Infrastructure.Services.SessionStorage;
 using SFA.DAS.EmployerFeedback.Web.Authorization;
 using SFA.DAS.EmployerFeedback.Web.Models;
+using SFA.DAS.EmployerFeedback.Web.Models.Home;
 using SFA.DAS.EmployerFeedback.Web.Models.Shared;
 using SFA.DAS.EmployerProvideFeedback.Infrastructure;
 using SFA.DAS.Encoding;
@@ -60,46 +61,28 @@ namespace SFA.DAS.EmployerFeedback.Web.Controllers
             _employerFeedbackOuterApi = employerFeedbackOuterApi;
         }
 
-        [Authorize(Policy = nameof(PolicyNames.ViewerRole))]
-        [HttpGet]
-        [Route(RoutePrefixPaths.FeedbackRoutePath, Name = RouteNames.Landing_Get_New)]
-        public async Task<IActionResult> Index(StartFeedbackRequest request)
-        {
-            var idClaim = HttpContext.User.FindFirst(EmployerClaims.UserId);   //System.Security.Claims.ClaimTypes.NameIdentifier
-            var sessionSurvey = await _sessionService.Get<SurveyModel>(idClaim.Value);
-            if (sessionSurvey == null)
-            {
-                return NotFound();
-            }
-            else
-            {
-                ViewData.Add("ProviderName", sessionSurvey.ProviderName);
-            }
-
-            return View();
-        }
 
         [Authorize(Policy = nameof(PolicyNames.ViewerRole))]
         [ServiceFilter(typeof(EnsureFeedbackNotSubmitted))]
-        [Route(RoutePrefixPaths.FeedbackFromEmailRoutePath, Name = RouteNames.Landing_Get)]
+        [Route(RoutePrefixPaths.FeedbackRoutePath, Name = RouteNames.Landing_Get)]
         [HttpGet]
-        public async Task<IActionResult> Index(Guid uniqueCode)
+        public async Task<IActionResult> Index(Parameters parameters)
         {
             var idClaim = HttpContext.User.FindFirst(EmployerClaims.UserId);    //System.Security.Claims.ClaimTypes.NameIdentifier
-            var sessionSurvey = await _sessionService.Get<SurveyModel>(idClaim.Value);
+            //var sessionSurvey = await _sessionService.Get<SurveyModel>(idClaim.Value);
 
-            if (sessionSurvey == null)
-            {
-                return NotFound();
-            }
+            //if (sessionSurvey == null)
+            //{
+            //    return NotFound();
+            //}
 
-            var employerEmailDetail = await _employerFeedbackOuterApi.GetTrainingProviderSearch(sessionSurvey.AccountId, sessionSurvey.UserRef);
+            var employerEmailDetail = await _employerFeedbackOuterApi.GetTrainingProviderSearch(parameters.AccountId, Guid.Parse(idClaim.Value));
             
             _logger.LogWarning("Landing Page GET hit");
 
             if (employerEmailDetail == null)
             {
-                _logger.LogWarning($"Attempt to use invalid unique code: {uniqueCode}");
+                //_logger.LogWarning($"Attempt to use invalid unique code: {uniqueCode}");
                 return NotFound();
             }
 
@@ -112,11 +95,14 @@ namespace SFA.DAS.EmployerFeedback.Web.Controllers
 
             var providerAttributesModel = providerAttributes.Select(s => new Models.Shared.ProviderAttributeModel { Name = s.AttributeName });
             var newSurveyModel = MapToNewSurveyModel(employerEmailDetail, providerAttributesModel);
-            newSurveyModel.UniqueCode = uniqueCode;
+            
             await _sessionService.Set(idClaim.Value, newSurveyModel);
+            var sessionSurvey = await _sessionService.Get<SurveyModel>(idClaim.Value);
+            ViewData.Add("ProviderName", sessionSurvey.ProviderName);
+            return View();
 
-            var encodedAccountId = _encodingService.Encode(employerEmailDetail.AccountId, EncodingType.AccountId);
-            return RedirectToRoute(RouteNames.Landing_Get_New, new { encodedAccountId = encodedAccountId });
+            //var encodedAccountId = _encodingService.Encode(employerEmailDetail.AccountId, EncodingType.AccountId);
+            //return RedirectToRoute(RouteNames.Landing_Get_New, new { encodedAccountId = parameters.EncodedAccountId });
         }
 
 
@@ -162,39 +148,46 @@ namespace SFA.DAS.EmployerFeedback.Web.Controllers
         {
             return Ok();
         }
-        
+
 #if DEBUG
         [AllowAnonymous()]
         [HttpGet]
-        [Route("SignIn-Stub")]
-        public IActionResult SigninStub()
+        [Route("SignIn-Stub", Name = "SignInStub")]
+        public IActionResult SigninStub(string returnUrl)
         {
-            return View("SigninStub", new List<string>{_config["StubId"],_config["StubEmail"]});
+            var model = new SignInStubViewModel
+            {
+                StubId = _config["StubId"],
+                StubEmail = _config["StubEmail"],
+                ReturnUrl = returnUrl
+            };
+
+            return View(model);
         }
-        
+
         [AllowAnonymous()]
         [HttpPost]
         [Route("SignIn-Stub")]
-        public async Task<IActionResult> SigninStubPost()
+        public async Task<IActionResult> SigninStubPost(SignInStubViewModel model)
         {
             var claims = await _stubAuthenticationService.GetStubSignInClaims(new StubAuthUserDetails
             {
-                Email = _config["StubEmail"],
-                Id = _config["StubId"]
+                Email = model.StubEmail,
+                Id = model.StubId
             });
 
             await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, claims,
                 new AuthenticationProperties());
 
-            return RedirectToRoute("Signed-in-stub");
+            return RedirectToRoute("SignedInStub", new { model.ReturnUrl });
         }
 
         [Authorize()]
         [HttpGet]
-        [Route("signed-in-stub", Name = "Signed-in-stub")]
-        public IActionResult SignedInStub()
+        [Route("signed-in-stub", Name = "SignedInStub")]
+        public IActionResult SignedInStub(string returnUrl)
         {
-            return View();
+            return View(new SignedInStubViewModel(_contextAccessor, returnUrl));
         }
 #endif
 

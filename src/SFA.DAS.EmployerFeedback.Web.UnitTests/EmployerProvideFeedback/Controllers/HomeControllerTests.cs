@@ -90,7 +90,7 @@ namespace UnitTests.EmployerProvideFeedback.Controllers
         public async Task SessionSurvey_DoesNotExist_ShouldPopulateProviderName_OnViewData()
         {
             // Arrange
-            var request = new StartFeedbackRequest();
+            var request = new Parameters();
 
             // Act
             await _controller.Index(request);

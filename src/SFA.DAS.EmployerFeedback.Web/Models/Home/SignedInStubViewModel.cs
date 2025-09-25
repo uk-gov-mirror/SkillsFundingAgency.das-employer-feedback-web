@@ -28,21 +28,6 @@ namespace SFA.DAS.EmployerFeedback.Web.Models.Home
 
         public string ReturnUrl { get; }
 
-        public bool HasEncodedAccountIdPlaceholder()
-        {
-            return Uri.UnescapeDataString(ReturnUrl).Contains(EncodedAccountIdPlaceholder);
-        }
-
-        public string ReplaceEncodedAccountIdPlaceholderUrl(string EncodedAccountId)
-        {
-            string replacedUrl = Regex.Replace(Uri.UnescapeDataString(ReturnUrl), 
-                EncodedAccountIdPlaceholder, 
-                EncodedAccountId, 
-                RegexOptions.None, 
-                TimeSpan.FromMilliseconds(25));
-
-            return replacedUrl;
-        }
 
         public List<EmployerUserAccountItem> GetAccounts()
         {
