@@ -89,11 +89,8 @@ namespace UnitTests.EmployerProvideFeedback.Controllers
         [Test]
         public async Task SessionSurvey_DoesNotExist_ShouldPopulateProviderName_OnViewData()
         {
-            // Arrange
-            var request = new Parameters();
-
             // Act
-            await _controller.Index(request);
+            await _controller.Index();
 
             // Assert
             _controller.ViewData.Should().ContainKey("ProviderName");

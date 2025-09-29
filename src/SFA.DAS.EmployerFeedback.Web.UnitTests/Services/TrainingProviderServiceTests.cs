@@ -51,6 +51,7 @@ namespace UnitTests.Services
                 // Arrange
                 var testAccountId = 1;
                 var testAccountIdEncoded = "MANYTEST1";
+                var userRef = new System.Guid();
                 _encodingServiceMock.Setup(m => m.Decode(testAccountIdEncoded, EncodingType.AccountId)).Returns(testAccountId);
                 var _employerFeedbackOuterApiMock = new Mock<IEmployerFeedbackOuterApi>();
 
@@ -61,7 +62,7 @@ namespace UnitTests.Services
 
                 // Act
                 var model = await sut.GetTrainingProviderSearchViewModel(
-                    testAccountIdEncoded, selectedProviderName, selectedFeedbackStatus, pageSize, pageIndex, sortColumn, sortDirection);
+                    testAccountIdEncoded, userRef, selectedProviderName, selectedFeedbackStatus, pageSize, pageIndex, sortColumn, sortDirection);
 
                 // Assert
                 model.TrainingProviders.TotalRecordCount.Should().Be(expectedTotalRecordCount);

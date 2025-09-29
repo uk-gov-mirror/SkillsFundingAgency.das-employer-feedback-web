@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Authentication;
-using SFA.DAS.EmployerFeedback.Domain.Entities.Models;
+﻿using Microsoft.AspNetCore.Http;
 using SFA.DAS.EmployerFeedback.Infrastructure.Api.OuterApi;
 using SFA.DAS.EmployerFeedback.Infrastructure.Configuration;
 using SFA.DAS.EmployerFeedback.Web.Models.Shared;
@@ -15,7 +14,7 @@ namespace SFA.DAS.EmployerProvideFeedback.Services
 {
     public interface ITrainingProviderService
     {
-        Task<ProviderSearchViewModel> GetTrainingProviderSearchViewModel(string encodedAccountId, string selectedProviderName, string selectedFeedbackStatus, int pageSize, int pageIndex, string sortColumn, string sortDirection);
+        Task<ProviderSearchViewModel> GetTrainingProviderSearchViewModel(string encodedAccountId, Guid userRef, string selectedProviderName, string selectedFeedbackStatus, int pageSize, int pageIndex, string sortColumn, string sortDirection);
 
         Task<ProviderSearchConfirmationViewModel> GetTrainingProviderConfirmationViewModel(long accountId, Guid userref, long providerId);
 
@@ -40,6 +39,7 @@ namespace SFA.DAS.EmployerProvideFeedback.Services
 
         public async Task<ProviderSearchViewModel> GetTrainingProviderSearchViewModel(
             string encodedAccountId, 
+            Guid userRef,
             string selectedProviderName,
             string selectedFeedbackStatus,
             int pageSize, 
@@ -56,8 +56,7 @@ namespace SFA.DAS.EmployerProvideFeedback.Services
             model.SortDirection = sortDirection;
 
             // Select all the providers for this employer.
-
-            var providers = await SelectAllProvidersForAccount(model.AccountId, model.UserRef);
+            var providers = await SelectAllProvidersForAccount(model.AccountId, userRef);
 
             // Augment the provider records with feedback data. Urgh.
             // We need to do this so that the date filtering will work.
@@ -144,7 +143,9 @@ namespace SFA.DAS.EmployerProvideFeedback.Services
                 .Select(a => new ProviderSearchViewModel.EmployerTrainingProvider()
                 {
                     ProviderId = a.First().Ukprn,
-                    ProviderName = a.First().ProviderName
+                    ProviderName = a.First().ProviderName,
+                    FeedbackStatus = a.First().Feedback == null ? NOT_YET_SUBMITTED : "Submitted",
+                    DateSubmitted = a.First().Feedback?.DateTimeCompleted
                 })
                 .ToList();
 
@@ -153,19 +154,12 @@ namespace SFA.DAS.EmployerProvideFeedback.Services
 
         private async Task AugmentProviderRecordsWithFeedbackStatus(long accountId, List<ProviderSearchViewModel.EmployerTrainingProvider> providers)
         {
-            var employerFeedback = await _employerFeedbackOuterApi.SubmitEmployerFeedback(new EmployerFeedbackResult { FeedbackId = accountId});
             foreach (var provider in providers)
             {
-                var feedBackForProvider = employerFeedback.FirstOrDefault(fp => fp.Ukprn == provider.ProviderId);
-                if (null == feedBackForProvider)
+                if (provider.FeedbackStatus == null)
                 {
                     provider.FeedbackStatus = NOT_YET_SUBMITTED;
                     provider.DateSubmitted = null;
-                }
-                else
-                {
-                    provider.FeedbackStatus = "Submitted";
-                    provider.DateSubmitted = feedBackForProvider.DateTimeCompleted;
                 }
 
                 provider.CanSubmitFeedback = true;

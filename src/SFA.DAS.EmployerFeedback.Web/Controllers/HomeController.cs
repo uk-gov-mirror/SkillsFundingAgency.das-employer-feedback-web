@@ -15,7 +15,6 @@ using SFA.DAS.EmployerFeedback.Web.Authorization;
 using SFA.DAS.EmployerFeedback.Web.Models;
 using SFA.DAS.EmployerFeedback.Web.Models.Home;
 using SFA.DAS.EmployerFeedback.Web.Models.Shared;
-using SFA.DAS.EmployerProvideFeedback.Infrastructure;
 using SFA.DAS.Encoding;
 using SFA.DAS.GovUK.Auth.Models;
 using SFA.DAS.GovUK.Auth.Services;
@@ -23,7 +22,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace SFA.DAS.EmployerFeedback.Web.Controllers
@@ -62,47 +60,21 @@ namespace SFA.DAS.EmployerFeedback.Web.Controllers
         }
 
 
-        [Authorize(Policy = nameof(PolicyNames.ViewerRole))]
-        [ServiceFilter(typeof(EnsureFeedbackNotSubmitted))]
+        [Authorize(Policy = nameof(PolicyNames.NoneRole))]
         [Route(RoutePrefixPaths.FeedbackRoutePath, Name = RouteNames.Landing_Get)]
         [HttpGet]
-        public async Task<IActionResult> Index(Parameters parameters)
+        public async Task<IActionResult> Index()
         {
-            var idClaim = HttpContext.User.FindFirst(EmployerClaims.UserId);    //System.Security.Claims.ClaimTypes.NameIdentifier
-            //var sessionSurvey = await _sessionService.Get<SurveyModel>(idClaim.Value);
-
-            //if (sessionSurvey == null)
-            //{
-            //    return NotFound();
-            //}
-
-            var employerEmailDetail = await _employerFeedbackOuterApi.GetTrainingProviderSearch(parameters.AccountId, Guid.Parse(idClaim.Value));
-            
-            _logger.LogWarning("Landing Page GET hit");
-
-            if (employerEmailDetail == null)
+            _logger.LogInformation("Index called");
+            var surveyModel = await _sessionService.Get<SurveyModel>(User.FindFirst(EmployerClaims.UserId).Value);
+           
+            if (surveyModel == null)
             {
-                //_logger.LogWarning($"Attempt to use invalid unique code: {uniqueCode}");
                 return NotFound();
             }
 
-            var providerAttributes = await _employerFeedbackOuterApi.GetAllAttributes();
-            if (providerAttributes == null)
-            {
-                _logger.LogError($"Unable to load Provider Attributes from the database.");
-                return RedirectToAction("Error", "Error");
-            }
-
-            var providerAttributesModel = providerAttributes.Select(s => new Models.Shared.ProviderAttributeModel { Name = s.AttributeName });
-            var newSurveyModel = MapToNewSurveyModel(employerEmailDetail, providerAttributesModel);
-            
-            await _sessionService.Set(idClaim.Value, newSurveyModel);
-            var sessionSurvey = await _sessionService.Get<SurveyModel>(idClaim.Value);
-            ViewData.Add("ProviderName", sessionSurvey.ProviderName);
+            ViewData.Add("ProviderName", surveyModel.ProviderName);
             return View();
-
-            //var encodedAccountId = _encodingService.Encode(employerEmailDetail.AccountId, EncodingType.AccountId);
-            //return RedirectToRoute(RouteNames.Landing_Get_New, new { encodedAccountId = parameters.EncodedAccountId });
         }
 
 

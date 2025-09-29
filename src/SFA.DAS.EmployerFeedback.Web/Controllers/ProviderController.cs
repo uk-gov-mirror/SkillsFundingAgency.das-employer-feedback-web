@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using SFA.DAS.Employer.Shared.UI;
-using SFA.DAS.EmployerFeedback.Domain.Entities.Models;
 using SFA.DAS.EmployerFeedback.Infrastructure.Api.OuterApi;
 using SFA.DAS.EmployerFeedback.Infrastructure.Configuration;
 using SFA.DAS.EmployerFeedback.Infrastructure.Services.SessionStorage;
@@ -18,7 +17,7 @@ using System.Threading.Tasks;
 
 namespace SFA.DAS.EmployerFeedback.Web.Controllers
 {
-    [Authorize(Policy = nameof(PolicyNames.ViewerRole))]
+    [Authorize(Policy = nameof(PolicyNames.NoneRole))]
     public class ProviderController : Controller
     {
         private readonly ISessionStorageService _sessionService;
@@ -59,6 +58,7 @@ namespace SFA.DAS.EmployerFeedback.Web.Controllers
 
             var model = await _trainingProviderService.GetTrainingProviderSearchViewModel(
                 request.EncodedAccountId,
+                Guid.Parse(idClaim.Value),
                 pagingState.SelectedProviderName,
                 pagingState.SelectedFeedbackStatus,
                 pagingState.PageSize,
@@ -91,6 +91,7 @@ namespace SFA.DAS.EmployerFeedback.Web.Controllers
 
             var model = await _trainingProviderService.GetTrainingProviderSearchViewModel(
                 postedModel.EncodedAccountId,
+                Guid.Parse(idClaim.Value),
                 pagingState.SelectedProviderName,
                 pagingState.SelectedFeedbackStatus,
                 pagingState.PageSize,
@@ -192,14 +193,14 @@ namespace SFA.DAS.EmployerFeedback.Web.Controllers
                 AccountId = _encodingService.Decode(postedModel.EncodedAccountId, EncodingType.AccountId),
                 Ukprn = postedModel.ProviderId,
                 UserRef = new Guid(idClaim?.Value),
-                Submitted = false, //employerEmailDetail.CodeBurntDate != null,
+                Submitted = false,
                 ProviderName = postedModel.ProviderName,
                 Attributes = providerAttributesModel
             };
 
             await _sessionService.Set(idClaim.Value, newSurveyModel);
 
-            return RedirectToAction("Index", "Home");
+            return RedirectToAction("Index", "Home", new { postedModel.EncodedAccountId });
         }
     }
 }

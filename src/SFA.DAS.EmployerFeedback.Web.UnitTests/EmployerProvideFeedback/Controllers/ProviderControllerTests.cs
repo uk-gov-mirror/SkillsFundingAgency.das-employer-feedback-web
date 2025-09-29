@@ -50,6 +50,7 @@ namespace UnitTests.EmployerProvideFeedback.Controllers
             _trainingProviderServiceMock
                 .Setup(m => m.GetTrainingProviderSearchViewModel(
                     It.IsAny<string>(),
+                    It.IsAny<Guid>(),
                     It.IsAny<string>(),
                     It.IsAny<string>(),
                     It.IsAny<int>(),
