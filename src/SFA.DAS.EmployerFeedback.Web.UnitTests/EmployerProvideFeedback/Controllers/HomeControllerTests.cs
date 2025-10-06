@@ -37,7 +37,6 @@ namespace UnitTests.EmployerProvideFeedback.Controllers
         private List<SFA.DAS.EmployerFeedback.Web.Models.Shared.ProviderAttributeModel> _providerAttributes;
         private IFixture _fixture;
         
-        private EmployerSurveyInvite _employerEmailDetail;
         private SurveyModel _surveyModel;
 
         
@@ -46,12 +45,11 @@ namespace UnitTests.EmployerProvideFeedback.Controllers
         public void SetUp()
         {
             _fixture = new Fixture();
-            _employerEmailDetail = _fixture.Create<EmployerSurveyInvite>();
             
             _surveyModel = new SurveyModel
             {
                 UserRef = Guid.NewGuid(),
-                ProviderName = _employerEmailDetail.ProviderName,
+                ProviderName = "Test Provider"
             };
             
             _providerAttributes = _fixture.Build<SFA.DAS.EmployerFeedback.Web.Models.Shared.ProviderAttributeModel>()
@@ -94,7 +92,7 @@ namespace UnitTests.EmployerProvideFeedback.Controllers
 
             // Assert
             _controller.ViewData.Should().ContainKey("ProviderName");
-            _controller.ViewData["ProviderName"].Should().Be(_employerEmailDetail.ProviderName);
+            _controller.ViewData["ProviderName"].Should().Be("Test Provider");
         }
 
         [TearDown]
