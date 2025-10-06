@@ -1,21 +1,22 @@
+using AutoFixture;
+using FluentAssertions;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using Moq;
+using Newtonsoft.Json;
+using NUnit.Framework;
+using SFA.DAS.EmployerFeedback.Infrastructure.Configuration;
+using SFA.DAS.EmployerFeedback.Infrastructure.Configuration.Routing;
+using SFA.DAS.EmployerFeedback.Infrastructure.Services.SessionStorage;
+using SFA.DAS.EmployerFeedback.Web.Controllers;
+using SFA.DAS.EmployerFeedback.Web.Models.Shared;
+using SFA.DAS.EmployerFeedback.Web.Types.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using AutoFixture;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
-using Moq;
-using NUnit.Framework;
-using FluentAssertions;
-using SFA.DAS.EmployerFeedback.Web.Controllers;
-using SFA.DAS.EmployerFeedback.Infrastructure.Services.SessionStorage;
-using SFA.DAS.EmployerFeedback.Web.Models.Shared;
-using SFA.DAS.EmployerFeedback.Infrastructure.Configuration;
-using SFA.DAS.EmployerFeedback.Infrastructure.Configuration.Routing;
-using SFA.DAS.EmployerFeedback.Web.Types.Enums;
 
 namespace UnitTests.EmployerProvideFeedback.Controllers
 {
@@ -85,6 +86,8 @@ namespace UnitTests.EmployerProvideFeedback.Controllers
 
             // Act
             var result = await _controller.QuestionOne(_accountId) as ViewResult;
+            var json = JsonConvert.SerializeObject(result.Model as SurveyModel, Formatting.Indented);
+
 
             // Assert
             result.Model.Should().BeOfType<SurveyModel>();

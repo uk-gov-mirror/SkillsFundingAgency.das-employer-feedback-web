@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using SFA.DAS.EmployerFeedback.Domain.Types;
 using SFA.DAS.EmployerFeedback.Web.Types.Enums;
 using SFA.DAS.EmployerFeedback.Web.Validators.Attributes;
 
@@ -30,5 +31,7 @@ namespace SFA.DAS.EmployerFeedback.Web.Models.Shared
         public string ProviderName { get; set; }
 
         public string FatUrl { get; internal set; }
+
+        public FeedbackSource FeedbackSource { get; set; }
     }
 }

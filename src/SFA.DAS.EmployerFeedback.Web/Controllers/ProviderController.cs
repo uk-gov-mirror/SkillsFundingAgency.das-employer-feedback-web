@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using SFA.DAS.Employer.Shared.UI;
+using SFA.DAS.EmployerFeedback.Domain.Types;
 using SFA.DAS.EmployerFeedback.Infrastructure.Api.OuterApi;
 using SFA.DAS.EmployerFeedback.Infrastructure.Configuration;
 using SFA.DAS.EmployerFeedback.Infrastructure.Services.SessionStorage;
@@ -17,6 +19,8 @@ using System.Threading.Tasks;
 
 namespace SFA.DAS.EmployerFeedback.Web.Controllers
 {
+
+
     [Authorize(Policy = nameof(PolicyNames.NoneRole))]
     public class ProviderController : Controller
     {
@@ -26,7 +30,6 @@ namespace SFA.DAS.EmployerFeedback.Web.Controllers
         private readonly IEncodingService _encodingService;
         private readonly IEmployerFeedbackOuterApi _employerFeedbackOuterApi;
         private readonly UrlBuilder _urlBuilder;
-
         public ProviderController(ISessionStorageService sessionService,
             ITrainingProviderService trainingProviderService,
             IEncodingService encodingService, 
@@ -45,7 +48,7 @@ namespace SFA.DAS.EmployerFeedback.Web.Controllers
 
         [HttpGet]
         [Route("/{encodedAccountId}/providers")]
-        public async Task<IActionResult> Index(GetProvidersForFeedbackRequest request, int pageIndex = PagingState.DefaultPageIndex)
+        public async Task<IActionResult> Index(GetProvidersForFeedbackRequest request, int pageIndex = PagingState.DefaultPageIndex, FeedbackSource source = FeedbackSource.AdHoc)
         {
             var idClaim = HttpContext.User.FindFirst(EmployerClaims.UserId);
             var pagingState = await _sessionService.Get<PagingState>($"{idClaim.Value}_PagingState");
@@ -70,6 +73,8 @@ namespace SFA.DAS.EmployerFeedback.Web.Controllers
             ViewBag.EmployerAccountsHomeUrl = _urlBuilder.AccountsLink("AccountsHome", request.EncodedAccountId);
 
             await _sessionService.Set($"{idClaim.Value}_ProviderCount", model.TrainingProviders.TotalRecordCount);
+            await _sessionService.Set($"{idClaim.Value}_FeedbackSource", source);
+
 
             return View(model);
         }
@@ -151,7 +156,7 @@ namespace SFA.DAS.EmployerFeedback.Web.Controllers
 
             var accountId = _encodingService.Decode(encodedAccountId, EncodingType.AccountId); // validate the account id
 
-            var model = await _trainingProviderService.GetTrainingProviderConfirmationViewModel(accountId, new Guid(idClaim?.Value), providerId);
+            var model = await _trainingProviderService.GetTrainingProviderConfirmationViewModel(accountId, Guid.Parse(idClaim?.Value), providerId);
 
             return View(model);
         }
@@ -188,6 +193,8 @@ namespace SFA.DAS.EmployerFeedback.Web.Controllers
                 return RedirectToAction("Error", "Error");
             }
 
+            var feedbackSource = await _sessionService.Get<FeedbackSource>($"{idClaim.Value}_FeedbackSource");
+
             var newSurveyModel = new SurveyModel
             {
                 AccountId = _encodingService.Decode(postedModel.EncodedAccountId, EncodingType.AccountId),
@@ -195,7 +202,8 @@ namespace SFA.DAS.EmployerFeedback.Web.Controllers
                 UserRef = new Guid(idClaim?.Value),
                 Submitted = false,
                 ProviderName = postedModel.ProviderName,
-                Attributes = providerAttributesModel
+                Attributes = providerAttributesModel,
+                FeedbackSource = feedbackSource
             };
 
             await _sessionService.Set(idClaim.Value, newSurveyModel);

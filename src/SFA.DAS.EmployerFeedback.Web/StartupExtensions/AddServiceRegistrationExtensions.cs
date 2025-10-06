@@ -12,6 +12,7 @@ using SFA.DAS.EmployerFeedback.Infrastructure.Services.UserAccounts;
 using SFA.DAS.EmployerFeedback.Infrastructure.Services.UserService;
 using SFA.DAS.EmployerFeedback.Web.Attributes;
 using SFA.DAS.EmployerFeedback.Web.Authorization;
+using SFA.DAS.EmployerFeedback.Web.Orchestrators;
 using SFA.DAS.EmployerFeedback.Web.Services.EmployerRoleAuthorization;
 using SFA.DAS.EmployerProvideFeedback.Infrastructure;
 using SFA.DAS.EmployerProvideFeedback.Services;
@@ -50,6 +51,7 @@ namespace SFA.DAS.EmployerFeedback.Web.StartupExtensions
             services.AddTransient<EnsureFeedbackNotSubmittedRecentlyAttribute>();
             services.AddTransient<EnsureSessionExists>();
             services.AddTransient<ITrainingProviderService, TrainingProviderService>();
+            services.AddTransient<ReviewAnswersOrchestrator>();
 
             // Encoding Service
             services.AddSingleton<IEncodingService, EncodingService>();

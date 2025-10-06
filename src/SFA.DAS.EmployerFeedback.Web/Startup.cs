@@ -58,7 +58,6 @@ namespace SFA.DAS.EmployerFeedback.Web
             services
                 .AddMvc(options =>
                 {
-                    options.AddValidation();
                     options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute());
                     options.Filters.Add(new HideAccountNavigationAttribute(false));
                     options.Filters.Add(new EnableGoogleAnalyticsAttribute(_configuration.GetSection<GoogleAnalytics>()));
@@ -67,7 +66,7 @@ namespace SFA.DAS.EmployerFeedback.Web
                     options.ModelBinderProviders.Insert(0, new AutoDecodeModelBinderProvider());
                 })
                 .AddControllersAsServices()
-                .SetDefaultNavigationSection(NavigationSection.AccountsFinance);
+                .SetDefaultNavigationSection(NavigationSection.AccountsHome);
 
             services
                 .AddValidatorsFromAssemblyContaining<Startup>();

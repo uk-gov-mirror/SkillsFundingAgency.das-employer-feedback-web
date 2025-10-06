@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace SFA.DAS.EmployerFeedback.Web.Controllers
 {
-    [Authorize(Policy = nameof(PolicyNames.OwnerRole))]
+    [Authorize(Policy = nameof(PolicyNames.NoneRole))]
     [Route(RoutePrefixPaths.FeedbackRoutePath)]
     [ServiceFilter(typeof(EnsureSessionExists))]
     public class ConfirmationController : Controller

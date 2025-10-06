@@ -15,8 +15,8 @@ namespace SFA.DAS.EmployerFeedback.Infrastructure.Api.OuterApi
         [Get("/attributes")]
         Task<IEnumerable<FeedbackQuestionAttribute>> GetAllAttributes();
 
-        [Post("/employerfeebackresult")]
-        Task<IEnumerable<EmployerFeedbackAndResult>> SubmitEmployerFeedback(EmployerFeedbackResult request);
+        [Post("/employerfeedbackresult")]
+        Task<IEnumerable<EmployerFeedbackAndResult>> SubmitEmployerFeedback([Body] EmployerFeedbackResult request);
 
         [Get("/employerfeedback")]
         Task<GetProviderFeedback> GetTrainingProviderSearch([Query(Name = "accountid")] long id, [Query("userref")] Guid userRef);

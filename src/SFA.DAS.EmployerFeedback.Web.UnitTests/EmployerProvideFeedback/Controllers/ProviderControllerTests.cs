@@ -80,7 +80,7 @@ namespace UnitTests.EmployerProvideFeedback.Controllers
             {
                 User = new ClaimsPrincipal(new ClaimsIdentity(new[]
                 {
-                    new Claim(EmployerClaims.UserId, "TestUserIdValue"),
+                    new Claim(EmployerClaims.UserId, new Guid().ToString()),
                 }))
             };
 

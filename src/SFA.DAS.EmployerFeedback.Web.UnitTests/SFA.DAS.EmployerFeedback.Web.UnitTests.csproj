@@ -47,6 +47,7 @@
 
   <ItemGroup>
     <Folder Include="ApplicationServices\" />
+    <Folder Include="Handlers\" />
     <Folder Include="Orchestrators\" />
     <Folder Include="OuterApi\" />
   </ItemGroup>

@@ -1,9 +1,10 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
-using SFA.DAS.CommitmentsV2.Api.Types.Responses;
+using SFA.DAS.EmployerFeedback.Domain.Entities.Models;
 using SFA.DAS.EmployerFeedback.Infrastructure.Api.OuterApi;
 using SFA.DAS.EmployerFeedback.Infrastructure.Configuration;
 using SFA.DAS.EmployerProvideFeedback.Services;
@@ -24,19 +25,19 @@ namespace UnitTests.Services
         {
             public static IEnumerable<object[]> MultiplePagedProvidersTestData()
             {
-                IEnumerable<GetApprenticeshipsResponse.ApprenticeshipDetailsResponse> providers = new[]
+                IEnumerable<ProviderFeedback> providers = new[]
                 {
-                    new GetApprenticeshipsResponse.ApprenticeshipDetailsResponse { ProviderId = 1, ProviderName = "A" },
-                    new GetApprenticeshipsResponse.ApprenticeshipDetailsResponse { ProviderId = 2, ProviderName = "B" },
-                    new GetApprenticeshipsResponse.ApprenticeshipDetailsResponse { ProviderId = 3, ProviderName = "C" },
-                    new GetApprenticeshipsResponse.ApprenticeshipDetailsResponse { ProviderId = 4, ProviderName = "D" },
-                    new GetApprenticeshipsResponse.ApprenticeshipDetailsResponse { ProviderId = 5, ProviderName = "E" },
-                    new GetApprenticeshipsResponse.ApprenticeshipDetailsResponse { ProviderId = 6, ProviderName = "F" },
-                    new GetApprenticeshipsResponse.ApprenticeshipDetailsResponse { ProviderId = 7, ProviderName = "G" },
-                    new GetApprenticeshipsResponse.ApprenticeshipDetailsResponse { ProviderId = 8, ProviderName = "H" },
-                    new GetApprenticeshipsResponse.ApprenticeshipDetailsResponse { ProviderId = 9, ProviderName = "I" },
-                    new GetApprenticeshipsResponse.ApprenticeshipDetailsResponse { ProviderId = 10, ProviderName = "J" },
-                    new GetApprenticeshipsResponse.ApprenticeshipDetailsResponse { ProviderId = 11, ProviderName = "K" },
+                    new ProviderFeedback { Ukprn = 1, ProviderName = "A" },
+                    new ProviderFeedback { Ukprn = 2, ProviderName = "B" },
+                    new ProviderFeedback { Ukprn = 3, ProviderName = "C" },
+                    new ProviderFeedback { Ukprn = 4, ProviderName = "D" },
+                    new ProviderFeedback { Ukprn = 5, ProviderName = "E" },
+                    new ProviderFeedback { Ukprn = 6, ProviderName = "F" },
+                    new ProviderFeedback { Ukprn = 7, ProviderName = "G" },
+                    new ProviderFeedback { Ukprn = 8, ProviderName = "H" },
+                    new ProviderFeedback { Ukprn = 9, ProviderName = "I" },
+                    new ProviderFeedback { Ukprn = 10, ProviderName = "J" },
+                    new ProviderFeedback { Ukprn = 11, ProviderName = "K" },
                 };
 
                 yield return new object[] { providers, 10, 1, "All", "All", "ProviderName", "Asc", 11, 2 };
@@ -44,7 +45,7 @@ namespace UnitTests.Services
 
             [TestCaseSource(nameof(MultiplePagedProvidersTestData))]
             public async Task When_Providers_Exist_Then_Return_PagedResult(
-                IEnumerable<GetApprenticeshipsResponse.ApprenticeshipDetailsResponse> providers,
+                IEnumerable<ProviderFeedback> providers,
                 int pageSize, int pageIndex, string selectedProviderName, string selectedFeedbackStatus,
                 string sortColumn, string sortDirection, int expectedTotalRecordCount, int expectedTotalPages)
             {
@@ -54,6 +55,8 @@ namespace UnitTests.Services
                 var userRef = new System.Guid();
                 _encodingServiceMock.Setup(m => m.Decode(testAccountIdEncoded, EncodingType.AccountId)).Returns(testAccountId);
                 var _employerFeedbackOuterApiMock = new Mock<IEmployerFeedbackOuterApi>();
+                _employerFeedbackOuterApiMock
+                    .Setup(m => m.GetTrainingProviderSearch(testAccountId, userRef)).ReturnsAsync(new GetProviderFeedback() { AccountId = testAccountId, Providers = providers.ToList() });
 
                 ITrainingProviderService sut = new TrainingProviderService(
                     _encodingServiceMock.Object,
@@ -80,6 +83,11 @@ namespace UnitTests.Services
                 var testUserRef = new System.Guid();
                 var testAccountIdEncoded = "CONFIRMATIONMODELTEST1";
                 _encodingServiceMock.Setup(m => m.Decode(testAccountIdEncoded, EncodingType.AccountId)).Returns(testAccountId);
+                _employerFeedbackOuterApiMock
+                    .Setup(m => m.GetTrainingProviderSearch(testAccountId, testUserRef)).ReturnsAsync(new GetProviderFeedback() { AccountId = testAccountId, Providers = new List<ProviderFeedback>() { 
+                        new ProviderFeedback { Ukprn = 1, ProviderName = "Test Provider" }
+                    } });
+
 
                 ITrainingProviderService sut = new TrainingProviderService(
                     _encodingServiceMock.Object,

@@ -19,7 +19,7 @@
                     </ul>
                 </div>
             }
-            <form asp-route="@RouteNames.QuestionOne_Post">
+            <form asp-route="@RouteNames.QuestionOne_Post" method="post">
                 <div class="govuk-form-group">
                     <h1 class="govuk-heading-l">@(Model.ProviderName.EndsWith("'s") ? @Model.ProviderName : $"{@Model.ProviderName}'s") strengths</h1>
                 
@@ -35,7 +35,7 @@
                         @for (var i = 0; i < Model.Attributes.Count; i++)
                         {
                             <div class="govuk-checkboxes__item" style="display: @(Model.Attributes[i].Bad ? "none" : "block");">
-                                <input asp-for="@Model.Attributes[i].Good" id="col1-@(i)" type="checkbox" class="govuk-checkboxes__input">
+                                <input asp-for="@Model.Attributes[i].Good" id="col1-@(i)" type="checkbox" class="govuk-checkboxes__input" />
                                 <label for="col1-@i" class="govuk-label govuk-checkboxes__label">@Model.Attributes[i].Name</label>
                                 <input asp-for="@Model.Attributes[i].Name" type="hidden" />
                             </div>

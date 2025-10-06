@@ -25,8 +25,9 @@ namespace SFA.DAS.EmployerFeedback.Infrastructure
         {
             var c = context.Controller as Controller;
             var userId = c.User.FindFirstValue(EmployerClaims.UserId);
+            var sessionExists = _sessionService.ExistsAsync(userId).Result;
 
-             if (!_sessionService.ExistsAsync(userId).Result)
+             if (!sessionExists)
             {
                 _logger.LogWarning($"Session for user id {userId} does not exist");
                 var controller = context.Controller as Controller;
