@@ -23,4 +23,8 @@
     <ProjectReference Include="..\SFA.DAS.EmployerFeedback.Domain\SFA.DAS.EmployerFeedback.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Api\Requests\" />
+  </ItemGroup>
+
 </Project>

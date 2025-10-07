@@ -18,7 +18,6 @@ using System.Threading.Tasks;
 namespace SFA.DAS.EmployerFeedback.Web.Controllers
 {
     [Authorize(Policy = nameof(PolicyNames.NoneRole))]
-    //[ServiceFilter(typeof(EnsureFeedbackNotSubmittedRecentlyAttribute))]
     [ServiceFilter(typeof(EnsureSessionExists))]
     [Route(RoutePrefixPaths.FeedbackRoutePath)]
     public class ReviewAnswersController : Controller

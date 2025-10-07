@@ -1,9 +1,11 @@
-using System.Collections.Generic;
 using Newtonsoft.Json;
 using SFA.DAS.GovUK.Auth.Employer;
+using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace SFA.DAS.EmployerFeedback.Infrastructure.Api.Responses
 {
+    [ExcludeFromCodeCoverage]
     public class UserAccountsDetails
     {
         [JsonProperty("isSuspended")]
@@ -18,6 +20,7 @@ namespace SFA.DAS.EmployerFeedback.Infrastructure.Api.Responses
         public List<EmployerIdentifier> UserAccounts { get; set; }
     }
 
+    [ExcludeFromCodeCoverage]
     public class EmployerIdentifier
     {
         [JsonProperty("encodedAccountId")]

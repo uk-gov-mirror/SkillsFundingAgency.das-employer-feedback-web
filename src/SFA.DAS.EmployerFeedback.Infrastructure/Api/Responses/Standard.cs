@@ -1,5 +1,9 @@
-﻿namespace SFA.DAS.EmployerFeedback.Infrastructure.Api.Responses
+﻿using System.Diagnostics.CodeAnalysis;
+
+namespace SFA.DAS.EmployerFeedback.Infrastructure.Api.Responses
 {
+
+    [ExcludeFromCodeCoverage]
     public class Standard
     {
         public string StandardReference { get; set; }

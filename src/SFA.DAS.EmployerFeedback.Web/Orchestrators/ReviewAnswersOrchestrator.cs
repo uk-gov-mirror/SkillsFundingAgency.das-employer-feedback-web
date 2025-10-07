@@ -15,9 +15,9 @@ namespace SFA.DAS.EmployerFeedback.Web.Orchestrators
         private readonly IEmployerFeedbackOuterApi _employerFeedbackOuterApi;
         private readonly ILogger<ReviewAnswersOrchestrator> _logger;
 
-        public ReviewAnswersOrchestrator(IEmployerFeedbackOuterApi employerEmailDetailRepository, ILogger<ReviewAnswersOrchestrator> logger)
+        public ReviewAnswersOrchestrator(IEmployerFeedbackOuterApi employerFeedbackOuterApi, ILogger<ReviewAnswersOrchestrator> logger)
         {
-            _employerFeedbackOuterApi = employerEmailDetailRepository;
+            _employerFeedbackOuterApi = employerFeedbackOuterApi;
             _logger = logger;
         }
 
