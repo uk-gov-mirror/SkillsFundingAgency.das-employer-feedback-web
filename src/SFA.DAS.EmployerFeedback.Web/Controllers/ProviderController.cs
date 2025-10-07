@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Logging;
 using SFA.DAS.Employer.Shared.UI;
 using SFA.DAS.EmployerFeedback.Domain.Types;
@@ -8,6 +9,7 @@ using SFA.DAS.EmployerFeedback.Infrastructure.Api.OuterApi;
 using SFA.DAS.EmployerFeedback.Infrastructure.Configuration;
 using SFA.DAS.EmployerFeedback.Infrastructure.Services.SessionStorage;
 using SFA.DAS.EmployerFeedback.Web.Authorization;
+using SFA.DAS.EmployerFeedback.Web.Configuration.Routing;
 using SFA.DAS.EmployerFeedback.Web.Models.Shared;
 using SFA.DAS.EmployerFeedback.Web.Paging;
 using SFA.DAS.EmployerFeedback.Web.ViewModels;
@@ -173,7 +175,9 @@ namespace SFA.DAS.EmployerFeedback.Web.Controllers
 
             if (!postedModel.Confirmed.Value)
             {
-                return RedirectToAction("Index");
+                var accountId = HttpContext.GetRouteData().Values[RouteValueKeys.EncodedAccountId] as string;
+                long ukprn = (long)HttpContext.GetRouteData().Values[RouteValueKeys.ProviderId];
+                return RedirectToAction("Index", new { encodedAccountId = accountId, providerId = ukprn });
             }
 
 
