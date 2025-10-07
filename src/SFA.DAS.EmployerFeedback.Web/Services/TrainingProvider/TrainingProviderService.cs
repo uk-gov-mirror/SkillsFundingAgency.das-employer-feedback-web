@@ -125,7 +125,7 @@ namespace SFA.DAS.EmployerProvideFeedback.Services
                 return null;
             }
 
-            var provider  = response.Providers.FirstOrDefault(p => p.Ukprn == providerId);
+            var provider  = response.Providers?.FirstOrDefault(p => p.Ukprn == providerId);
 
             var model = new ProviderSearchConfirmationViewModel();
             model.ProviderId = provider.Ukprn;
