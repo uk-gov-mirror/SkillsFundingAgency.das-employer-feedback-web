@@ -40,7 +40,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\SFA.DAS.EmployerFeedback.Application\SFA.DAS.EmployerFeedback.Application.csproj" />
+    <ProjectReference Include="..\SFA.DAS.EmployerFeedback.Domain\SFA.DAS.EmployerFeedback.Domain.csproj" />
+    <ProjectReference Include="..\SFA.DAS.EmployerFeedback.Infrastructure\SFA.DAS.EmployerFeedback.Infrastructure.csproj" />
     <ProjectReference Include="..\SFA.DAS.EmployerFeedback.Web.Types\SFA.DAS.EmployerFeedback.Web.Types.csproj" />
   </ItemGroup>
 

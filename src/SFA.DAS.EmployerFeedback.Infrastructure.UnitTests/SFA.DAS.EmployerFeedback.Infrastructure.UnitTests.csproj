@@ -31,10 +31,7 @@
   <ItemGroup>
     <ProjectReference Include="..\SFA.DAS.EmployerFeedback.Infrastructure\SFA.DAS.EmployerFeedback.Infrastructure.csproj" />
     <ProjectReference Include="..\SFA.DAS.EmployerFeedback.TestHelper\SFA.DAS.EmployerFeedback.TestHelper.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Services\SessionStorage\" />
+    <ProjectReference Include="..\SFA.DAS.EmployerFeedback.Web\SFA.DAS.EmployerFeedback.Web.csproj" />
   </ItemGroup>
 
 </Project>

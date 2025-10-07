@@ -18,7 +18,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
-namespace UnitTests.EmployerProvideFeedback.Controllers
+namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Controllers
 {
     [TestFixture]
     public class QuestionsControllerTests

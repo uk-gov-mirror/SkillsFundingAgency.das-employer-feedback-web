@@ -14,7 +14,7 @@ using SFA.DAS.EmployerFeedback.Infrastructure.Services.SessionStorage;
 using SFA.DAS.EmployerFeedback.Web.Controllers;
 using SFA.DAS.EmployerFeedback.Web.Models.Shared;
 
-namespace UnitTests.EmployerProvideFeedback.Controllers
+namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Controllers
 {
     public class ConfirmationControllerTests
     {

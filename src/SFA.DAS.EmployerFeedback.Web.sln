@@ -14,8 +14,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SFA.DAS.EmployerFeedback.We
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SFA.DAS.EmployerFeedback.Infrastructure", "SFA.DAS.EmployerFeedback.Infrastructure\SFA.DAS.EmployerFeedback.Infrastructure.csproj", "{E1486581-824F-4663-8F37-F9FFF5ECD25A}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SFA.DAS.EmployerFeedback.Application", "SFA.DAS.EmployerFeedback.Application\SFA.DAS.EmployerFeedback.Application.csproj", "{6AB3CFFE-6003-407A-A5AA-642B316D96FB}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{10964E4C-0272-40E1-B51D-7992745D9A45}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SFA.DAS.EmployerFeedback.Web.UnitTests", "SFA.DAS.EmployerFeedback.Web.UnitTests\SFA.DAS.EmployerFeedback.Web.UnitTests.csproj", "{148191FB-3414-4EA1-8D1A-20B7E30FB413}"
@@ -23,8 +21,6 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SFA.DAS.EmployerFeedback.Domain", "SFA.DAS.EmployerFeedback.Domain\SFA.DAS.EmployerFeedback.Domain.csproj", "{9B5188A4-EC0E-4208-83F8-8B36EFE727AE}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SFA.DAS.EmployerFeedback.Infrastructure.UnitTests", "SFA.DAS.EmployerFeedback.Infrastructure.UnitTests\SFA.DAS.EmployerFeedback.Infrastructure.UnitTests.csproj", "{BDCB99DE-2B83-4D28-991A-AA54AC10FEC3}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SFA.DAS.EmployerFeedback.Application.UnitTests", "SFA.DAS.EmployerFeedback.Application.UnitTests\SFA.DAS.EmployerFeedback.Application.UnitTests.csproj", "{E2923528-6973-49BB-85E3-8E5E4E6B0BB5}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SFA.DAS.EmployerFeedback.TestHelper", "SFA.DAS.EmployerFeedback.TestHelper\SFA.DAS.EmployerFeedback.TestHelper.csproj", "{6A94C89F-9AAD-4A2E-8C9C-5CBAD4522072}"
 EndProject
@@ -44,10 +40,6 @@ Global
 		{E1486581-824F-4663-8F37-F9FFF5ECD25A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E1486581-824F-4663-8F37-F9FFF5ECD25A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E1486581-824F-4663-8F37-F9FFF5ECD25A}.Release|Any CPU.Build.0 = Release|Any CPU
-		{6AB3CFFE-6003-407A-A5AA-642B316D96FB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6AB3CFFE-6003-407A-A5AA-642B316D96FB}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6AB3CFFE-6003-407A-A5AA-642B316D96FB}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6AB3CFFE-6003-407A-A5AA-642B316D96FB}.Release|Any CPU.Build.0 = Release|Any CPU
 		{148191FB-3414-4EA1-8D1A-20B7E30FB413}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{148191FB-3414-4EA1-8D1A-20B7E30FB413}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{148191FB-3414-4EA1-8D1A-20B7E30FB413}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -60,10 +52,6 @@ Global
 		{BDCB99DE-2B83-4D28-991A-AA54AC10FEC3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BDCB99DE-2B83-4D28-991A-AA54AC10FEC3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BDCB99DE-2B83-4D28-991A-AA54AC10FEC3}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E2923528-6973-49BB-85E3-8E5E4E6B0BB5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E2923528-6973-49BB-85E3-8E5E4E6B0BB5}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E2923528-6973-49BB-85E3-8E5E4E6B0BB5}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E2923528-6973-49BB-85E3-8E5E4E6B0BB5}.Release|Any CPU.Build.0 = Release|Any CPU
 		{6A94C89F-9AAD-4A2E-8C9C-5CBAD4522072}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{6A94C89F-9AAD-4A2E-8C9C-5CBAD4522072}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6A94C89F-9AAD-4A2E-8C9C-5CBAD4522072}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -79,7 +67,6 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{148191FB-3414-4EA1-8D1A-20B7E30FB413} = {49D40A60-5C9B-49C1-947E-18D07E5A5F73}
 		{BDCB99DE-2B83-4D28-991A-AA54AC10FEC3} = {49D40A60-5C9B-49C1-947E-18D07E5A5F73}
-		{E2923528-6973-49BB-85E3-8E5E4E6B0BB5} = {49D40A60-5C9B-49C1-947E-18D07E5A5F73}
 		{6A94C89F-9AAD-4A2E-8C9C-5CBAD4522072} = {49D40A60-5C9B-49C1-947E-18D07E5A5F73}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution

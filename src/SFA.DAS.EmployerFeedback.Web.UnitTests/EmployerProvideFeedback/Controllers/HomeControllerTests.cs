@@ -21,7 +21,7 @@ using SFA.DAS.EmployerFeedback.Web.Models.Shared;
 using SFA.DAS.Encoding;
 using SFA.DAS.GovUK.Auth.Services;
 
-namespace UnitTests.EmployerProvideFeedback.Controllers
+namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Controllers
 {
     [TestFixture]
     public class HomeControllerTests

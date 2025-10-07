@@ -19,7 +19,7 @@ using SFA.DAS.EmployerFeedback.Infrastructure.Services.SessionStorage;
 using SFA.DAS.EmployerFeedback.Web.Controllers;
 using SFA.DAS.Encoding;
 
-namespace UnitTests.EmployerProvideFeedback.Infrastructure
+namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Infrastructure
 {
     public class EnsureSessionExistsAttributeTests
     {

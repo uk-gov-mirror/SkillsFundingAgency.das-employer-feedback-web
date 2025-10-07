@@ -19,7 +19,7 @@ using SFA.DAS.EmployerProvideFeedback.Paging;
 using SFA.DAS.EmployerProvideFeedback.Services;
 using SFA.DAS.Encoding;
 
-namespace UnitTests.EmployerProvideFeedback.Controllers
+namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Controllers
 {
     public class ProviderControllerTests
     {

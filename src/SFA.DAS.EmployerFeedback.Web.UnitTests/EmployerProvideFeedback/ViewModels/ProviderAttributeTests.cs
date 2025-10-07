@@ -2,7 +2,7 @@
 using NUnit.Framework;
 using SFA.DAS.EmployerFeedback.Web.Models.Shared;
 
-namespace UnitTests.EmployerProvideFeedback.ViewModels
+namespace SFA.DAS.EmployerFeedback.Web.UnitTests.ViewModels
 {
     public class ProviderAttributeTests
     {
