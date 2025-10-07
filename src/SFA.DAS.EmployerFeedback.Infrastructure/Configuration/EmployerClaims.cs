@@ -1,5 +1,8 @@
-﻿namespace SFA.DAS.EmployerFeedback.Infrastructure.Configuration;
+﻿using System.Diagnostics.CodeAnalysis;
 
+namespace SFA.DAS.EmployerFeedback.Infrastructure.Configuration;
+
+[ExcludeFromCodeCoverage]
 public static class EmployerClaims
 {
     public static string UserId => "http://das/employer/identity/claims/id";
