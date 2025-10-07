@@ -89,7 +89,7 @@ namespace SFA.DAS.EmployerFeedback.Web.Controllers
         [Route("signout", Name = RouteNames.Signout)]
         public new async Task<IActionResult> SignOut()
         {
-            var idToken = await HttpContext.GetTokenAsync("id_token");
+            var idToken = await _contextAccessor.HttpContext.GetTokenAsync("id_token");
 
             var authenticationProperties = new AuthenticationProperties();
             authenticationProperties.Parameters.Clear();
@@ -111,7 +111,7 @@ namespace SFA.DAS.EmployerFeedback.Web.Controllers
         [Route("signoutcleanup")]
         public void SignOutCleanup()
         {
-            Response.Cookies.Delete("SFA.DAS.ProvideFeedbackEmployer.Web.Auth");
+            _contextAccessor.HttpContext.Response.Cookies.Delete("SFA.DAS.EmployerFeedback.Web.Auth");
         }
 
         [AllowAnonymous]
