@@ -2,7 +2,9 @@
 
 namespace SFA.DAS.EmployerFeedback.Infrastructure.Configuration;
 
-[ExcludeFromCodeCoverage]
+[System.Diagnostics.CodeAnalysis.SuppressMessage(
+    "Encryption of Sensitive Data",
+    "csharpsquid:S5332")]
 public static class EmployerClaims
 {
     public static string UserId => "http://das/employer/identity/claims/id";
