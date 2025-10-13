@@ -5,7 +5,6 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace SFA.DAS.EmployerFeedback.Domain.Entities.Models
 {
-    [ExcludeFromCodeCoverage]
     public class EmployerFeedbackResult
     {
         public Guid UserRef { get; set; }

@@ -2,7 +2,6 @@
 
 namespace SFA.DAS.EmployerFeedback.Domain.Entities.Models
 {
-    [ExcludeFromCodeCoverage]
     public class ProviderAttribute
     {
         public long AttributeId { get; set; }

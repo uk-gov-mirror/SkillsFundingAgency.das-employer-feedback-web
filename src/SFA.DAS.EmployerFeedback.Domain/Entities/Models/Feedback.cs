@@ -3,7 +3,6 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace SFA.DAS.EmployerFeedback.Domain.Entities.Models
 {
-    [ExcludeFromCodeCoverage]
     public class Feedback
     {
         public long FeedbackSource { get; set; }

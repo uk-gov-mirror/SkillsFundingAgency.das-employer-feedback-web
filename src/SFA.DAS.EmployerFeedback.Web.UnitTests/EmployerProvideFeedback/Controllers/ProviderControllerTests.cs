@@ -30,7 +30,6 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Controllers
         private ProviderController _controller;
         private Mock<ISessionStorageService> _sessionServiceMock;
         private Mock<ITrainingProviderService> _trainingProviderServiceMock;
-        private Mock<IEncodingService> _encodingServiceMock;
         private Mock<ILogger<ProviderController>> _loggerMock;
         private Mock<IEmployerFeedbackOuterApi> _employerFeedbackOuterApiMock;
         private Mock<IUserService> _userServiceMock;

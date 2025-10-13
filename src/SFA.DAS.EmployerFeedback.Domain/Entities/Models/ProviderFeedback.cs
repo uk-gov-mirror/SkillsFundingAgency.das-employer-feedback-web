@@ -2,7 +2,6 @@
 
 namespace SFA.DAS.EmployerFeedback.Domain.Entities.Models
 {
-    [ExcludeFromCodeCoverage]
     public class ProviderFeedback
     {
         public long Ukprn { get; set; }
