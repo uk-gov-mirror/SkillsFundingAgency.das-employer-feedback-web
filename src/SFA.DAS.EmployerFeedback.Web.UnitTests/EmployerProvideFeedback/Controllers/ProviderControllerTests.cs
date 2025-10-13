@@ -17,7 +17,6 @@ using SFA.DAS.EmployerFeedback.Web.Paging;
 using SFA.DAS.EmployerFeedback.Web.ViewModels;
 using SFA.DAS.EmployerProvideFeedback.Paging;
 using SFA.DAS.EmployerProvideFeedback.Services;
-using SFA.DAS.Encoding;
 using System;
 using System.Collections.Generic;
 using System.Security.Claims;
@@ -45,6 +44,9 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Controllers
                 ProviderName = "TestProviderName",
             };
 
+            _userServiceMock = new Mock<IUserService>();
+            _userServiceMock.Setup(m => m.GetUserId()).Returns(new Guid().ToString());
+
             _sessionServiceMock = new Mock<ISessionStorageService>();
             _sessionServiceMock
                 .Setup(mock => mock.Get<SurveyModel>(It.IsAny<string>()))
@@ -70,7 +72,6 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Controllers
             _loggerMock = new Mock<ILogger<ProviderController>>();
             _urlBuilder = new UrlBuilder("LOCAL");
             _employerFeedbackOuterApiMock = new Mock<IEmployerFeedbackOuterApi>();
-            _userServiceMock = new Mock<IUserService>();
 
             _controller = new ProviderController(
                 _sessionServiceMock.Object,
@@ -244,7 +245,7 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Controllers
             }
 
             [Test]
-            public async Task ProviderConfirmed_RedirecToHomeControllerIndex()
+            public async Task ProviderConfirmed_RedirecToLandingPage()
             {
                 // Arrange
                 string encodedAccountId = "ENCODED123";
@@ -277,8 +278,7 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Controllers
                 // Assert
                 result.Should().BeOfType<RedirectToActionResult>();
                 var redirectResult = (RedirectToActionResult)result;
-                redirectResult.ActionName.Should().Be("Index");
-                redirectResult.ControllerName.Should().Be("Home");
+                redirectResult.ActionName.Should().Be("StartFeedback");
             }
 
             [Test]
@@ -375,15 +375,7 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Controllers
                     Confirmed = true
                 };
 
-                var context = new DefaultHttpContext
-                {
-                    User = new ClaimsPrincipal(new ClaimsIdentity(Array.Empty<Claim>()))
-                };
-
-                _controller.ControllerContext = new ControllerContext
-                {
-                    HttpContext = context
-                };
+                _userServiceMock.Setup(m => m.GetUserId()).Returns((string)null);
 
                 // Act
                 var result = await _controller.ProviderConfirmed(postedModel);
@@ -396,16 +388,17 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Controllers
             }
 
             [Test]
-            public async Task SessionSurvey_DoesNotExist_ShouldPopulateProviderName_OnViewData()
+            public async Task SessionSurvey_DoesNotExist_ShouldRedirectToNotFoundError()
             {
+                //  Arrange
+                _sessionServiceMock.Setup(mock => mock.Get<SurveyModel>(It.IsAny<string>())).ReturnsAsync((SurveyModel)null);
+
                 // Act
-                await _controller.StartFeedback();
+                var result = await _controller.StartFeedback();
 
                 // Assert
-                _controller.ViewData.Should().ContainKey("ProviderName");
-                _controller.ViewData["ProviderName"].Should().Be("Test Provider");
+                result.Should().BeOfType<NotFoundResult>();
             }
-
         }
 
         [TearDown]
