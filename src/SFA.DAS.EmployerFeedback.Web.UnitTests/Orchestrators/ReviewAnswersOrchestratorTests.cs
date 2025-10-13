@@ -49,7 +49,7 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Orchestrators
             _employerFeedbackOuterApi.Setup(x =>
                 x.SubmitEmployerFeedback(_employerFeedback.Object))
                 .ReturnsAsync(employerFeedbackAndResult);
-            
+
             // Act
             await _orchestrator.SubmitConfirmedEmployerFeedback(surveyModel);
 

@@ -1,8 +1,8 @@
-﻿using System;
+﻿using SFA.DAS.EmployerFeedback.Infrastructure.Api.OuterApi;
+using SFA.DAS.GovUK.Auth.Employer;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
-using SFA.DAS.EmployerFeedback.Infrastructure.Api.OuterApi;
-using SFA.DAS.GovUK.Auth.Employer;
 
 namespace SFA.DAS.EmployerFeedback.Infrastructure.Services.EmployerAccount
 {

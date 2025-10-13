@@ -1,13 +1,13 @@
+using SFA.DAS.EmployerFeedback.Domain.Types;
+using SFA.DAS.EmployerFeedback.Web.Types.Enums;
+using SFA.DAS.EmployerFeedback.Web.Validators.Attributes;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using SFA.DAS.EmployerFeedback.Domain.Types;
-using SFA.DAS.EmployerFeedback.Web.Types.Enums;
-using SFA.DAS.EmployerFeedback.Web.Validators.Attributes;
 
 namespace SFA.DAS.EmployerFeedback.Web.Models.Shared
-{ 
+{
     public class SurveyModel
     {
         public Guid UserRef { get; set; }

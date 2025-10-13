@@ -16,7 +16,6 @@ using SFA.DAS.EmployerFeedback.Web.Controllers;
 using SFA.DAS.EmployerFeedback.Web.Filters;
 using SFA.DAS.EmployerFeedback.Web.ModelBinders;
 using SFA.DAS.EmployerFeedback.Web.StartupExtensions;
-using SFA.DAS.Validation.Mvc.Extensions;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 

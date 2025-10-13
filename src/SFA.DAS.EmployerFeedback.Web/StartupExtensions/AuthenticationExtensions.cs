@@ -5,7 +5,6 @@ using SFA.DAS.GovUK.Auth.AppStart;
 using SFA.DAS.GovUK.Auth.Configuration;
 using SFA.DAS.GovUK.Auth.Models;
 using SFA.DAS.GovUK.Auth.Services;
-using System.Configuration;
 using System.Diagnostics.CodeAnalysis;
 
 namespace SFA.DAS.EmployerFeedback.Web.StartupExtensions

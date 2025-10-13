@@ -1,12 +1,9 @@
 ﻿using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Distributed;
 using Newtonsoft.Json;
 using SFA.DAS.EmployerFeedback.Infrastructure.Configuration;
 using System;
-using System.Text;
 using System.Threading.Tasks;
-using static SFA.DAS.EmployerFeedback.Infrastructure.Services.SessionStorage.SessionStorageService;
 
 namespace SFA.DAS.EmployerFeedback.Infrastructure.Services.SessionStorage
 {

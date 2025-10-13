@@ -9,12 +9,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
-using SFA.DAS.EmployerFeedback.Domain.Entities.Models;
 using SFA.DAS.EmployerFeedback.Infrastructure.Api.OuterApi;
 using SFA.DAS.EmployerFeedback.Infrastructure.Configuration;
 using SFA.DAS.EmployerFeedback.Infrastructure.Services.SessionStorage;
 using SFA.DAS.EmployerFeedback.Web.Controllers;
-using SFA.DAS.EmployerFeedback.Web.Models;
 using SFA.DAS.EmployerFeedback.Web.Models.Shared;
 using SFA.DAS.Encoding;
 using SFA.DAS.GovUK.Auth.Services;
@@ -39,22 +37,22 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Controllers
         private Mock<IEmployerFeedbackOuterApi> _employerFeedbackOuterApiMock;
         private List<SFA.DAS.EmployerFeedback.Web.Models.Shared.ProviderAttributeModel> _providerAttributes;
         private IFixture _fixture;
-        
+
         private SurveyModel _surveyModel;
 
-        
+
 
         [SetUp]
         public void SetUp()
         {
             _fixture = new Fixture();
-            
+
             _surveyModel = new SurveyModel
             {
                 UserRef = Guid.NewGuid(),
                 ProviderName = "Test Provider"
             };
-            
+
             _providerAttributes = _fixture.Build<SFA.DAS.EmployerFeedback.Web.Models.Shared.ProviderAttributeModel>()
                 .With(x => x.Good, false)
                 .With(x => x.Bad, false)
@@ -73,7 +71,7 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Controllers
 
             _loggerMock = new Mock<ILogger<HomeController>>();
 
-            _controller = new HomeController(_sessionServiceMock.Object, _encodingServiceMock.Object, _loggerMock.Object, _configurationMock.Object, _stubAuthenticationServiceMock.Object, _httpContextAccessorMock.Object, _employerFeedbackOuterApiMock.Object);
+            _controller = new HomeController(_sessionServiceMock.Object, _loggerMock.Object, _configurationMock.Object, _stubAuthenticationServiceMock.Object, _httpContextAccessorMock.Object);
 
             _controller.ControllerContext = new ControllerContext
             {
@@ -86,18 +84,6 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Controllers
                 }
             };
         }
-
-        [Test]
-        public async Task SessionSurvey_DoesNotExist_ShouldPopulateProviderName_OnViewData()
-        {
-            // Act
-            await _controller.Index();
-
-            // Assert
-            _controller.ViewData.Should().ContainKey("ProviderName");
-            _controller.ViewData["ProviderName"].Should().Be("Test Provider");
-        }
-
 
         [Test]
         public async Task SignOut_ShouldSignOutUser()
@@ -178,6 +164,6 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Controllers
         public void DisposeController()
         {
             _controller.Dispose();
-        }   
+        }
     }
 }

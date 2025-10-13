@@ -2,8 +2,9 @@
 @{
     ViewBag.PageID = "page-strengths-question";
     ViewBag.Title = "Providers Strengths";
+    var accountId = ViewContext.RouteData.Values[RouteValueKeys.EncodedAccountId] as string;
 }
-<a asp-controller="Home" asp-action="Index" class="govuk-back-link">Back</a>
+<a asp-route="@RouteNames.Landing_Get" asp-route-encodedAccountId="@accountId" class="govuk-back-link">Back</a>
 <main class="govuk-main-wrapper govuk-main-wrapper--auto-spacing" id="main-content">
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
@@ -34,7 +35,7 @@
                         <div class="govuk-checkboxes" data-module="govuk-checkboxes">
                         @for (var i = 0; i < Model.Attributes.Count; i++)
                         {
-                            <div class="govuk-checkboxes__item" style="display: @(Model.Attributes[i].Bad ? "none" : "block");">
+                                <div class="govuk-checkboxes__item" style="@(Model.Attributes[i].Bad ? "display: none" : "");">
                                 <input asp-for="@Model.Attributes[i].Good" id="col1-@(i)" type="checkbox" class="govuk-checkboxes__input" />
                                 <label for="col1-@i" class="govuk-label govuk-checkboxes__label">@Model.Attributes[i].Name</label>
                                 <input asp-for="@Model.Attributes[i].Name" type="hidden" />

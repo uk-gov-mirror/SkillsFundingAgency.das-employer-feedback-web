@@ -1,10 +1,10 @@
-﻿using System.Security.Claims;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.Extensions.Logging;
 using SFA.DAS.EmployerFeedback.Infrastructure.Configuration;
 using SFA.DAS.EmployerFeedback.Infrastructure.Configuration.Routing;
 using SFA.DAS.EmployerFeedback.Infrastructure.Services.SessionStorage;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Filters;
-using Microsoft.Extensions.Logging;
+using System.Security.Claims;
 
 
 
@@ -27,7 +27,7 @@ namespace SFA.DAS.EmployerFeedback.Infrastructure
             var userId = c.User.FindFirstValue(EmployerClaims.UserId);
             var sessionExists = _sessionService.ExistsAsync(userId).Result;
 
-             if (!sessionExists)
+            if (!sessionExists)
             {
                 _logger.LogWarning($"Session for user id {userId} does not exist");
                 var controller = context.Controller as Controller;

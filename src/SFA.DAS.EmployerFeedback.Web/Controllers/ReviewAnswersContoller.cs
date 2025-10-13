@@ -60,7 +60,7 @@ namespace SFA.DAS.EmployerFeedback.Web.Controllers
 
             var accountId = HttpContext.GetRouteData().Values[RouteValueKeys.EncodedAccountId] as string;
 
-            if ((DateTime.UtcNow - providerFeedback.Feedback?.DateTimeCompleted).Value.TotalDays < _config.FeedbackWaitPeriodDays)
+            if (providerFeedback.Feedback != null && (DateTime.UtcNow - providerFeedback.Feedback?.DateTimeCompleted).Value.TotalDays < _config.FeedbackWaitPeriodDays)
             {
                 return RedirectToRoute(RouteNames.FeedbackAlreadySubmitted, new { encodedAccountId = accountId });
             }

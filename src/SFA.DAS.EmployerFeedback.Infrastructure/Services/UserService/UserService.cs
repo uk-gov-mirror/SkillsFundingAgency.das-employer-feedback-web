@@ -1,11 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 using SFA.DAS.EmployerFeedback.Domain.Types;
 using SFA.DAS.GovUK.Auth.Employer;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Security.Claims;
 using EmployerClaims = SFA.DAS.EmployerFeedback.Infrastructure.Configuration.EmployerClaims;
 
 namespace SFA.DAS.EmployerFeedback.Infrastructure.Services.UserService
@@ -36,7 +36,7 @@ namespace SFA.DAS.EmployerFeedback.Infrastructure.Services.UserService
             {
                 return false;
             }
-            
+
             try
             {
                 var employerAccounts = JsonConvert.DeserializeObject<Dictionary<string, EmployerUserAccountItem>>(associatedAccountsClaim);

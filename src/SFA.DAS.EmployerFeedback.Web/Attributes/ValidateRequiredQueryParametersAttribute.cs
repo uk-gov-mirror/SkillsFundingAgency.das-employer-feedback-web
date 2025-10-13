@@ -1,7 +1,7 @@
-﻿using System;
-using System.Linq;
-using Microsoft.AspNetCore.Mvc.Filters;
+﻿using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Logging;
+using System;
+using System.Linq;
 
 namespace SFA.DAS.EmployerFeedback.Web.Attributes
 {
@@ -10,7 +10,7 @@ namespace SFA.DAS.EmployerFeedback.Web.Attributes
     {
         public const string MissingRequireQueryParameterMessage = "Missing required query parameter: ";
         private readonly ILogger _logger;
-        
+
         public ValidateRequiredQueryParametersAttribute(ILogger<ValidateRequiredQueryParametersAttribute> logger)
         {
             _logger = logger;

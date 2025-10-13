@@ -14,7 +14,7 @@ namespace SFA.DAS.EmployerFeedback.Web.Extensions
                 return validValue;
             }
 
-            if(entry.AttemptedValue == null)
+            if (entry.AttemptedValue == null)
             {
                 return defaultValue;
             }

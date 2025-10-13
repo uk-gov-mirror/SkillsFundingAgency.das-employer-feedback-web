@@ -1,6 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
-
-namespace SFA.DAS.EmployerFeedback.Infrastructure.Configuration;
+﻿namespace SFA.DAS.EmployerFeedback.Infrastructure.Configuration;
 
 public static class EmployerClaims
 {
@@ -11,6 +9,6 @@ public static class EmployerClaims
     public static string AccountsClaimsTypeIdentifier => "http://das/employer/identity/claims/associatedAccounts";
 
     public const string UserDisplayName = "http://das/employer/identity/claims/display_name";
-    
+
     public const string UserAccount = "http://das/employer/identity/claims/account";
 }

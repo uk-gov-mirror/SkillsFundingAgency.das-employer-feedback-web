@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Security.Claims;
-using FluentAssertions;
+﻿using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Abstractions;
@@ -12,12 +9,13 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
 using SFA.DAS.EmployerFeedback.Infrastructure;
-using SFA.DAS.EmployerFeedback.Infrastructure.Api.OuterApi;
 using SFA.DAS.EmployerFeedback.Infrastructure.Configuration;
 using SFA.DAS.EmployerFeedback.Infrastructure.Configuration.Routing;
 using SFA.DAS.EmployerFeedback.Infrastructure.Services.SessionStorage;
 using SFA.DAS.EmployerFeedback.Web.Controllers;
-using SFA.DAS.Encoding;
+using System;
+using System.Collections.Generic;
+using System.Security.Claims;
 
 namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Infrastructure
 {
@@ -25,27 +23,22 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Infrastructure
     {
         private readonly HomeController _controller;
         private readonly Mock<ISessionStorageService> _sessionServiceMock;
-        private readonly Mock<IEncodingService> _encodingServiceMock;
         private readonly Mock<ILogger<HomeController>> _controllerLoggerMock;
         private readonly Mock<ILogger<EnsureSessionExists>> _loggerMock;
         private readonly Mock<IConfiguration> _configurationMock = new Mock<IConfiguration>();
-        private readonly Mock<IEmployerFeedbackOuterApi> _employerFeedbackOuterAPI = new Mock<IEmployerFeedbackOuterApi>();
 
         public EnsureSessionExistsAttributeTests()
         {
             _controllerLoggerMock = new Mock<ILogger<HomeController>>();
             _loggerMock = new Mock<ILogger<EnsureSessionExists>>();
             _sessionServiceMock = new Mock<ISessionStorageService>();
-            _encodingServiceMock = new Mock<IEncodingService>();
 
             _controller = new HomeController(
                             _sessionServiceMock.Object,
-                            _encodingServiceMock.Object,
                             _controllerLoggerMock.Object,
                             _configurationMock.Object,
                             null,
-                            null,
-                            _employerFeedbackOuterAPI.Object);
+                            null);
             var context = new DefaultHttpContext()
             {
                 User = new ClaimsPrincipal(new ClaimsIdentity(new Claim[]
@@ -97,6 +90,6 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Infrastructure
         public void DisposeController()
         {
             _controller.Dispose();
-        }   
+        }
     }
 }

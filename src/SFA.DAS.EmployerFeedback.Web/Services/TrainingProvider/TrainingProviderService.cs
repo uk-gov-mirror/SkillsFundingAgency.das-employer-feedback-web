@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using SFA.DAS.EmployerFeedback.Infrastructure.Api.OuterApi;
+﻿using SFA.DAS.EmployerFeedback.Infrastructure.Api.OuterApi;
 using SFA.DAS.EmployerFeedback.Infrastructure.Configuration;
 using SFA.DAS.EmployerFeedback.Web.Models.Shared;
 using SFA.DAS.EmployerFeedback.Web.Paging;
@@ -38,11 +37,11 @@ namespace SFA.DAS.EmployerProvideFeedback.Services
         }
 
         public async Task<ProviderSearchViewModel> GetTrainingProviderSearchViewModel(
-            string encodedAccountId, 
+            string encodedAccountId,
             Guid userRef,
             string selectedProviderName,
             string selectedFeedbackStatus,
-            int pageSize, 
+            int pageSize,
             int pageIndex,
             string sortColumn,
             string sortDirection)
@@ -77,9 +76,9 @@ namespace SFA.DAS.EmployerProvideFeedback.Services
 
             // Sort
 
-            if(PagingState.SortDescending == model.SortDirection)
+            if (PagingState.SortDescending == model.SortDirection)
             {
-                if(!string.IsNullOrWhiteSpace(model.SortColumn) && model.SortColumn.Equals("FeedbackStatus", StringComparison.InvariantCultureIgnoreCase))
+                if (!string.IsNullOrWhiteSpace(model.SortColumn) && model.SortColumn.Equals("FeedbackStatus", StringComparison.InvariantCultureIgnoreCase))
                 {
                     filteredProviders = filteredProviders.OrderByDescending(p => p.FeedbackStatus);
                 }
@@ -125,7 +124,7 @@ namespace SFA.DAS.EmployerProvideFeedback.Services
                 return null;
             }
 
-            var provider  = response.Providers.FirstOrDefault(p => p.Ukprn == providerId);
+            var provider = response.Providers.FirstOrDefault(p => p.Ukprn == providerId);
             if (null == provider)
             {
                 return null;

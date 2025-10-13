@@ -32,13 +32,9 @@ namespace SFA.DAS.EmployerFeedback.Web.Controllers
         [HttpGet("question-one", Name = RouteNames.QuestionOne_Get)]
         public async Task<IActionResult> QuestionOne(string encodedAccountId, string returnUrl = null)
         {
-            // TODO: Replace TempData by adding a flag to the ViewModel.
             TempData[ReturnUrlKey] = returnUrl;
             var idClaim = HttpContext.User.FindFirst(EmployerClaims.UserId);
             var cachedAnswers = await _sessionService.Get<SurveyModel>(idClaim.Value);
-
-            // TODO: Redirect from all questions and review route to landing if no survey in the session.
-
             return View(cachedAnswers);
         }
 
@@ -53,7 +49,7 @@ namespace SFA.DAS.EmployerFeedback.Web.Controllers
             var idClaim = HttpContext.User.FindFirst(EmployerClaims.UserId);
             var sessionAnswer = await _sessionService.Get<SurveyModel>(idClaim.Value);
             SetStengths(sessionAnswer, surveyModel.Attributes.Where(x => x.Good));
-            
+
             await _sessionService.Set(idClaim.Value, sessionAnswer);
 
             return await HandleRedirect(RouteNames.QuestionTwo_Get);
@@ -117,7 +113,7 @@ namespace SFA.DAS.EmployerFeedback.Web.Controllers
             var sessionAnswer = await _sessionService.Get<SurveyModel>(idClaim.Value);
             var accountId = HttpContext.GetRouteData().Values[RouteValueKeys.EncodedAccountId] as string;
 
-            return await Task.Run(() => RedirectToRoute(string.IsNullOrEmpty(returnRoute) ? nextRoute : returnRoute, new { encodedAccountId = accountId}) as IActionResult);
+            return await Task.Run(() => RedirectToRoute(string.IsNullOrEmpty(returnRoute) ? nextRoute : returnRoute, new { encodedAccountId = accountId }) as IActionResult);
         }
 
         private bool IsProviderAttributesValid(SurveyModel surveyModel)

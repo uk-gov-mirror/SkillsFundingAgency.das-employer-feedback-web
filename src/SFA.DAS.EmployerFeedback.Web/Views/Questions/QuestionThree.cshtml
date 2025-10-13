@@ -1,8 +1,10 @@
 ﻿@using SFA.DAS.EmployerFeedback.Web.Types.Enums
 @model SurveyModel
 @{ ViewBag.PageID = "page-overall-quality-question";
-                ViewBag.Title = "Provide Feedback"; }
-<a asp-route="@RouteNames.QuestionTwo_Get" class="govuk-back-link">Back</a>
+                ViewBag.Title = "Provide Feedback"; 
+    var accountId = ViewContext.RouteData.Values[RouteValueKeys.EncodedAccountId] as string;
+            }
+<a asp-route="@RouteNames.QuestionTwo_Get" asp-route-encodedAccountId="@accountId" class="govuk-back-link">Back</a>
 <main class="govuk-main-wrapper govuk-main-wrapper--auto-spacing" id="main-content">
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">

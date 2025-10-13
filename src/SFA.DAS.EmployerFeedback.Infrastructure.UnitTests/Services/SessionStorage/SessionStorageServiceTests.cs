@@ -1,6 +1,4 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
-using FluentAssertions;
+﻿using FluentAssertions;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Caching.Distributed;
 using Moq;
@@ -8,6 +6,8 @@ using Newtonsoft.Json;
 using NUnit.Framework;
 using SFA.DAS.EmployerFeedback.Infrastructure.Configuration;
 using SFA.DAS.EmployerFeedback.Infrastructure.Services.SessionStorage;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace SFA.DAS.EmployerFeedback.Infrastructure.UnitTests.Services.SessionStorage
 {
@@ -24,7 +24,7 @@ namespace SFA.DAS.EmployerFeedback.Infrastructure.UnitTests.Services.SessionStor
         public void SetUp()
         {
             _distributedCacheMock = new Mock<IDistributedCache>();
-            _configurationMock = new EmployerFeedbackWebConfiguration() {  SlidingExpirationMinutes = 30 };
+            _configurationMock = new EmployerFeedbackWebConfiguration() { SlidingExpirationMinutes = 30 };
             _environmentMock = new Mock<IWebHostEnvironment>();
             _environmentMock.Setup(x => x.EnvironmentName).Returns(EnvironmentName);
             _service = new SessionStorageService(_distributedCacheMock.Object, _configurationMock, _environmentMock.Object);

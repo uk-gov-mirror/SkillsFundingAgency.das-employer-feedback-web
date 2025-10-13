@@ -1,5 +1,4 @@
-﻿using Microsoft.VisualBasic;
-using Moq;
+﻿using Moq;
 using NUnit.Framework;
 using SFA.DAS.EmployerFeedback.Infrastructure.Api.OuterApi;
 using SFA.DAS.EmployerFeedback.Infrastructure.Api.Responses;
@@ -99,7 +98,7 @@ namespace SFA.DAS.EmployerFeedback.Infrastructure.UnitTests.Services.EmployerAcc
             Assert.That(employerAccounts.EmployerAccounts.ToList().Count == 0);
             Assert.That(employerAccounts.EmployerUserId == expectedResponse.EmployerUserId);
             Assert.That(employerAccounts.FirstName == expectedResponse.FirstName);
-            Assert.That(employerAccounts.LastName == expectedResponse.LastName);    
+            Assert.That(employerAccounts.LastName == expectedResponse.LastName);
         }
     }
 }

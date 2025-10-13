@@ -1,8 +1,5 @@
-﻿using Castle.Core.Logging;
-using FluentAssertions;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
@@ -19,9 +16,7 @@ using SFA.DAS.EmployerFeedback.Web.Orchestrators;
 using SFA.DAS.EmployerFeedback.Web.Types.Enums;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Security.Claims;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace SFA.DAS.EmployerFeedback.Web.UnitTests.EmployerProvideFeedback.Controllers
@@ -81,7 +76,7 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.EmployerProvideFeedback.Control
 
         [Test]
         public async Task Confirmation_RedirectToConfirmationPage()
-        {   
+        {
             //Arrange
             var surveyModel = new SurveyModel
             {
@@ -116,12 +111,12 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.EmployerProvideFeedback.Control
 
             //Act
             var result = await _controller.Confirmation();
-            
+
             //Assert
             Assert.IsNotNull(result);
             Assert.That(result, Is.TypeOf<RedirectToRouteResult>());
             var redirectResult = (RedirectToRouteResult)result;
-            Assert.That(redirectResult.RouteName, Is.EqualTo(RouteNames.Confirmation_Get));  
+            Assert.That(redirectResult.RouteName, Is.EqualTo(RouteNames.Confirmation_Get));
         }
 
         [Test]

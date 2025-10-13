@@ -3,7 +3,6 @@
     public static class RouteNames
     {
         public const string Landing_Get = "Landing_Get";
-        public const string Landing_Get_New = "Landing_Get_New";
 
         public const string QuestionOne_Get = "QuestionOne_Get";
         public const string QuestionOne_Post = "QuestionOne_Post";

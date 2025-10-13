@@ -1,16 +1,16 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using SFA.DAS.EmployerFeedback.Domain.Types;
+using SFA.DAS.EmployerFeedback.Web.Configuration.Routing;
+using SFA.DAS.GovUK.Auth.Employer;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using SFA.DAS.GovUK.Auth.Employer;
 using EmployerClaims = SFA.DAS.EmployerFeedback.Infrastructure.Configuration.EmployerClaims;
-using SFA.DAS.EmployerFeedback.Web.Configuration.Routing;
-using SFA.DAS.EmployerFeedback.Domain.Types;
 
 namespace SFA.DAS.EmployerFeedback.Web.Services.EmployerRoleAuthorization
 {

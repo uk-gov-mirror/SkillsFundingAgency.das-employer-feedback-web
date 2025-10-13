@@ -1,12 +1,10 @@
 ﻿using Microsoft.AspNetCore.Http;
-using System;
+using SFA.DAS.GovUK.Auth.Employer;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Security.Claims;
 using System.Text.Json;
-using System.Text.RegularExpressions;
-using SFA.DAS.GovUK.Auth.Employer;
 using EmployerClaims = SFA.DAS.EmployerFeedback.Infrastructure.Configuration.EmployerClaims;
 
 namespace SFA.DAS.EmployerFeedback.Web.Models.Home

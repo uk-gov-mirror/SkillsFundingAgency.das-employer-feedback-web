@@ -191,7 +191,7 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Controllers
 
                 // Act
                 var result = await _controller.SortProviders(encodedAccountId, sortColumn, sortDirection);
-                
+
                 // Assert
                 result.Should().BeOfType<RedirectToActionResult>();
                 var redirectResult = (RedirectToActionResult)result;
@@ -203,10 +203,10 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Controllers
             {
                 // Arrange
                 string encodedAccountId = "ENCODED123";
-                
+
                 // Act
                 var result = await _controller.ClearFilters(encodedAccountId);
-               
+
                 // Assert
                 result.Should().BeOfType<RedirectToActionResult>();
                 var redirectResult = (RedirectToActionResult)result;
@@ -346,7 +346,7 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Controllers
                     Confirmed = true
                 };
 
-                _employerFeedbackOuterApiMock.Setup(m => m.GetAllAttributes()).ReturnsAsync((List<FeedbackQuestionAttribute>)null);  
+                _employerFeedbackOuterApiMock.Setup(m => m.GetAllAttributes()).ReturnsAsync((List<FeedbackQuestionAttribute>)null);
 
                 // Act
                 var result = await _controller.ProviderConfirmed(postedModel);
@@ -391,6 +391,18 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Controllers
                 redirectResult.ActionName.Should().Be("Error");
                 redirectResult.ControllerName.Should().Be("Error");
             }
+
+            [Test]
+            public async Task SessionSurvey_DoesNotExist_ShouldPopulateProviderName_OnViewData()
+            {
+                // Act
+                await _controller.StartFeedback();
+
+                // Assert
+                _controller.ViewData.Should().ContainKey("ProviderName");
+                _controller.ViewData["ProviderName"].Should().Be("Test Provider");
+            }
+
         }
 
         [TearDown]

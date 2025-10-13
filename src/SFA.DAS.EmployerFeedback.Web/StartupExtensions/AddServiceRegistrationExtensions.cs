@@ -1,5 +1,4 @@
-﻿using FluentValidation;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
 using RestEase.HttpClientFactory;
 using SFA.DAS.EmployerFeedback.Infrastructure;
@@ -18,9 +17,7 @@ using SFA.DAS.EmployerProvideFeedback.Services;
 using SFA.DAS.Encoding;
 using SFA.DAS.GovUK.Auth.Authentication;
 using SFA.DAS.GovUK.Auth.Employer;
-using SFA.DAS.GovUK.Auth.Services;
 using SFA.DAS.Http.Configuration;
-using System.Configuration;
 using System.Diagnostics.CodeAnalysis;
 
 namespace SFA.DAS.EmployerFeedback.Web.StartupExtensions

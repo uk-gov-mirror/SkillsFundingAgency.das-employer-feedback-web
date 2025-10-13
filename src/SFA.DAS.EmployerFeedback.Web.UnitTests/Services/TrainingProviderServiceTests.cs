@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using FluentAssertions;
+﻿using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using SFA.DAS.EmployerFeedback.Domain.Entities.Models;
@@ -9,6 +6,9 @@ using SFA.DAS.EmployerFeedback.Infrastructure.Api.OuterApi;
 using SFA.DAS.EmployerFeedback.Infrastructure.Configuration;
 using SFA.DAS.EmployerProvideFeedback.Services;
 using SFA.DAS.Encoding;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace UnitTests.Services
 {
@@ -84,9 +84,13 @@ namespace UnitTests.Services
                 var testAccountIdEncoded = "CONFIRMATIONMODELTEST1";
                 _encodingServiceMock.Setup(m => m.Decode(testAccountIdEncoded, EncodingType.AccountId)).Returns(testAccountId);
                 _employerFeedbackOuterApiMock
-                    .Setup(m => m.GetTrainingProviderSearch(testAccountId, testUserRef)).ReturnsAsync(new GetProviderFeedback() { AccountId = testAccountId, Providers = new List<ProviderFeedback>() { 
+                    .Setup(m => m.GetTrainingProviderSearch(testAccountId, testUserRef)).ReturnsAsync(new GetProviderFeedback()
+                    {
+                        AccountId = testAccountId,
+                        Providers = new List<ProviderFeedback>() {
                         new ProviderFeedback { Ukprn = 1, ProviderName = "Test Provider" }
-                    } });
+                    }
+                    });
 
 
                 ITrainingProviderService sut = new TrainingProviderService(

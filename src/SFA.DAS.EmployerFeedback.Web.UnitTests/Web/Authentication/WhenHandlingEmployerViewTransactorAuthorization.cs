@@ -1,5 +1,3 @@
-using System.Security.Claims;
-using System.Threading.Tasks;
 using AutoFixture.NUnit3;
 using FluentAssertions;
 using Microsoft.AspNetCore.Authorization;
@@ -7,6 +5,8 @@ using Moq;
 using NUnit.Framework;
 using SFA.DAS.EmployerFeedback.Web.Authorization;
 using SFA.DAS.Testing.AutoFixture;
+using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace UnitTests.Web.Authentication
 {

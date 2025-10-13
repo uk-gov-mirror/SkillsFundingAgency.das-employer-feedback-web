@@ -1,8 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
@@ -10,10 +5,14 @@ using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Newtonsoft.Json;
 using SFA.DAS.EmployerFeedback.Domain.Types;
-using SFA.DAS.EmployerFeedback.Infrastructure.Api.OuterApi;
 using SFA.DAS.EmployerFeedback.Infrastructure.Configuration;
 using SFA.DAS.EmployerFeedback.Web.Configuration.Routing;
 using SFA.DAS.GovUK.Auth.Employer;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Security.Claims;
+using System.Threading.Tasks;
 using EmployerClaims = SFA.DAS.EmployerFeedback.Infrastructure.Configuration.EmployerClaims;
 
 namespace SFA.DAS.EmployerFeedback.Web.Authorization
@@ -22,7 +21,7 @@ namespace SFA.DAS.EmployerFeedback.Web.Authorization
     {
         bool IsEmployerAuthorised(AuthorizationHandlerContext context, bool allowAllUserRoles);
     }
-    
+
     public class EmployerAccountAuthorizationHandler : AuthorizationHandler<EmployerAccountRequirement>, IEmployerAccountAuthorisationHandler
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
@@ -56,9 +55,9 @@ namespace SFA.DAS.EmployerFeedback.Web.Authorization
                 return false;
             }
             var accountIdFromUrl = _httpContextAccessor.HttpContext.Request.RouteValues[RouteValueKeys.EncodedAccountId].ToString().ToUpper();
-            var employerAccountClaim = context.User.FindFirst(c=>c.Type.Equals(EmployerClaims.AccountsClaimsTypeIdentifier));
+            var employerAccountClaim = context.User.FindFirst(c => c.Type.Equals(EmployerClaims.AccountsClaimsTypeIdentifier));
 
-            if(employerAccountClaim?.Value == null)
+            if (employerAccountClaim?.Value == null)
                 return false;
 
             Dictionary<string, EmployerUserAccountItem> employerAccounts;
@@ -77,17 +76,17 @@ namespace SFA.DAS.EmployerFeedback.Web.Authorization
 
             if (employerAccounts != null)
             {
-                employerIdentifier = employerAccounts.ContainsKey(accountIdFromUrl) 
+                employerIdentifier = employerAccounts.ContainsKey(accountIdFromUrl)
                     ? employerAccounts[accountIdFromUrl] : null;
             }
 
             if (employerAccounts == null || !employerAccounts.ContainsKey(accountIdFromUrl))
             {
                 var requiredIdClaim = ClaimTypes.NameIdentifier;
-                
+
                 if (!context.User.HasClaim(c => c.Type.Equals(requiredIdClaim)))
                     return false;
-                
+
                 var userClaim = context.User.Claims
                     .First(c => c.Type.Equals(requiredIdClaim));
 
@@ -96,14 +95,14 @@ namespace SFA.DAS.EmployerFeedback.Web.Authorization
                 var userId = userClaim.Value;
 
                 var result = _accountsService.GetUserAccounts(userId, email).Result;
-                
+
                 var accountsAsJson = JsonConvert.SerializeObject(result.EmployerAccounts.ToDictionary(k => k.AccountId));
                 var associatedAccountsClaim = new Claim(EmployerClaims.AccountsClaimsTypeIdentifier, accountsAsJson, JsonClaimValueTypes.Json);
-                
+
                 var updatedEmployerAccounts = JsonConvert.DeserializeObject<Dictionary<string, EmployerUserAccountItem>>(associatedAccountsClaim.Value);
 
                 userClaim.Subject.AddClaim(associatedAccountsClaim);
-                
+
                 if (!updatedEmployerAccounts.ContainsKey(accountIdFromUrl))
                 {
                     return false;
@@ -115,7 +114,7 @@ namespace SFA.DAS.EmployerFeedback.Web.Authorization
             {
                 _httpContextAccessor.HttpContext.Items.Add("Employer", employerAccounts.GetValueOrDefault(accountIdFromUrl));
             }
-            
+
             if (!CheckUserRoleForAccess(employerIdentifier, allowAllUserRoles))
             {
                 return false;
