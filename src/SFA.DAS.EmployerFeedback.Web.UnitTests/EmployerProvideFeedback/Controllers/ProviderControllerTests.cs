@@ -9,6 +9,7 @@ using SFA.DAS.EmployerFeedback.Domain.Entities.Models;
 using SFA.DAS.EmployerFeedback.Infrastructure.Api.OuterApi;
 using SFA.DAS.EmployerFeedback.Infrastructure.Configuration;
 using SFA.DAS.EmployerFeedback.Infrastructure.Services.SessionStorage;
+using SFA.DAS.EmployerFeedback.Infrastructure.Services.UserService;
 using SFA.DAS.EmployerFeedback.Web.Configuration.Routing;
 using SFA.DAS.EmployerFeedback.Web.Controllers;
 using SFA.DAS.EmployerFeedback.Web.Models.Shared;
@@ -32,6 +33,7 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Controllers
         private Mock<IEncodingService> _encodingServiceMock;
         private Mock<ILogger<ProviderController>> _loggerMock;
         private Mock<IEmployerFeedbackOuterApi> _employerFeedbackOuterApiMock;
+        private Mock<IUserService> _userServiceMock;
         private SurveyModel _surveyModel;
         private UrlBuilder _urlBuilder;
 
@@ -66,18 +68,18 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Controllers
                         new List<ProviderSearchViewModel.EmployerTrainingProvider>(), 0, 0, 0, 6)
                 });
 
-            _encodingServiceMock = new Mock<IEncodingService>();
             _loggerMock = new Mock<ILogger<ProviderController>>();
             _urlBuilder = new UrlBuilder("LOCAL");
             _employerFeedbackOuterApiMock = new Mock<IEmployerFeedbackOuterApi>();
+            _userServiceMock = new Mock<IUserService>();
 
             _controller = new ProviderController(
                 _sessionServiceMock.Object,
                 _trainingProviderServiceMock.Object,
-                _encodingServiceMock.Object,
                 _loggerMock.Object,
                 _employerFeedbackOuterApiMock.Object,
-                _urlBuilder);
+                _urlBuilder,
+                _userServiceMock.Object);
 
             var context = new DefaultHttpContext
             {
@@ -217,23 +219,25 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Controllers
             public async Task ConfirmProvider_ShoulReturnViewWithModel()
             {
                 // Arrange
-                string encodedAccountId = "ENCODED123";
-                long ukprn = 10000001;
+                var providerSearchModel = new ProviderSearchConfirmationViewModel
+                {
+                    EncodedAccountId = "ENCODED123",
+                    ProviderId = 10000001,
+                    ProviderName = "Test Provider",
+                    Confirmed = true
+                };
+                
+                
                 _trainingProviderServiceMock.Setup(m => m.GetTrainingProviderConfirmationViewModel(
                         It.IsAny<long>(),
                         It.IsAny<Guid>(),
                         It.IsAny<long>()))
-                    .ReturnsAsync(new ProviderSearchConfirmationViewModel
-                    {
-                        EncodedAccountId = encodedAccountId,
-                        ProviderId = ukprn,
-                        ProviderName = "Test Provider",
-                        Confirmed = true
-                    });
+                    .ReturnsAsync(providerSearchModel);
 
 
                 // Act
-                var result = await _controller.ConfirmProvider(encodedAccountId, ukprn);
+               
+                var result = await _controller.ConfirmProvider(providerSearchModel);
 
                 // Assert
                 result.Should().BeOfType<ViewResult>();
