@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace SFA.DAS.EmployerProvideFeedback.Paging
+namespace SFA.DAS.EmployerFeedback.Paging
 {
     public abstract class PaginatedList
     {

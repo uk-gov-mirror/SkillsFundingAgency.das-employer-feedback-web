@@ -11,7 +11,7 @@ using SFA.DAS.EmployerFeedback.Infrastructure.Configuration.Routing;
 using SFA.DAS.EmployerFeedback.Infrastructure.Services.SessionStorage;
 using SFA.DAS.EmployerFeedback.Web.Controllers;
 using SFA.DAS.EmployerFeedback.Web.Models.Shared;
-using SFA.DAS.EmployerFeedback.Web.Types.Enums;
+using SFA.DAS.EmployerFeedback.Domain.Types;
 using System;
 using System.Collections.Generic;
 using System.Linq;

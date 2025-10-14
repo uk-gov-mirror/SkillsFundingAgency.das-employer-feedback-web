@@ -1,8 +1,10 @@
 ﻿using Azure.Monitor.OpenTelemetry.AspNetCore;
 using Microsoft.Extensions.DependencyInjection;
+using System.Diagnostics.CodeAnalysis;
 
 namespace SFA.DAS.EmployerFeedback.Web.StartupExtensions
 {
+    [ExcludeFromCodeCoverage]
     public static class AddOpenTelemetryExtensions
     {
         /// <summary>

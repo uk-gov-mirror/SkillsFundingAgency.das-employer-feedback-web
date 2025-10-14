@@ -1,6 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
-
-namespace SFA.DAS.EmployerFeedback.Domain.Entities.Models
+﻿namespace SFA.DAS.EmployerFeedback.Domain.Entities.Models
 {
     public class ProviderFeedback
     {

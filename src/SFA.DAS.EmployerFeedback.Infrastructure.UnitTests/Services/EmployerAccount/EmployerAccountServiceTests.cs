@@ -1,9 +1,11 @@
-﻿using Moq;
+﻿using FluentAssertions;
+using Moq;
 using NUnit.Framework;
 using SFA.DAS.EmployerFeedback.Infrastructure.Api.OuterApi;
 using SFA.DAS.EmployerFeedback.Infrastructure.Api.Responses;
 using SFA.DAS.EmployerFeedback.Infrastructure.Services.EmployerAccount;
 using SFA.DAS.GovUK.Auth.Employer;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -71,6 +73,7 @@ namespace SFA.DAS.EmployerFeedback.Infrastructure.UnitTests.Services.EmployerAcc
 
             // Assert
             Assert.That(employerAccounts != null);
+            employerAccounts.Should().BeEquivalentTo(expectedResponse);
         }
 
         [Test]
@@ -78,13 +81,13 @@ namespace SFA.DAS.EmployerFeedback.Infrastructure.UnitTests.Services.EmployerAcc
         {
             // Arrange
             var userId = "test-user-id";
-            var email = "";
+            var email = "test@test.com";
 
             var expectedResponse = new UserAccountsDetails
             {
-                EmployerUserId = "test-user-id",
-                FirstName = "",
-                LastName = "",
+                EmployerUserId = new Guid().ToString(),
+                FirstName = null,
+                LastName = null,
                 IsSuspended = false,
                 UserAccounts = new System.Collections.Generic.List<EmployerIdentifier>()
             };

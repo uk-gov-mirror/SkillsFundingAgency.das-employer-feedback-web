@@ -1,4 +1,4 @@
-﻿using SFA.DAS.EmployerProvideFeedback.Paging;
+﻿using SFA.DAS.EmployerFeedback.Paging;
 using System.Collections.Generic;
 
 namespace SFA.DAS.EmployerFeedback.Web.Models;

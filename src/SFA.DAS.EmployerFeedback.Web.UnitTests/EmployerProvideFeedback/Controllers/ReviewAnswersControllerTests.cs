@@ -13,19 +13,17 @@ using SFA.DAS.EmployerFeedback.Infrastructure.Services.SessionStorage;
 using SFA.DAS.EmployerFeedback.Web.Controllers;
 using SFA.DAS.EmployerFeedback.Web.Models.Shared;
 using SFA.DAS.EmployerFeedback.Web.Orchestrators;
-using SFA.DAS.EmployerFeedback.Web.Types.Enums;
 using System;
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
-namespace SFA.DAS.EmployerFeedback.Web.UnitTests.EmployerProvideFeedback.Controllers
+namespace SFA.DAS.EmployerFeedback.Web.UnitTests.EmployerFeedback.Controllers
 {
     [TestFixture]
     public class ReviewAnswersControllerTests
     {
         private ReviewAnswersController _controller;
-        private Mock<IHttpContextAccessor> _httpContextAccessorMock;
         private Mock<ISessionStorageService> _sessionService;
         private Mock<ReviewAnswersOrchestrator> _orchestrator;
         private Mock<ILogger<ReviewAnswersOrchestrator>> _orchestratorLogger;
@@ -145,8 +143,10 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.EmployerProvideFeedback.Control
                             FeedbackSource = (long)FeedbackSource.Email,
                             ProviderRating = ProviderRating.Good.ToString(),
                             DateTimeCompleted = DateTime.UtcNow
-                        }
-                    }
+                        },
+                        HasCompleted = true
+                    },
+                    
                 }
             };
 

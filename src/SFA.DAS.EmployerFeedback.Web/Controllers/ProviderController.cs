@@ -5,7 +5,6 @@ using Microsoft.Extensions.Logging;
 using SFA.DAS.Employer.Shared.UI;
 using SFA.DAS.EmployerFeedback.Domain.Types;
 using SFA.DAS.EmployerFeedback.Infrastructure.Api.OuterApi;
-using SFA.DAS.EmployerFeedback.Infrastructure.Configuration;
 using SFA.DAS.EmployerFeedback.Infrastructure.Configuration.Routing;
 using SFA.DAS.EmployerFeedback.Infrastructure.Services.SessionStorage;
 using SFA.DAS.EmployerFeedback.Infrastructure.Services.UserService;
@@ -14,7 +13,7 @@ using SFA.DAS.EmployerFeedback.Web.Configuration.Routing;
 using SFA.DAS.EmployerFeedback.Web.Models.Shared;
 using SFA.DAS.EmployerFeedback.Web.Paging;
 using SFA.DAS.EmployerFeedback.Web.ViewModels;
-using SFA.DAS.EmployerProvideFeedback.Services;
+using SFA.DAS.EmployerFeedback.Services;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -82,7 +81,7 @@ namespace SFA.DAS.EmployerFeedback.Web.Controllers
                 _logger.LogError(ex, "Error in Index");
                 return RedirectToAction("Error", "Error");
             }
-            
+
         }
 
         [HttpPost]
@@ -139,7 +138,7 @@ namespace SFA.DAS.EmployerFeedback.Web.Controllers
                 _logger.LogError(ex, "Error in Provider Controller - SortProviders");
                 return RedirectToAction("Error", "Error");
             }
-            
+
         }
 
         [HttpGet]
@@ -153,7 +152,7 @@ namespace SFA.DAS.EmployerFeedback.Web.Controllers
                 pagingState.SelectedFeedbackStatus = string.Empty;
                 SetPagingState(pagingState);
 
-                return RedirectToAction(nameof(Index), new { encodedAccountId = encodedAccountId });
+                return RedirectToAction(nameof(Index), new { encodedAccountId });
             }
             catch (Exception ex)
             {
@@ -177,7 +176,7 @@ namespace SFA.DAS.EmployerFeedback.Web.Controllers
                 _logger.LogError(ex, "Error in Provider Controller - ConfirmProvider");
                 return RedirectToAction("Error", "Error");
             }
-            
+
         }
 
         [HttpPost]
@@ -234,7 +233,7 @@ namespace SFA.DAS.EmployerFeedback.Web.Controllers
                 return RedirectToAction("Error", "Error");
             }
         }
-            
+
 
         [Authorize(Policy = nameof(PolicyNames.NoneRole))]
         [Route("/{encodedAccountId}/landing", Name = RouteNames.Landing_Get)]

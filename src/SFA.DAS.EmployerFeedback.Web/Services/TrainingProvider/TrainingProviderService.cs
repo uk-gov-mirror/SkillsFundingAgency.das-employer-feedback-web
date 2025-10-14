@@ -2,14 +2,14 @@
 using SFA.DAS.EmployerFeedback.Infrastructure.Configuration;
 using SFA.DAS.EmployerFeedback.Web.Models.Shared;
 using SFA.DAS.EmployerFeedback.Web.Paging;
-using SFA.DAS.EmployerProvideFeedback.Paging;
+using SFA.DAS.EmployerFeedback.Paging;
 using SFA.DAS.Encoding;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace SFA.DAS.EmployerProvideFeedback.Services
+namespace SFA.DAS.EmployerFeedback.Services
 {
     public interface ITrainingProviderService
     {

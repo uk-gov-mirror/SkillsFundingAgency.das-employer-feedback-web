@@ -15,8 +15,8 @@ using SFA.DAS.EmployerFeedback.Web.Controllers;
 using SFA.DAS.EmployerFeedback.Web.Models.Shared;
 using SFA.DAS.EmployerFeedback.Web.Paging;
 using SFA.DAS.EmployerFeedback.Web.ViewModels;
-using SFA.DAS.EmployerProvideFeedback.Paging;
-using SFA.DAS.EmployerProvideFeedback.Services;
+using SFA.DAS.EmployerFeedback.Paging;
+using SFA.DAS.EmployerFeedback.Services;
 using System;
 using System.Collections.Generic;
 using System.Security.Claims;
@@ -42,6 +42,24 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Controllers
             {
                 UserRef = Guid.NewGuid(),
                 ProviderName = "TestProviderName",
+                Ukprn = 10000001,
+                AccountId = 123456,
+                Attributes = new List<ProviderAttributeModel>
+                {
+                    new ProviderAttributeModel
+                    {
+                        Name = "TestAttribute1",
+                        Good = true,
+                        Bad = false
+                    },
+                    new ProviderAttributeModel
+                    {
+                        Name = "TestAttribute2",
+                        Good = false,
+                        Bad = true
+                    }
+                },
+                FeedbackSource = Domain.Types.FeedbackSource.AdHoc,
             };
 
             _userServiceMock = new Mock<IUserService>();
@@ -226,8 +244,8 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Controllers
                     ProviderName = "Test Provider",
                     Confirmed = true
                 };
-                
-                
+
+
                 _trainingProviderServiceMock.Setup(m => m.GetTrainingProviderConfirmationViewModel(
                         It.IsAny<long>(),
                         It.IsAny<Guid>(),
@@ -236,12 +254,15 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Controllers
 
 
                 // Act
-               
                 var result = await _controller.ConfirmProvider(providerSearchModel);
 
                 // Assert
                 result.Should().BeOfType<ViewResult>();
                 _controller.ViewData.Model.Should().NotBeNull();
+
+                var providerSearchedConfirmedViewModel = _controller.ViewData.Model as ProviderSearchConfirmationViewModel;
+                providerSearchedConfirmedViewModel.Should().NotBeNull();
+                providerSearchedConfirmedViewModel.Should().BeEquivalentTo(providerSearchModel);
             }
 
             [Test]
@@ -279,6 +300,9 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Controllers
                 result.Should().BeOfType<RedirectToActionResult>();
                 var redirectResult = (RedirectToActionResult)result;
                 redirectResult.ActionName.Should().Be("StartFeedback");
+
+                var surveyModel = _sessionServiceMock.Object.Get<SurveyModel>("TEST_USER_ID").Result;
+                surveyModel.Should().BeEquivalentTo(_surveyModel);
             }
 
             [Test]

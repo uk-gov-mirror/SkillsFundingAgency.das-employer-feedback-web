@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace SFA.DAS.EmployerFeedback.Web.Types.Enums
+namespace SFA.DAS.EmployerFeedback.Domain.Types
 {
     public enum ProviderRating
     {

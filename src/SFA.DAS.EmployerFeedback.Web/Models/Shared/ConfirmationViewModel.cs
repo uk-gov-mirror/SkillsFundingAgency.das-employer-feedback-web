@@ -1,4 +1,4 @@
-﻿using SFA.DAS.EmployerFeedback.Web.Types.Enums;
+﻿using SFA.DAS.EmployerFeedback.Domain.Types;
 
 namespace SFA.DAS.EmployerFeedback.Web.Models.Shared
 {

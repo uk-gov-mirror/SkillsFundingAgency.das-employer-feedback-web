@@ -4,7 +4,7 @@ using NUnit.Framework;
 using SFA.DAS.EmployerFeedback.Domain.Entities.Models;
 using SFA.DAS.EmployerFeedback.Infrastructure.Api.OuterApi;
 using SFA.DAS.EmployerFeedback.Infrastructure.Configuration;
-using SFA.DAS.EmployerProvideFeedback.Services;
+using SFA.DAS.EmployerFeedback.Services;
 using SFA.DAS.Encoding;
 using System.Collections.Generic;
 using System.Linq;

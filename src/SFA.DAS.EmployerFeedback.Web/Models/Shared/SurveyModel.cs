@@ -1,5 +1,4 @@
 using SFA.DAS.EmployerFeedback.Domain.Types;
-using SFA.DAS.EmployerFeedback.Web.Types.Enums;
 using SFA.DAS.EmployerFeedback.Web.Validators.Attributes;
 using System;
 using System.Collections.Generic;

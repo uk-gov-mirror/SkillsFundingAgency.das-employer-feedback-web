@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using SFA.DAS.EmployerFeedback.Infrastructure.Services.UserService;
 using System;
@@ -16,7 +15,7 @@ namespace SFA.DAS.EmployerFeedback.Web.Controllers
             _userService = userService;
             _logger = logger;
         }
-    
+
         public ActionResult<Guid> GetUserId()
         {
             string userId = _userService.GetUserId();

@@ -1,4 +1,4 @@
-﻿using SFA.DAS.EmployerProvideFeedback.Paging;
+﻿using SFA.DAS.EmployerFeedback.Paging;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;

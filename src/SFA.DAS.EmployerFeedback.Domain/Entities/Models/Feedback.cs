@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics.CodeAnalysis;
 
 namespace SFA.DAS.EmployerFeedback.Domain.Entities.Models
 {
