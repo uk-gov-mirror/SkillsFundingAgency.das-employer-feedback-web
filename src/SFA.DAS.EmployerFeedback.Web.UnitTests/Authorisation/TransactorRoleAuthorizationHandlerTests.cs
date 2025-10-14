@@ -23,7 +23,7 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Authorization
             var user = new ClaimsPrincipal(new ClaimsIdentity(new Claim[] { new Claim(ClaimTypes.Name, "Test User") }));
             var context = new AuthorizationHandlerContext(new[] { requirement }, user, null);
 
-            employerRoleAuthorizationService.Setup(x => x.IsEmployerAuthorized(It.IsAny<ClaimsPrincipal>(), UserRole.Transactor))    
+            employerRoleAuthorizationService.Setup(x => x.IsEmployerAuthorized(It.IsAny<ClaimsPrincipal>(), UserRole.Transactor))
                 .ReturnsAsync(true);
 
             // Act

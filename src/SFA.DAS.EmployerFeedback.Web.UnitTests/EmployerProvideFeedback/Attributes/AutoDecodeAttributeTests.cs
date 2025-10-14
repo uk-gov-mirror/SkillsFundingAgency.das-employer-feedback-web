@@ -1,7 +1,6 @@
 ﻿using FluentAssertions;
 using Moq;
 using NUnit.Framework;
-using SFA.DAS.EmployerFeedback.Domain.Entities.Models;
 using SFA.DAS.EmployerFeedback.Web.Attributes;
 using SFA.DAS.EmployerFeedback.Web.Models.Shared;
 using SFA.DAS.Encoding;

@@ -1,8 +1,8 @@
 ﻿using SFA.DAS.EmployerFeedback.Infrastructure.Api.OuterApi;
 using SFA.DAS.EmployerFeedback.Infrastructure.Configuration;
+using SFA.DAS.EmployerFeedback.Paging;
 using SFA.DAS.EmployerFeedback.Web.Models.Shared;
 using SFA.DAS.EmployerFeedback.Web.Paging;
-using SFA.DAS.EmployerFeedback.Paging;
 using SFA.DAS.Encoding;
 using System;
 using System.Collections.Generic;

@@ -5,15 +5,15 @@ using Microsoft.AspNetCore.Http.Features;
 using Moq;
 using Newtonsoft.Json;
 using NUnit.Framework;
+using SFA.DAS.EmployerFeedback.Domain.Types;
+using SFA.DAS.EmployerFeedback.Web.Configuration.Routing;
+using SFA.DAS.EmployerFeedback.Web.Services.EmployerRoleAuthorization;
+using SFA.DAS.GovUK.Auth.Employer;
 using SFA.DAS.Testing.AutoFixture;
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using SFA.DAS.GovUK.Auth.Employer;
 using EmployerClaims = SFA.DAS.EmployerFeedback.Infrastructure.Configuration.EmployerClaims;
-using SFA.DAS.EmployerFeedback.Domain.Types;
-using SFA.DAS.EmployerFeedback.Web.Services.EmployerRoleAuthorization;
-using SFA.DAS.EmployerFeedback.Web.Configuration.Routing;
 
 namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Services
 {

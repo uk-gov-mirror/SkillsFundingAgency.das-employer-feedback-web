@@ -1,14 +1,14 @@
-﻿using NUnit.Framework;
-using Moq;
-using FluentAssertions;
+﻿using FluentAssertions;
 using Microsoft.AspNetCore.Http;
-using System.Security.Claims;
+using Moq;
+using Newtonsoft.Json;
+using NUnit.Framework;
+using SFA.DAS.EmployerFeedback.Infrastructure.Services.UserService;
+using SFA.DAS.GovUK.Auth.Employer;
 using System;
 using System.Collections.Generic;
-using Newtonsoft.Json;
-using SFA.DAS.GovUK.Auth.Employer;
+using System.Security.Claims;
 using EmployerClaims = SFA.DAS.EmployerFeedback.Infrastructure.Configuration.EmployerClaims;
-using SFA.DAS.EmployerFeedback.Infrastructure.Services.UserService;
 
 namespace SFA.DAS.EmployerFeedback.Infrastructure.UnitTests.Services.User
 {
@@ -55,7 +55,7 @@ namespace SFA.DAS.EmployerFeedback.Infrastructure.UnitTests.Services.User
             {
                 { accountId, new EmployerUserAccountItem { Role = "Owner" } }
             };
-            
+
             var claimsJson = JsonConvert.SerializeObject(claimsData);
             _identity.AddClaim(new Claim(EmployerClaims.AccountsClaimsTypeIdentifier, claimsJson));
 
@@ -75,7 +75,7 @@ namespace SFA.DAS.EmployerFeedback.Infrastructure.UnitTests.Services.User
             {
                 { accountId, new EmployerUserAccountItem { Role = "Viewer" } }
             };
-            
+
             var claimsJson = JsonConvert.SerializeObject(claimsData);
             _identity.AddClaim(new Claim(EmployerClaims.AccountsClaimsTypeIdentifier, claimsJson));
 

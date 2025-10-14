@@ -146,7 +146,7 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.EmployerFeedback.Controllers
                         },
                         HasCompleted = true
                     },
-                    
+
                 }
             };
 

@@ -1,18 +1,18 @@
-using System;
 using AutoFixture.NUnit3;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using RestEase;
+using SFA.DAS.EmployerFeedback.Infrastructure.Api.OuterApi;
+using SFA.DAS.EmployerFeedback.Infrastructure.Api.Responses;
+using SFA.DAS.EmployerFeedback.Infrastructure.Services.UserAccounts;
+using SFA.DAS.GovUK.Auth.Employer;
 using SFA.DAS.Testing.AutoFixture;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
-using SFA.DAS.GovUK.Auth.Employer;
-using SFA.DAS.EmployerFeedback.Infrastructure.Api.OuterApi;
-using SFA.DAS.EmployerFeedback.Infrastructure.Services.UserAccounts;
-using SFA.DAS.EmployerFeedback.Infrastructure.Api.Responses;
 
 namespace SFA.DAS.EmployerRequestApprenticeTraining.Infrastructure.UnitTests.Services.UserAccounts
 {

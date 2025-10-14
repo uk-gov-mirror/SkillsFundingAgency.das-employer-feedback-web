@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace SFA.DAS.EmployerFeedback.Domain.Entities.Models
+﻿namespace SFA.DAS.EmployerFeedback.Domain.Entities.Models
 {
     public class FeedbackQuestionAttribute
     {
