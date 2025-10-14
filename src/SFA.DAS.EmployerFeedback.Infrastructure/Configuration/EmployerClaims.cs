@@ -1,5 +1,6 @@
 ﻿namespace SFA.DAS.EmployerFeedback.Infrastructure.Configuration;
 
+// NOSONAR
 public static class EmployerClaims
 {
     public static string UserId => "http://das/employer/identity/claims/id";
