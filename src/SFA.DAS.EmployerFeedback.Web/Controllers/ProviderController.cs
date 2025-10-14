@@ -55,7 +55,7 @@ namespace SFA.DAS.EmployerFeedback.Web.Controllers
                 var userId = GetUserId().Value;
                 var pagingState = GetPagingState();
                 pagingState.PageIndex = pageIndex;
-                SetPagingState(pagingState);
+                await SetPagingState(pagingState);
 
                 var model = await _trainingProviderService.GetTrainingProviderSearchViewModel(
                     request.EncodedAccountId,
@@ -130,7 +130,7 @@ namespace SFA.DAS.EmployerFeedback.Web.Controllers
                 var pagingState = GetPagingState();
                 pagingState.SortColumn = sortColumn;
                 pagingState.SortDirection = sortDirection;
-                SetPagingState(pagingState);
+                await SetPagingState(pagingState);
                 return RedirectToAction(nameof(Index), new { encodedAccountId });
             }
             catch (Exception ex)
@@ -150,7 +150,7 @@ namespace SFA.DAS.EmployerFeedback.Web.Controllers
                 var pagingState = GetPagingState();
                 pagingState.SelectedProviderName = string.Empty;
                 pagingState.SelectedFeedbackStatus = string.Empty;
-                SetPagingState(pagingState);
+                await SetPagingState(pagingState);
 
                 return RedirectToAction(nameof(Index), new { encodedAccountId });
             }
@@ -272,7 +272,7 @@ namespace SFA.DAS.EmployerFeedback.Web.Controllers
             return pagingState;
         }
 
-        private async void SetPagingState(PagingState pagingState)
+        private async Task SetPagingState(PagingState pagingState)
         {
             var userId = _userService.GetUserId();
             await _sessionService.Set($"{userId}_PagingState", pagingState);
