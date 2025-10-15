@@ -24,8 +24,7 @@ namespace SFA.DAS.EmployerFeedback.Web.StartupExtensions
                 },
                 null,
                 typeof(UserAccountsService)
-                );
-
+            );
             return services;
         }
     }

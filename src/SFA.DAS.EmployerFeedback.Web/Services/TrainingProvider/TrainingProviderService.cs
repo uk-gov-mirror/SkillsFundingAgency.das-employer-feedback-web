@@ -14,19 +14,14 @@ namespace SFA.DAS.EmployerFeedback.Services
     public interface ITrainingProviderService
     {
         Task<ProviderSearchViewModel> GetTrainingProviderSearchViewModel(string encodedAccountId, Guid userRef, string selectedProviderName, string selectedFeedbackStatus, int pageSize, int pageIndex, string sortColumn, string sortDirection);
-
         Task<ProviderSearchConfirmationViewModel> GetTrainingProviderConfirmationViewModel(long accountId, Guid userref, long providerId);
-
     }
-
-
 
     public class TrainingProviderService : ITrainingProviderService
     {
         private readonly IEncodingService _encodingService;
         private readonly EmployerFeedbackWebConfiguration _config;
         private readonly IEmployerFeedbackOuterApi _employerFeedbackOuterApi;
-
         private const string NOT_YET_SUBMITTED = "Not yet submitted";
 
         public TrainingProviderService(IEncodingService encodingService, EmployerFeedbackWebConfiguration config, IEmployerFeedbackOuterApi employerFeedbackOuterApi)
@@ -75,7 +70,6 @@ namespace SFA.DAS.EmployerFeedback.Services
             filteredProviders = ApplyFeedbackStatusFilter(filteredProviders, selectedFeedbackStatus);
 
             // Sort
-
             if (PagingState.SortDescending == model.SortDirection)
             {
                 if (!string.IsNullOrWhiteSpace(model.SortColumn) && model.SortColumn.Equals("FeedbackStatus", StringComparison.InvariantCultureIgnoreCase))
@@ -108,17 +102,14 @@ namespace SFA.DAS.EmployerFeedback.Services
             }
 
             // Page
-
             var pagedFilteredProviders = filteredProviders.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
             model.TrainingProviders = new PaginatedList<ProviderSearchViewModel.EmployerTrainingProvider>(pagedFilteredProviders, filteredProviders.Count(), pageIndex, pageSize, 6);
-
             return model;
         }
 
         public async Task<ProviderSearchConfirmationViewModel> GetTrainingProviderConfirmationViewModel(long accountId, Guid userref, long providerId)
         {
             var response = await _employerFeedbackOuterApi.GetTrainingProviderSearch(accountId, userref);
-
             if (null == response)
             {
                 return null;
@@ -133,7 +124,6 @@ namespace SFA.DAS.EmployerFeedback.Services
             var model = new ProviderSearchConfirmationViewModel();
             model.ProviderId = provider.Ukprn;
             model.ProviderName = provider.ProviderName;
-
             return model;
         }
 

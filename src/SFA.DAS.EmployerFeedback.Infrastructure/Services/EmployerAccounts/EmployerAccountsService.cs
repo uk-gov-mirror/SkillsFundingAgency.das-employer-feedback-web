@@ -17,7 +17,6 @@ namespace SFA.DAS.EmployerFeedback.Infrastructure.Services.EmployerAccount
         public async Task<EmployerUserAccounts> GetUserAccounts(string userId, string email)
         {
             var result = await _apiClient.GetUserAccounts(userId, email);
-
             return new EmployerUserAccounts
             {
                 EmployerAccounts = result.UserAccounts != null

@@ -2,10 +2,12 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.Logging;
 using SFA.DAS.EmployerFeedback.Infrastructure;
 using SFA.DAS.EmployerFeedback.Infrastructure.Configuration;
 using SFA.DAS.EmployerFeedback.Infrastructure.Configuration.Routing;
 using SFA.DAS.EmployerFeedback.Infrastructure.Services.SessionStorage;
+using SFA.DAS.EmployerFeedback.Infrastructure.Services.UserService;
 using SFA.DAS.EmployerFeedback.Web.Authorization;
 using SFA.DAS.EmployerFeedback.Web.Configuration.Routing;
 using SFA.DAS.EmployerFeedback.Web.Models.Shared;
@@ -19,12 +21,12 @@ namespace SFA.DAS.EmployerFeedback.Web.Controllers
     [Authorize(Policy = nameof(PolicyNames.NoneRole))]
     [ServiceFilter(typeof(EnsureSessionExists))]
     [Route(RoutePrefixPaths.FeedbackRoutePath)]
-    public class QuestionsController : Controller
+    public class QuestionsController : ControllerBase
     {
         private const string ReturnUrlKey = "ReturnUrl";
         private readonly ISessionStorageService _sessionService;
 
-        public QuestionsController(ISessionStorageService sessionService)
+        public QuestionsController(ISessionStorageService sessionService, IUserService userService, ILogger<QuestionsController> logger) : base(userService, logger)
         {
             _sessionService = sessionService;
         }
@@ -33,8 +35,8 @@ namespace SFA.DAS.EmployerFeedback.Web.Controllers
         public async Task<IActionResult> QuestionOne(string encodedAccountId, string returnUrl = null)
         {
             TempData[ReturnUrlKey] = returnUrl;
-            var idClaim = HttpContext.User.FindFirst(EmployerClaims.UserId);
-            var cachedAnswers = await _sessionService.Get<SurveyModel>(idClaim.Value);
+            var idClaim = GetUserId().Value;
+            var cachedAnswers = await _sessionService.Get<SurveyModel>(idClaim.ToString());
             return View(cachedAnswers);
         }
 
@@ -49,9 +51,7 @@ namespace SFA.DAS.EmployerFeedback.Web.Controllers
             var idClaim = HttpContext.User.FindFirst(EmployerClaims.UserId);
             var sessionAnswer = await _sessionService.Get<SurveyModel>(idClaim.Value);
             SetStengths(sessionAnswer, surveyModel.Attributes.Where(x => x.Good));
-
             await _sessionService.Set(idClaim.Value, sessionAnswer);
-
             return await HandleRedirect(RouteNames.QuestionTwo_Get);
         }
 
@@ -74,13 +74,10 @@ namespace SFA.DAS.EmployerFeedback.Web.Controllers
 
             var idClaim = HttpContext.User.FindFirst(EmployerClaims.UserId);
             var sessionAnswer = await _sessionService.Get<SurveyModel>(idClaim.Value);
-
             SetWeaknesses(sessionAnswer, surveyModel.Attributes.Where(x => x.Bad));
             await _sessionService.Set(idClaim.Value, sessionAnswer);
             return await HandleRedirect(RouteNames.QuestionThree_Get);
         }
-
-
 
         [HttpGet("question-three", Name = RouteNames.QuestionThree_Get)]
         public async Task<IActionResult> QuestionThree(string returnUrl = null)
@@ -130,7 +127,7 @@ namespace SFA.DAS.EmployerFeedback.Web.Controllers
                 attr.Good = match != null;
             }
         }
-
+        
         private void SetWeaknesses(SurveyModel sessionAnswer, IEnumerable<ProviderAttributeModel> currentAnswerAttributes)
         {
             foreach (var attr in sessionAnswer.Attributes)

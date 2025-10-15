@@ -36,7 +36,6 @@ namespace SFA.DAS.EmployerFeedback.Web.StartupExtensions
                     policy.Requirements.Add(new AccountActiveRequirement());
                 });
             });
-
             return services;
         }
     }

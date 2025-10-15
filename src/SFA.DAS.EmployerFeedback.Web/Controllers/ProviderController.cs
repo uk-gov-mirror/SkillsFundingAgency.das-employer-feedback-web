@@ -20,8 +20,6 @@ using System.Threading.Tasks;
 
 namespace SFA.DAS.EmployerFeedback.Web.Controllers
 {
-
-
     [Authorize(Policy = nameof(PolicyNames.NoneRole))]
     public class ProviderController : ControllerBase
     {
@@ -72,7 +70,6 @@ namespace SFA.DAS.EmployerFeedback.Web.Controllers
 
                 await _sessionService.Set($"{userId}_ProviderCount", model.TrainingProviders.TotalRecordCount);
                 await _sessionService.Set($"{userId}_FeedbackSource", request.FeedbackSource);
-
 
                 return View(model);
             }
@@ -151,7 +148,6 @@ namespace SFA.DAS.EmployerFeedback.Web.Controllers
                 pagingState.SelectedProviderName = string.Empty;
                 pagingState.SelectedFeedbackStatus = string.Empty;
                 await SetPagingState(pagingState);
-
                 return RedirectToAction(nameof(Index), new { encodedAccountId });
             }
             catch (Exception ex)
@@ -198,7 +194,6 @@ namespace SFA.DAS.EmployerFeedback.Web.Controllers
                     return RedirectToAction("Index", new { encodedAccountId = accountId, providerId = ukprn });
                 }
 
-
                 var providerAttributes = await _employerFeedbackOuterApi.GetAllAttributes();
                 if (providerAttributes == null)
                 {
@@ -207,10 +202,7 @@ namespace SFA.DAS.EmployerFeedback.Web.Controllers
                 }
 
                 var providerAttributesModel = providerAttributes.Select(s => new ProviderAttributeModel { Name = s.AttributeName }).ToList();
-
-
                 var userId = GetUserId().Value;
-
                 var feedbackSource = await _sessionService.Get<FeedbackSource>($"{userId}_FeedbackSource");
 
                 var newSurveyModel = new SurveyModel
@@ -263,7 +255,7 @@ namespace SFA.DAS.EmployerFeedback.Web.Controllers
 
         private PagingState GetPagingState()
         {
-            var userId = _userService.GetUserId();
+            var userId = GetUserId().Value;
             var pagingState = _sessionService.Get<PagingState>($"{userId}_PagingState").Result;
             if (null == pagingState)
             {

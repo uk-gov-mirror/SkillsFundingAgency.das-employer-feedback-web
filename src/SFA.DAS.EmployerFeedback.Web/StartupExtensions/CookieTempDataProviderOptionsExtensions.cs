@@ -16,7 +16,6 @@ namespace SFA.DAS.EmployerFeedback.Web.StartupExtensions
                 options.Cookie.IsEssential = true;
                 options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
             });
-
             return services;
         }
     }

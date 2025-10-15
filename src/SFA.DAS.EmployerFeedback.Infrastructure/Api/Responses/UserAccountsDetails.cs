@@ -1,5 +1,4 @@
 using Newtonsoft.Json;
-using SFA.DAS.GovUK.Auth.Employer;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 
@@ -18,18 +17,5 @@ namespace SFA.DAS.EmployerFeedback.Infrastructure.Api.Responses
         public string LastName { get; set; }
         [JsonProperty("userAccounts")]
         public List<EmployerIdentifier> UserAccounts { get; set; }
-    }
-
-    [ExcludeFromCodeCoverage]
-    public class EmployerIdentifier
-    {
-        [JsonProperty("encodedAccountId")]
-        public string AccountId { get; set; }
-        [JsonProperty("dasAccountName")]
-        public string EmployerName { get; set; }
-        [JsonProperty("role")]
-        public string Role { get; set; }
-        [JsonProperty("apprenticeshipEmployerType")]
-        public ApprenticeshipEmployerType ApprenticeshipEmployerType { get; set; }
     }
 }

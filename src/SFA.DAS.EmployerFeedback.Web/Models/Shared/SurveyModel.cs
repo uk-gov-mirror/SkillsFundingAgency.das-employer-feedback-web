@@ -10,9 +10,7 @@ namespace SFA.DAS.EmployerFeedback.Web.Models.Shared
     public class SurveyModel
     {
         public Guid UserRef { get; set; }
-
         public long Ukprn { get; set; }
-
         public long AccountId { get; set; }
 
         [EnsureMaxThreeProviderAttribute]
@@ -22,15 +20,10 @@ namespace SFA.DAS.EmployerFeedback.Web.Models.Shared
         public ProviderRating? Rating { get; set; }
 
         public bool HasStrengths => Attributes.Any(attr => attr.Good);
-
         public bool HasWeaknesses => Attributes.Any(attr => attr.Bad);
-
         public bool Submitted { get; internal set; }
-
         public string ProviderName { get; set; }
-
         public string FatUrl { get; internal set; }
-
         public FeedbackSource FeedbackSource { get; set; }
     }
 }

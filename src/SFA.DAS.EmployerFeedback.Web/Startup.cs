@@ -37,9 +37,7 @@ namespace SFA.DAS.EmployerFeedback.Web
         {
             services.AddHttpContextAccessor();
             services.AddConfigurationOptions(_configuration);
-
             services.AddOpenTelemetryRegistration(_configuration["APPLICATIONINSIGHTS_CONNECTION_STRING"]!);
-
             services.AddAntiforgery(options =>
             {
                 options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
@@ -53,7 +51,6 @@ namespace SFA.DAS.EmployerFeedback.Web
                 .AddSingleton(configurationOuterApi);
 
             services.AddControllersWithViews();
-
             services
                 .AddMvc(options =>
                 {
@@ -127,7 +124,6 @@ namespace SFA.DAS.EmployerFeedback.Web
             app.UseAuthorization();
             app.UseMiddleware<SecurityHeadersMiddleware>();
             app.UseSession();
-
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(

@@ -27,8 +27,6 @@ namespace SFA.DAS.EmployerFeedback.Web.StartupExtensions
     {
         public static IServiceCollection AddServiceRegistrations(this IServiceCollection services)
         {
-            //services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(GetExistingEmployerRequestQuery).Assembly));
-
             services.AddSingleton<IAuthorizationHandler, OwnerRoleAuthorizationHandler>();
             services.AddSingleton<IAuthorizationHandler, TransactorRoleAuthorizationHandler>();
             services.AddSingleton<IAuthorizationHandler, ViewerRoleAuthorizationHandler>();
@@ -37,12 +35,9 @@ namespace SFA.DAS.EmployerFeedback.Web.StartupExtensions
 
             services.AddTransient<IEmployerRoleAuthorizationService, EmployerRoleAuthorizationService>();
             services.AddTransient<IGovAuthEmployerAccountService, UserAccountsService>();
-
             services.AddTransient<ISessionStorageService, SessionStorageService>();
             services.AddTransient<ICacheStorageService, CacheStorageService>();
-
             services.AddTransient<ValidateRequiredQueryParametersAttribute>();
-
             services.AddTransient<EnsureSessionExists>();
             services.AddTransient<ITrainingProviderService, TrainingProviderService>();
             services.AddTransient<ReviewAnswersOrchestrator>();
@@ -69,7 +64,6 @@ namespace SFA.DAS.EmployerFeedback.Web.StartupExtensions
                 .AddHttpMessageHandler<Http.MessageHandlers.LoggingMessageHandler>();
 
             services.AddTransient<IApimClientConfiguration>((_) => configuration);
-
             return services;
         }
     }

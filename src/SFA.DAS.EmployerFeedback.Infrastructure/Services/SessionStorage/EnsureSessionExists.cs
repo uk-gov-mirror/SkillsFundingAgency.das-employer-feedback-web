@@ -20,7 +20,7 @@ namespace SFA.DAS.EmployerFeedback.Infrastructure
             _sessionService = sessionService;
             _logger = logger;
         }
-
+        
         public override void OnActionExecuting(ActionExecutingContext context)
         {
             var c = context.Controller as Controller;

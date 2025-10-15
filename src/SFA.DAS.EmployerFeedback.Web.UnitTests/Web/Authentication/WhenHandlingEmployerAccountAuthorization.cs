@@ -37,7 +37,7 @@ namespace UnitTests.Web.Authentication
             employerIdentifier.Role = role;
             employerIdentifier.AccountId = employerIdentifier.AccountId.ToUpper();
             var employerAccounts = new Dictionary<string, EmployerIdentifier> { { employerIdentifier.AccountId, employerIdentifier } };
-            var claim = new Claim(EmployerClaims.AccountsClaimsTypeIdentifier, JsonConvert.SerializeObject(employerAccounts));
+            var claim = new Claim(EmployerClaims.AssociatedAccounts, JsonConvert.SerializeObject(employerAccounts));
             var claimsPrinciple = new ClaimsPrincipal(new[] { new ClaimsIdentity(new[] { claim }) });
             var context = new AuthorizationHandlerContext(new[] { requirement }, claimsPrinciple, null);
             var httpContext = new DefaultHttpContext(new FeatureCollection());
@@ -63,7 +63,7 @@ namespace UnitTests.Web.Authentication
             employerIdentifier.Role = "Owner";
             employerIdentifier.AccountId = employerIdentifier.AccountId.ToUpper();
             var employerAccounts = new Dictionary<string, EmployerIdentifier> { { employerIdentifier.AccountId, employerIdentifier } };
-            var claim = new Claim(EmployerClaims.AccountsClaimsTypeIdentifier, JsonConvert.SerializeObject(employerAccounts));
+            var claim = new Claim(EmployerClaims.AssociatedAccounts, JsonConvert.SerializeObject(employerAccounts));
             var claimsPrinciple = new ClaimsPrincipal(new[] { new ClaimsIdentity(new[] { claim }) });
             var context = new AuthorizationHandlerContext(new[] { requirement }, claimsPrinciple, null);
             var responseMock = new FeatureCollection();
@@ -102,7 +102,7 @@ namespace UnitTests.Web.Authentication
 
             var userClaim = new Claim(ClaimTypes.NameIdentifier, userId);
             var employerAccounts = new Dictionary<string, EmployerIdentifier> { { employerIdentifier.AccountId, employerIdentifier } };
-            var employerAccountClaim = new Claim(EmployerClaims.AccountsClaimsTypeIdentifier, JsonConvert.SerializeObject(employerAccounts));
+            var employerAccountClaim = new Claim(EmployerClaims.AssociatedAccounts, JsonConvert.SerializeObject(employerAccounts));
             var claimsPrinciple = new ClaimsPrincipal(new[] { new ClaimsIdentity(new[] { employerAccountClaim, userClaim, new Claim(ClaimTypes.Email, email) }) });
             var context = new AuthorizationHandlerContext(new[] { requirement }, claimsPrinciple, null);
             var responseMock = new FeatureCollection();
@@ -140,7 +140,7 @@ namespace UnitTests.Web.Authentication
 
             var userClaim = new Claim(EmployerClaims.UserId, userId);
             var employerAccounts = new Dictionary<string, EmployerIdentifier> { { employerIdentifier.AccountId, employerIdentifier } };
-            var employerAccountClaim = new Claim(EmployerClaims.AccountsClaimsTypeIdentifier, JsonConvert.SerializeObject(employerAccounts));
+            var employerAccountClaim = new Claim(EmployerClaims.AssociatedAccounts, JsonConvert.SerializeObject(employerAccounts));
             var claimsPrinciple = new ClaimsPrincipal(new[] { new ClaimsIdentity(new[] { employerAccountClaim, userClaim }) });
             var context = new AuthorizationHandlerContext(new[] { requirement }, claimsPrinciple, null);
             var responseMock = new FeatureCollection();
@@ -166,7 +166,7 @@ namespace UnitTests.Web.Authentication
             employerIdentifier.Role = "Viewer-Owner-Transactor";
             employerIdentifier.AccountId = employerIdentifier.AccountId.ToUpper();
             var employerAccounts = new Dictionary<string, EmployerIdentifier> { { employerIdentifier.AccountId, employerIdentifier } };
-            var claim = new Claim(EmployerClaims.AccountsClaimsTypeIdentifier, JsonConvert.SerializeObject(employerAccounts));
+            var claim = new Claim(EmployerClaims.AssociatedAccounts, JsonConvert.SerializeObject(employerAccounts));
             var claimsPrinciple = new ClaimsPrincipal(new[] { new ClaimsIdentity(new[] { claim }) });
             var context = new AuthorizationHandlerContext(new[] { requirement }, claimsPrinciple, null);
             var responseMock = new FeatureCollection();
@@ -193,7 +193,7 @@ namespace UnitTests.Web.Authentication
             employerIdentifier.Role = "Owner";
             employerIdentifier.AccountId = employerIdentifier.AccountId.ToUpper();
             var employerAccounts = new Dictionary<string, EmployerIdentifier> { { employerIdentifier.AccountId, employerIdentifier } };
-            var claim = new Claim(EmployerClaims.AccountsClaimsTypeIdentifier, JsonConvert.SerializeObject(employerAccounts));
+            var claim = new Claim(EmployerClaims.AssociatedAccounts, JsonConvert.SerializeObject(employerAccounts));
             var claimsPrinciple = new ClaimsPrincipal(new[] { new ClaimsIdentity(new[] { claim }) });
             var context = new AuthorizationHandlerContext(new[] { requirement }, claimsPrinciple, null);
             var responseMock = new FeatureCollection();
@@ -271,7 +271,7 @@ namespace UnitTests.Web.Authentication
             // Arrange
             employerIdentifier.Role = "Owner";
             employerIdentifier.AccountId = employerIdentifier.AccountId.ToUpper();
-            var claim = new Claim(EmployerClaims.AccountsClaimsTypeIdentifier, JsonConvert.SerializeObject(employerIdentifier));
+            var claim = new Claim(EmployerClaims.AssociatedAccounts, JsonConvert.SerializeObject(employerIdentifier));
             var claimsPrinciple = new ClaimsPrincipal(new[] { new ClaimsIdentity(new[] { claim }) });
             var context = new AuthorizationHandlerContext(new[] { requirement }, claimsPrinciple, null);
             var responseMock = new FeatureCollection();

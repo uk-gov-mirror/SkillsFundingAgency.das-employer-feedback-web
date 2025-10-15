@@ -19,7 +19,6 @@ namespace SFA.DAS.EmployerFeedback.Web.StartupExtensions
                     HttpOnly = true
                 };
             });
-
             return services;
         }
     }

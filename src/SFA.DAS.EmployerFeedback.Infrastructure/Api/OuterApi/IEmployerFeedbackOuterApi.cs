@@ -10,7 +10,6 @@ namespace SFA.DAS.EmployerFeedback.Infrastructure.Api.OuterApi
 {
     public interface IEmployerFeedbackOuterApi
     {
-
         [Get("/attributes")]
         Task<IEnumerable<FeedbackQuestionAttribute>> GetAllAttributes();
 
@@ -28,6 +27,5 @@ namespace SFA.DAS.EmployerFeedback.Infrastructure.Api.OuterApi
 
         [Get("/accountusers/{userId}/accounts")]
         Task<UserAccountsDetails> GetUserAccounts([Path] string userId, [Query] string email);
-
     }
 }

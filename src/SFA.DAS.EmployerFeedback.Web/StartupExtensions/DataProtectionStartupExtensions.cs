@@ -19,7 +19,6 @@ namespace SFA.DAS.EmployerFeedback.Web.StartupExtensions
 
             var redisConnectionString = configWeb.RedisConnectionString;
             var dataProtectionKeysDatabase = configWeb.DataProtectionKeysDatabase;
-
             var redis = ConnectionMultiplexer.Connect($"{redisConnectionString},{dataProtectionKeysDatabase}");
 
             services.AddDataProtection()

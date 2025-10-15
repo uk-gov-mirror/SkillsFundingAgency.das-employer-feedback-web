@@ -206,7 +206,7 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Services
             employerUserAccount.Role = "Owner";
 
             var employerAccounts = new Dictionary<string, EmployerUserAccountItem> { { employerUserAccount.AccountId, employerUserAccount } };
-            var employerAccountClaim = new Claim(EmployerClaims.AccountsClaimsTypeIdentifier, JsonConvert.SerializeObject(employerAccounts));
+            var employerAccountClaim = new Claim(EmployerClaims.AssociatedAccounts, JsonConvert.SerializeObject(employerAccounts));
             var claimsPrinciple = new ClaimsPrincipal(new[] { new ClaimsIdentity(new[]
             {
                 employerAccountClaim,
@@ -237,7 +237,7 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Services
             employerUserAccount.Role = "Owner";
 
             var employerAccounts = new Dictionary<string, EmployerUserAccountItem> { { employerUserAccount.AccountId, employerUserAccount } };
-            var employerAccountClaim = new Claim(EmployerClaims.AccountsClaimsTypeIdentifier, JsonConvert.SerializeObject(employerAccounts));
+            var employerAccountClaim = new Claim(EmployerClaims.AssociatedAccounts, JsonConvert.SerializeObject(employerAccounts));
             var claimsPrinciple = new ClaimsPrincipal(new[] { new ClaimsIdentity(new[]
             {
                 employerAccountClaim,
@@ -259,7 +259,7 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Services
         private ClaimsPrincipal GetClaims(string userId, string email, EmployerUserAccountItem employerUserAccount)
         {
             var employerAccounts = new Dictionary<string, EmployerUserAccountItem> { { employerUserAccount.AccountId, employerUserAccount } };
-            var employerAccountClaim = new Claim(EmployerClaims.AccountsClaimsTypeIdentifier, JsonConvert.SerializeObject(employerAccounts));
+            var employerAccountClaim = new Claim(EmployerClaims.AssociatedAccounts, JsonConvert.SerializeObject(employerAccounts));
 
             return new ClaimsPrincipal(new[] { new ClaimsIdentity(new[]
             {

@@ -25,11 +25,8 @@ namespace SFA.DAS.EmployerFeedback.Web.Helpers
         public override void Process(TagHelperContext context, TagHelperOutput output)
         {
             output.TagName = "";
-
             var content = new StringBuilder();
-
             content.Append(!string.IsNullOrWhiteSpace(Class) ? $"<ul class=\"{Class}\">" : $"<ul>");
-
             var modelValue = Property.Model as List<string>;
 
             foreach (var tag in Source)
@@ -41,17 +38,17 @@ namespace SFA.DAS.EmployerFeedback.Web.Helpers
                 }
 
                 content.Append("<li");
-
                 if (!string.IsNullOrWhiteSpace(ItemClass))
                 {
                     content.Append($" class=\"{ItemClass}\"");
                 }
+                
                 content.Append('>');
                 content.Append($"{tag.Description}");
                 content.Append("</li>");
             }
+            
             content.Append("</ul>");
-
             output.PostContent.SetHtmlContent(content.ToString());
             output.Attributes.Clear();
         }

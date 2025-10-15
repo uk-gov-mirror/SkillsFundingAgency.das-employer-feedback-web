@@ -20,7 +20,6 @@ namespace SFA.DAS.EmployerFeedback.Web.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ISessionStorageService _sessionService;
         private readonly ILogger<HomeController> _logger;
         private readonly IConfiguration _config;
         private readonly IStubAuthenticationService _stubAuthenticationService;
@@ -30,15 +29,12 @@ namespace SFA.DAS.EmployerFeedback.Web.Controllers
         public const string ErrorRouteGet = nameof(ErrorRouteGet);
         #endregion
 
-
         public HomeController(
-            ISessionStorageService sessionService,
             ILogger<HomeController> logger,
             IConfiguration config,
             IStubAuthenticationService stubAuthenticationService,
             IHttpContextAccessor contextAccessor)
         {
-            _sessionService = sessionService;
             _logger = logger;
             _config = config;
             _contextAccessor = contextAccessor;
@@ -61,11 +57,13 @@ namespace SFA.DAS.EmployerFeedback.Web.Controllers
             var authenticationProperties = new AuthenticationProperties();
             authenticationProperties.Parameters.Clear();
             authenticationProperties.Parameters.Add("id_token", idToken);
+
             var schemes = new List<string>
             {
                 CookieAuthenticationDefaults.AuthenticationScheme
             };
             _ = bool.TryParse(_config["StubAuth"], out var stubAuth);
+
             if (!stubAuth)
             {
                 schemes.Add(OpenIdConnectDefaults.AuthenticationScheme);

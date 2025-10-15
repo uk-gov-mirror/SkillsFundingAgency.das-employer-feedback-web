@@ -31,7 +31,7 @@ namespace SFA.DAS.EmployerFeedback.Infrastructure.Services.UserService
 
         public bool IsUserChangeAuthorized(string accountId)
         {
-            var result = TryGetUserClaimValue(EmployerClaims.AccountsClaimsTypeIdentifier, out var associatedAccountsClaim);
+            var result = TryGetUserClaimValue(EmployerClaims.AssociatedAccounts, out var associatedAccountsClaim);
             if (!result)
             {
                 return false;
@@ -62,7 +62,7 @@ namespace SFA.DAS.EmployerFeedback.Infrastructure.Services.UserService
 
         public IEnumerable<string> GetUserOwnerTransactorAccountIds()
         {
-            var result = TryGetUserClaimValue(EmployerClaims.AccountsClaimsTypeIdentifier, out var associatedAccountsClaim);
+            var result = TryGetUserClaimValue(EmployerClaims.AssociatedAccounts, out var associatedAccountsClaim);
             if (!result)
             {
                 return [];
@@ -98,9 +98,7 @@ namespace SFA.DAS.EmployerFeedback.Infrastructure.Services.UserService
         {
             var claimsIdentity = (ClaimsIdentity)_httpContextAccessor.HttpContext.User.Identity;
             var claim = claimsIdentity.FindFirst(key);
-
             var exists = claim != null;
-
             value = exists ? claim.Value : null;
 
             return exists;

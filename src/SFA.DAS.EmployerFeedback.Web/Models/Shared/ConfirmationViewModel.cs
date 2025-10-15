@@ -5,9 +5,7 @@ namespace SFA.DAS.EmployerFeedback.Web.Models.Shared
     public class ConfirmationViewModel
     {
         public string ProviderName { get; set; }
-
         public ProviderRating FeedbackRating { get; set; }
-
         public string FatUrl { get; internal set; }
         public string ComplaintToProviderSiteUrl { get; set; }
         public string ComplaintSiteUrl { get; set; }

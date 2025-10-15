@@ -27,12 +27,8 @@ namespace SFA.DAS.EmployerFeedback.Web.Controllers
         private readonly ReviewAnswersOrchestrator _orchestrator;
         private readonly EmployerFeedbackWebConfiguration _config;
 
-        public ReviewAnswersController(
-            ISessionStorageService sessionService
-            , ReviewAnswersOrchestrator orchestrator
-            , EmployerFeedbackWebConfiguration config,
-             IEmployerFeedbackOuterApi employerFeedbackOuterApi
-            )
+        public ReviewAnswersController(ISessionStorageService sessionService, ReviewAnswersOrchestrator orchestrator
+            , EmployerFeedbackWebConfiguration config, IEmployerFeedbackOuterApi employerFeedbackOuterApi)
         {
             _sessionService = sessionService;
             _orchestrator = orchestrator;
@@ -57,7 +53,6 @@ namespace SFA.DAS.EmployerFeedback.Web.Controllers
             var answers = await _sessionService.Get<SurveyModel>(idClaim.Value);
             var trainingProviders = await _employerFeedbackOuterApi.GetTrainingProviderSearch(answers.AccountId, Guid.Parse(idClaim.Value));
             var providerFeedback = trainingProviders.Providers.Where(x => x.Ukprn == answers.Ukprn).First();
-
             var accountId = HttpContext.GetRouteData().Values[RouteValueKeys.EncodedAccountId] as string;
 
             if (providerFeedback.Feedback != null && (DateTime.UtcNow - providerFeedback.Feedback?.DateTimeCompleted).Value.TotalDays < _config.FeedbackWaitPeriodDays)

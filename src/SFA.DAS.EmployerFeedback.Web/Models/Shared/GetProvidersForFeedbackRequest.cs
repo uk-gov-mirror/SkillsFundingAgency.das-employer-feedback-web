@@ -10,7 +10,6 @@ namespace SFA.DAS.EmployerFeedback.Web.ViewModels
 
         [AutoDecode(nameof(EncodedAccountId), EncodingType.AccountId)]
         public long AccountId { get; set; }
-
         public FeedbackSource FeedbackSource { get; set; } = FeedbackSource.AdHoc;
 
     }

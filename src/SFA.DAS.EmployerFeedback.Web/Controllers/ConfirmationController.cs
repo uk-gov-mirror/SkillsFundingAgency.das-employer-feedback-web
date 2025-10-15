@@ -43,7 +43,6 @@ namespace SFA.DAS.EmployerFeedback.Web.Controllers
             await _sessionService.Remove($"{idClaim.Value}_PagingState");  // remove paging state incase we loop round for another provider
             var hasMultipleProviders = providerCount > 0;
 
-
             var confirmationVm = new ConfirmationViewModel
             {
                 ProviderName = surveyModel.ProviderName,

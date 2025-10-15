@@ -11,7 +11,6 @@ namespace SFA.DAS.EmployerFeedback.Web.Models.Shared
         public Guid UserRef { get; set; }
         public string EncodedAccountId { get; set; }
 
-
         [Display(Name = "Training provider")]
         public string SelectedProviderName { get; set; }
         public IEnumerable<string> ProviderNameFilter { get; set; }
@@ -20,14 +19,11 @@ namespace SFA.DAS.EmployerFeedback.Web.Models.Shared
         public string SelectedFeedbackStatus { get; set; }
         public IEnumerable<string> FeedbackStatusFilter { get; set; }
 
-
-
         public PaginatedList<ProviderSearchViewModel.EmployerTrainingProvider> TrainingProviders { get; set; }
         public string Fragment { get; set; }
         public string SortColumn { get; set; }
         public string SortDirection { get; set; }
         public int UnfilteredTotalRecordCount { get; set; }
-
         public string ChangePageAction { get; set; }
 
         public class EmployerTrainingProvider

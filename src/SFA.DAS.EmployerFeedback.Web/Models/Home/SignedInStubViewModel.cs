@@ -23,13 +23,11 @@ namespace SFA.DAS.EmployerFeedback.Web.Models.Home
 
         public string StubEmail => _claimsPrinciple.Claims.FirstOrDefault(c => c.Type.Equals(ClaimTypes.Email))?.Value;
         public string StubId => _claimsPrinciple.Claims.FirstOrDefault(c => c.Type.Equals(ClaimTypes.NameIdentifier))?.Value;
-
         public string ReturnUrl { get; }
-
 
         public List<EmployerUserAccountItem> GetAccounts()
         {
-            var associatedAccountsClaim = _claimsPrinciple.Claims.FirstOrDefault(c => c.Type.Equals(EmployerClaims.AccountsClaimsTypeIdentifier))?.Value;
+            var associatedAccountsClaim = _claimsPrinciple.Claims.FirstOrDefault(c => c.Type.Equals(EmployerClaims.AssociatedAccounts))?.Value;
             if (string.IsNullOrEmpty(associatedAccountsClaim))
                 return new List<EmployerUserAccountItem>();
 

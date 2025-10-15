@@ -44,7 +44,6 @@ namespace SFA.DAS.EmployerFeedback.Web.Authorization
             }
 
             context.Succeed(requirement);
-
             return Task.CompletedTask;
         }
 
@@ -54,14 +53,14 @@ namespace SFA.DAS.EmployerFeedback.Web.Authorization
             {
                 return false;
             }
-            var accountIdFromUrl = _httpContextAccessor.HttpContext.Request.RouteValues[RouteValueKeys.EncodedAccountId].ToString().ToUpper();
-            var employerAccountClaim = context.User.FindFirst(c => c.Type.Equals(EmployerClaims.AccountsClaimsTypeIdentifier));
 
+            var accountIdFromUrl = _httpContextAccessor.HttpContext.Request.RouteValues[RouteValueKeys.EncodedAccountId].ToString().ToUpper();
+            var employerAccountClaim = context.User.FindFirst(c => c.Type.Equals(EmployerClaims.AssociatedAccounts));
+            
             if (employerAccountClaim?.Value == null)
                 return false;
 
             Dictionary<string, EmployerUserAccountItem> employerAccounts;
-
             try
             {
                 employerAccounts = JsonConvert.DeserializeObject<Dictionary<string, EmployerUserAccountItem>>(employerAccountClaim.Value);
@@ -73,7 +72,6 @@ namespace SFA.DAS.EmployerFeedback.Web.Authorization
             }
 
             EmployerUserAccountItem employerIdentifier = null;
-
             if (employerAccounts != null)
             {
                 employerIdentifier = employerAccounts.ContainsKey(accountIdFromUrl)
@@ -91,16 +89,13 @@ namespace SFA.DAS.EmployerFeedback.Web.Authorization
                     .First(c => c.Type.Equals(requiredIdClaim));
 
                 var email = context.User.Claims.FirstOrDefault(c => c.Type.Equals(ClaimTypes.Email))?.Value;
-
                 var userId = userClaim.Value;
-
                 var result = _accountsService.GetUserAccounts(userId, email).Result;
 
                 var accountsAsJson = JsonConvert.SerializeObject(result.EmployerAccounts.ToDictionary(k => k.AccountId));
-                var associatedAccountsClaim = new Claim(EmployerClaims.AccountsClaimsTypeIdentifier, accountsAsJson, JsonClaimValueTypes.Json);
+                var associatedAccountsClaim = new Claim(EmployerClaims.AssociatedAccounts, accountsAsJson, JsonClaimValueTypes.Json);
 
                 var updatedEmployerAccounts = JsonConvert.DeserializeObject<Dictionary<string, EmployerUserAccountItem>>(associatedAccountsClaim.Value);
-
                 userClaim.Subject.AddClaim(associatedAccountsClaim);
 
                 if (!updatedEmployerAccounts.ContainsKey(accountIdFromUrl))
@@ -129,10 +124,7 @@ namespace SFA.DAS.EmployerFeedback.Web.Authorization
                 return false;
             }
 
-            return true;
-
-            // TODO re-enable this line for role checking
-            //return allowAllUserRoles || userRole == EmployerUserRole.Owner;
+            return allowAllUserRoles || userRole == UserRole.Owner;
         }
     }
 }

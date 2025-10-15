@@ -35,7 +35,7 @@ namespace SFA.DAS.EmployerFeedback.Web.Services.EmployerRoleAuthorization
             }
 
             var accountIdFromUrl = _httpContextAccessor.HttpContext.Request.RouteValues[RouteValueKeys.EncodedAccountId].ToString().ToUpper();
-            var associatedAccountsClaim = user.FindFirst(c => c.Type.Equals(EmployerClaims.AccountsClaimsTypeIdentifier));
+            var associatedAccountsClaim = user.FindFirst(c => c.Type.Equals(EmployerClaims.AssociatedAccounts));
 
             if (associatedAccountsClaim?.Value == null)
                 return false;
@@ -79,7 +79,7 @@ namespace SFA.DAS.EmployerFeedback.Web.Services.EmployerRoleAuthorization
                 var employerUserAccountsAsJson = JsonConvert.SerializeObject(employerUserAccounts);
 
                 userIdClaim.Subject.RemoveClaim(associatedAccountsClaim);
-                associatedAccountsClaim = new Claim(EmployerClaims.AccountsClaimsTypeIdentifier, employerUserAccountsAsJson, JsonClaimValueTypes.Json);
+                associatedAccountsClaim = new Claim(EmployerClaims.AssociatedAccounts, employerUserAccountsAsJson, JsonClaimValueTypes.Json);
                 userIdClaim.Subject.AddClaim(associatedAccountsClaim);
 
                 if (!employerUserAccounts.ContainsKey(accountIdFromUrl))
