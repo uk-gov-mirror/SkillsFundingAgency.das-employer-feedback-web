@@ -9,8 +9,14 @@ namespace SFA.DAS.EmployerFeedback.Web.Services.SessionStorage
     {
         public Task<SurveyModel> GetSurveyModel(string key);
         public Task<PagingState> GetPagingState(string key);
+        
         public Task<FeedbackSource> GetFeedbackSource(string key);
         public Task<int> GetProviderCount(string key);
+
+        public Task SetPagingState(string key, PagingState pagingState);
+
+        public Task SetSurveyModel(string key, SurveyModel surveyModel);
+
         Task Set(string key, object value);
         Task Remove(string key);
         Task<bool> ExistsAsync(string key);

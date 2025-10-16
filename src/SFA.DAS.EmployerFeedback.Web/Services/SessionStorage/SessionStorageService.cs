@@ -51,6 +51,16 @@ namespace SFA.DAS.EmployerFeedback.Web.Services.SessionStorage
             return await Get<int>(key);
         }
 
+        public async Task SetPagingState(string key, PagingState pagingState)
+        {
+            await Set(key, pagingState);
+        }
+
+        public async Task SetSurveyModel(string key, SurveyModel surveyModel)
+        {
+            await Set(key, surveyModel);
+        }
+
         public async Task Set(string key, object value)
         {
             await _sessionCache.SetStringAsync(_environment + "_" + key, JsonConvert.SerializeObject(value), new DistributedCacheEntryOptions

@@ -1,4 +1,6 @@
 ﻿using SFA.DAS.EmployerFeedback.Paging;
+using SFA.DAS.EmployerFeedback.Web.Attributes;
+using SFA.DAS.Encoding;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -7,6 +9,7 @@ namespace SFA.DAS.EmployerFeedback.Web.Models.Shared
 {
     public class ProviderSearchViewModel
     {
+        [AutoDecode(nameof(EncodedAccountId), EncodingType.AccountId)]
         public long AccountId { get; set; }
         public Guid UserRef { get; set; }
         public string EncodedAccountId { get; set; }

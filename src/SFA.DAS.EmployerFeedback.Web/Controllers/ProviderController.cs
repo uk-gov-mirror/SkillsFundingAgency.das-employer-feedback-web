@@ -89,15 +89,11 @@ namespace SFA.DAS.EmployerFeedback.Web.Controllers
             try
             {
                 var userId = GetUserId().Value;
-                var pagingState = await _sessionService.GetPagingState($"{userId}_PagingState");
-                if (null == pagingState)
-                {
-                    pagingState = new PagingState();
-                }
+                var pagingState = GetPagingState();
                 pagingState.PageIndex = PagingState.DefaultPageIndex; // applying filter resets the paging
                 pagingState.SelectedProviderName = postedModel.SelectedProviderName;
                 pagingState.SelectedFeedbackStatus = postedModel.SelectedFeedbackStatus;
-                await _sessionService.Set($"{userId}_PagingState", pagingState);
+                await SetPagingState(pagingState);
 
                 var model = await _trainingProviderService.GetTrainingProviderSearchViewModel(
                     postedModel.AccountId,
@@ -219,7 +215,7 @@ namespace SFA.DAS.EmployerFeedback.Web.Controllers
                     FeedbackSource = feedbackSource
                 };
 
-                await _sessionService.Set(userId.ToString(), newSurveyModel);
+                await _sessionService.SetSurveyModel(userId.ToString(), newSurveyModel);
                 return RedirectToAction("StartFeedback", new { postedModel.EncodedAccountId });
             }
             catch (Exception ex)
@@ -270,7 +266,7 @@ namespace SFA.DAS.EmployerFeedback.Web.Controllers
         private async Task SetPagingState(PagingState pagingState)
         {
             var userId = _userService.GetUserId();
-            await _sessionService.Set($"{userId}_PagingState", pagingState);
+            await _sessionService.SetPagingState($"{userId}_PagingState", pagingState);
         }
     }
 }

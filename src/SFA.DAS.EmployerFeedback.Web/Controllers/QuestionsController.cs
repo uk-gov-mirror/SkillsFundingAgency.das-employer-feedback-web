@@ -47,7 +47,7 @@ namespace SFA.DAS.EmployerFeedback.Web.Controllers
             var idClaim = GetUserId().Value.ToString();
             var sessionAnswer = await _sessionService.GetSurveyModel(idClaim);
             SetStengths(sessionAnswer, surveyModel.Attributes.Where(x => x.Good));
-            await _sessionService.Set(idClaim, sessionAnswer);
+            await _sessionService.SetSurveyModel(idClaim, sessionAnswer);
             return await HandleRedirect(RouteNames.QuestionTwo_Get);
         }
 
@@ -71,7 +71,7 @@ namespace SFA.DAS.EmployerFeedback.Web.Controllers
             string userId = GetUserId().Value.ToString();
             var sessionAnswer = await _sessionService.GetSurveyModel(userId);
             SetWeaknesses(sessionAnswer, surveyModel.Attributes.Where(x => x.Bad));
-            await _sessionService.Set(userId, sessionAnswer);
+            await _sessionService.SetSurveyModel(userId, sessionAnswer);
             return await HandleRedirect(RouteNames.QuestionThree_Get);
         }
 
@@ -95,7 +95,7 @@ namespace SFA.DAS.EmployerFeedback.Web.Controllers
             string userId = GetUserId().Value.ToString();
             var sessionAnswer = await _sessionService.GetSurveyModel(userId);
             sessionAnswer.Rating = surveyModel.Rating;
-            await _sessionService.Set(userId, sessionAnswer);
+            await _sessionService.SetSurveyModel(userId, sessionAnswer);
             return await HandleRedirect(RouteNames.ReviewAnswers_Get);
         }
 
