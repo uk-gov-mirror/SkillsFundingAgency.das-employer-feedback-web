@@ -82,6 +82,17 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Controllers
         }
 
         [Test]
+        public async Task Question_1_InvalidAttributes_ShouldReturnView()
+        {
+            var surveyModel = new SurveyModel { Attributes = null };
+
+            var result = await _controller.QuestionOne(_accountId) as ViewResult;
+
+            result.Model.Should().BeOfType<SurveyModel>();
+            result.Should().BeOfType<ViewResult>();
+        }
+
+        [Test]
         public async Task Question_1_When_Answers_Submitted_Should_Update_Session_And_Redirect()
         {
             // Arrange

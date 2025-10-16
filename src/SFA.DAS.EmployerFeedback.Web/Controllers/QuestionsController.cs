@@ -56,8 +56,8 @@ namespace SFA.DAS.EmployerFeedback.Web.Controllers
         public async Task<IActionResult> QuestionTwo(string returnUrl = null)
         {
             TempData[ReturnUrlKey] = returnUrl;
-            string idClaim = GetUserId().Value.ToString();
-            var sessionAnswers = await _sessionService.GetSurveyModel(GetUserId().Value.ToString());
+            var userId = GetUserId().Value.ToString();
+            var sessionAnswers = await _sessionService.GetSurveyModel(userId);
             return View(sessionAnswers);
         }
 
@@ -69,10 +69,10 @@ namespace SFA.DAS.EmployerFeedback.Web.Controllers
                 return View(surveyModel);
             }
 
-            string idClaim = GetUserId().Value.ToString();
-            var sessionAnswer = await _sessionService.GetSurveyModel(GetUserId().Value.ToString());
+            string userId = GetUserId().Value.ToString();
+            var sessionAnswer = await _sessionService.GetSurveyModel(userId);
             SetWeaknesses(sessionAnswer, surveyModel.Attributes.Where(x => x.Bad));
-            await _sessionService.Set(idClaim, sessionAnswer);
+            await _sessionService.Set(userId, sessionAnswer);
             return await HandleRedirect(RouteNames.QuestionThree_Get);
         }
 
@@ -80,8 +80,8 @@ namespace SFA.DAS.EmployerFeedback.Web.Controllers
         public async Task<IActionResult> QuestionThree(string returnUrl = null)
         {
             TempData[ReturnUrlKey] = returnUrl;
-            string idClaim = GetUserId().Value.ToString();
-            var sessionAnswer = await _sessionService.GetSurveyModel(GetUserId().Value.ToString());
+            string userId = GetUserId().Value.ToString();
+            var sessionAnswer = await _sessionService.GetSurveyModel(userId);
             return View(sessionAnswer);
         }
 
@@ -93,18 +93,18 @@ namespace SFA.DAS.EmployerFeedback.Web.Controllers
                 return View(surveyModel);
             }
 
-            string idClaim = GetUserId().Value.ToString();
-            var sessionAnswer = await _sessionService.GetSurveyModel(GetUserId().Value.ToString());
+            string userId = GetUserId().Value.ToString();
+            var sessionAnswer = await _sessionService.GetSurveyModel(userId);
             sessionAnswer.Rating = surveyModel.Rating;
-            await _sessionService.Set(idClaim, sessionAnswer);
+            await _sessionService.Set(userId, sessionAnswer);
             return await HandleRedirect(RouteNames.ReviewAnswers_Get);
         }
 
         private async Task<IActionResult> HandleRedirect(string nextRoute)
         {
             var returnRoute = Convert.ToString(TempData[ReturnUrlKey]);
-            string idClaim = GetUserId().Value.ToString();
-            var sessionAnswer = await _sessionService.GetSurveyModel(GetUserId().Value.ToString());
+            string userId = GetUserId().Value.ToString();
+            var sessionAnswer = await _sessionService.GetSurveyModel(userId);
             var accountId = HttpContext.GetRouteData().Values[RouteValueKeys.EncodedAccountId] as string;
             return await Task.Run(() => RedirectToRoute(string.IsNullOrEmpty(returnRoute) ? nextRoute : returnRoute, new { encodedAccountId = accountId }) as IActionResult);
         }
