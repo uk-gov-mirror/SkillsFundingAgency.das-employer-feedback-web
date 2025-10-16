@@ -49,6 +49,7 @@
     <Folder Include="ApplicationServices\" />
     <Folder Include="Handlers\" />
     <Folder Include="OuterApi\" />
+    <Folder Include="Web\Authentication\" />
   </ItemGroup>
 
 </Project>

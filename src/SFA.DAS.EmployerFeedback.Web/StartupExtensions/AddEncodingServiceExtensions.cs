@@ -10,7 +10,6 @@ namespace SFA.DAS.EmployerFeedback.Web.StartupExtensions
         public static IServiceCollection AddEncodingService(this IServiceCollection services)
         {
             services.AddSingleton<IEncodingService, EncodingService>();
-
             return services;
         }
     }

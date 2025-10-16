@@ -64,7 +64,7 @@ namespace UnitTests.Services
                     _employerFeedbackOuterApiMock.Object);
 
                 // Act
-                var model = await sut.GetTrainingProviderSearchViewModel(
+                var model = await sut.GetTrainingProviderSearchViewModel(testAccountId,
                     testAccountIdEncoded, userRef, selectedProviderName, selectedFeedbackStatus, pageSize, pageIndex, sortColumn, sortDirection);
 
                 // Assert

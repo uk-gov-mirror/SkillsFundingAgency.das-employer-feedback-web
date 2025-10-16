@@ -25,7 +25,6 @@ namespace SFA.DAS.EmployerFeedback.Web.Helpers
             }
 
             var sb = new StringBuilder();
-
             for (int i = 0; i < values.Length; i++)
             {
                 var name = $"{modelName}[{i}]";

@@ -8,7 +8,6 @@ using SFA.DAS.Employer.Shared.UI;
 using SFA.DAS.EmployerFeedback.Domain.Entities.Models;
 using SFA.DAS.EmployerFeedback.Infrastructure.Api.OuterApi;
 using SFA.DAS.EmployerFeedback.Infrastructure.Configuration;
-using SFA.DAS.EmployerFeedback.Infrastructure.Services.SessionStorage;
 using SFA.DAS.EmployerFeedback.Infrastructure.Services.UserService;
 using SFA.DAS.EmployerFeedback.Paging;
 using SFA.DAS.EmployerFeedback.Services;
@@ -16,6 +15,7 @@ using SFA.DAS.EmployerFeedback.Web.Configuration.Routing;
 using SFA.DAS.EmployerFeedback.Web.Controllers;
 using SFA.DAS.EmployerFeedback.Web.Models.Shared;
 using SFA.DAS.EmployerFeedback.Web.Paging;
+using SFA.DAS.EmployerFeedback.Web.Services.SessionStorage;
 using SFA.DAS.EmployerFeedback.Web.ViewModels;
 using System;
 using System.Collections.Generic;
@@ -67,12 +67,13 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Controllers
 
             _sessionServiceMock = new Mock<ISessionStorageService>();
             _sessionServiceMock
-                .Setup(mock => mock.Get<SurveyModel>(It.IsAny<string>()))
+                .Setup(mock => mock.GetSurveyModel(It.IsAny<string>()))
                 .ReturnsAsync(_surveyModel);
 
             _trainingProviderServiceMock = new Mock<ITrainingProviderService>();
             _trainingProviderServiceMock
                 .Setup(m => m.GetTrainingProviderSearchViewModel(
+                    It.IsAny<long>(),
                     It.IsAny<string>(),
                     It.IsAny<Guid>(),
                     It.IsAny<string>(),
@@ -142,6 +143,7 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Controllers
                 };
 
                 _trainingProviderServiceMock.Setup(m => m.GetTrainingProviderSearchViewModel(
+                    It.IsAny<long>(),
                     It.IsAny<string>(),
                     It.IsAny<Guid>(),
                     It.IsAny<string>(),
@@ -172,7 +174,7 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Controllers
                     SortDirection = "Asc"
                 };
 
-                _sessionServiceMock.Setup(x => x.Get<PagingState>(It.IsAny<string>()))
+                _sessionServiceMock.Setup(x => x.GetPagingState(It.IsAny<string>()))
                     .ReturnsAsync(new PagingState
                     {
                         PageIndex = 1,
@@ -184,6 +186,7 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Controllers
                     });
 
                 _trainingProviderServiceMock.Setup(m => m.GetTrainingProviderSearchViewModel(
+                    It.IsAny<long>(),
                     It.IsAny<string>(),
                     It.IsAny<Guid>(),
                     It.IsAny<string>(),
@@ -301,7 +304,7 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Controllers
                 var redirectResult = (RedirectToActionResult)result;
                 redirectResult.ActionName.Should().Be("StartFeedback");
 
-                var surveyModel = _sessionServiceMock.Object.Get<SurveyModel>("TEST_USER_ID").Result;
+                var surveyModel = _sessionServiceMock.Object.GetSurveyModel("TEST_USER_ID").Result;
                 surveyModel.Should().BeEquivalentTo(_surveyModel);
             }
 
@@ -415,7 +418,7 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Controllers
             public async Task SessionSurvey_DoesNotExist_ShouldRedirectToNotFoundError()
             {
                 //  Arrange
-                _sessionServiceMock.Setup(mock => mock.Get<SurveyModel>(It.IsAny<string>())).ReturnsAsync((SurveyModel)null);
+                _sessionServiceMock.Setup(mock => mock.GetSurveyModel(It.IsAny<string>())).ReturnsAsync((SurveyModel)null);
 
                 // Act
                 var result = await _controller.StartFeedback();

@@ -8,15 +8,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using static Microsoft.ApplicationInsights.MetricDimensionNames.TelemetryContext;
 
 namespace SFA.DAS.EmployerFeedback.Services
 {
-    public interface ITrainingProviderService
-    {
-        Task<ProviderSearchViewModel> GetTrainingProviderSearchViewModel(string encodedAccountId, Guid userRef, string selectedProviderName, string selectedFeedbackStatus, int pageSize, int pageIndex, string sortColumn, string sortDirection);
-        Task<ProviderSearchConfirmationViewModel> GetTrainingProviderConfirmationViewModel(long accountId, Guid userref, long providerId);
-    }
-
     public class TrainingProviderService : ITrainingProviderService
     {
         private readonly IEncodingService _encodingService;
@@ -32,6 +27,7 @@ namespace SFA.DAS.EmployerFeedback.Services
         }
 
         public async Task<ProviderSearchViewModel> GetTrainingProviderSearchViewModel(
+            long accountId,
             string encodedAccountId,
             Guid userRef,
             string selectedProviderName,
@@ -42,7 +38,7 @@ namespace SFA.DAS.EmployerFeedback.Services
             string sortDirection)
         {
             ProviderSearchViewModel model = new ProviderSearchViewModel();
-            model.AccountId = _encodingService.Decode(encodedAccountId, EncodingType.AccountId);
+            model.AccountId = accountId;
             model.EncodedAccountId = encodedAccountId;
             model.SelectedProviderName = selectedProviderName;
             model.SelectedFeedbackStatus = selectedFeedbackStatus;
@@ -51,11 +47,6 @@ namespace SFA.DAS.EmployerFeedback.Services
 
             // Select all the providers for this employer.
             var providers = await SelectAllProvidersForAccount(model.AccountId, userRef);
-
-            // Augment the provider records with feedback data. Urgh.
-            // We need to do this so that the date filtering will work.
-
-            await AugmentProviderRecordsWithFeedbackStatus(model.AccountId, providers);
 
             // Initialise the filter options.
 
@@ -138,29 +129,24 @@ namespace SFA.DAS.EmployerFeedback.Services
                     ProviderId = a.First().Ukprn,
                     ProviderName = a.First().ProviderName,
                     FeedbackStatus = a.First().Feedback == null ? NOT_YET_SUBMITTED : "Submitted",
-                    DateSubmitted = a.First().Feedback?.DateTimeCompleted
+                    DateSubmitted = a.First().Feedback?.DateTimeCompleted,
+                    CanSubmitFeedback = CanSubmitFeedback(a.First().Feedback?.DateTimeCompleted ?? null)
                 })
                 .ToList();
 
             return providers;
         }
-
-        private async Task AugmentProviderRecordsWithFeedbackStatus(long accountId, List<ProviderSearchViewModel.EmployerTrainingProvider> providers)
+        public bool CanSubmitFeedback(DateTime? dateTimeCompleted)
         {
-            foreach (var provider in providers)
+            if (!dateTimeCompleted.HasValue)
             {
-                if (provider.FeedbackStatus == null)
-                {
-                    provider.FeedbackStatus = NOT_YET_SUBMITTED;
-                    provider.DateSubmitted = null;
-                }
-
-                provider.CanSubmitFeedback = true;
-                if (provider.DateSubmitted.HasValue && (DateTime.UtcNow - provider.DateSubmitted.Value).TotalDays < _config.FeedbackWaitPeriodDays)
-                {
-                    provider.CanSubmitFeedback = false;
-                }
+                return true;
             }
+            if ((DateTime.UtcNow - dateTimeCompleted.Value).TotalDays < _config.FeedbackWaitPeriodDays)
+            {
+                return false;
+            }
+            return true;
         }
 
         private IQueryable<ProviderSearchViewModel.EmployerTrainingProvider> ApplyProviderNameFilter(IQueryable<ProviderSearchViewModel.EmployerTrainingProvider> providers, string providerName)

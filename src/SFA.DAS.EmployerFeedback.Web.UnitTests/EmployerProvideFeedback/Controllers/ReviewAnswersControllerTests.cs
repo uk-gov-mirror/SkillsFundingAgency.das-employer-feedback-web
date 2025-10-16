@@ -9,10 +9,12 @@ using SFA.DAS.EmployerFeedback.Infrastructure;
 using SFA.DAS.EmployerFeedback.Infrastructure.Api.OuterApi;
 using SFA.DAS.EmployerFeedback.Infrastructure.Configuration;
 using SFA.DAS.EmployerFeedback.Infrastructure.Configuration.Routing;
-using SFA.DAS.EmployerFeedback.Infrastructure.Services.SessionStorage;
+using SFA.DAS.EmployerFeedback.Infrastructure.Services.UserService;
+using SFA.DAS.EmployerFeedback.Services;
 using SFA.DAS.EmployerFeedback.Web.Controllers;
 using SFA.DAS.EmployerFeedback.Web.Models.Shared;
 using SFA.DAS.EmployerFeedback.Web.Orchestrators;
+using SFA.DAS.EmployerFeedback.Web.Services.SessionStorage;
 using System;
 using System.Collections.Generic;
 using System.Security.Claims;
@@ -23,12 +25,16 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.EmployerFeedback.Controllers
     [TestFixture]
     public class ReviewAnswersControllerTests
     {
-        private ReviewAnswersController _controller;
+        private Mock<IUserService> _userService;
+        private Mock<ILogger<ReviewAnswersController>> _controllerLoggerMock;
         private Mock<ISessionStorageService> _sessionService;
-        private Mock<ReviewAnswersOrchestrator> _orchestrator;
         private Mock<ILogger<ReviewAnswersOrchestrator>> _orchestratorLogger;
-        private EmployerFeedbackWebConfiguration _config;
         private Mock<IEmployerFeedbackOuterApi> _employerFeedbackOuterApi;
+        private Mock<ITrainingProviderService> _trainingProviderServiceMock;
+        private Mock<ReviewAnswersOrchestrator> _orchestrator;
+        private ReviewAnswersController _controller;
+        private EmployerFeedbackWebConfiguration _config;
+        
 
         [SetUp]
         public void Arrange()
@@ -36,15 +42,20 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.EmployerFeedback.Controllers
             _sessionService = new Mock<ISessionStorageService>();
             _employerFeedbackOuterApi = new Mock<IEmployerFeedbackOuterApi>();
             _orchestratorLogger = new Mock<ILogger<ReviewAnswersOrchestrator>>();
+            _trainingProviderServiceMock = new Mock<ITrainingProviderService>();
             Mock<IHttpContextAccessor> _httpContextAccessorMock = new Mock<IHttpContextAccessor>();
+
+            _userService = new Mock<IUserService>();
+            _userService.Setup(m => m.GetUserId()).Returns(new Guid().ToString());
+            _controllerLoggerMock = new Mock<ILogger<ReviewAnswersController>>();
 
             _config = new EmployerFeedbackWebConfiguration();
             _config.FeedbackWaitPeriodDays = 21;
             _config.ExternalLinks = new ExternalLinksConfiguration();
             _config.ExternalLinks.FindApprenticeshipTrainingSiteUrl = "https://findapprenticeshiptraining.sfa.gov.uk/";
 
-            _orchestrator = new Mock<ReviewAnswersOrchestrator>(_employerFeedbackOuterApi.Object, _orchestratorLogger.Object);
-            _controller = new ReviewAnswersController(_sessionService.Object, _orchestrator.Object, _config, _employerFeedbackOuterApi.Object);
+            _orchestrator = new Mock<ReviewAnswersOrchestrator>(_employerFeedbackOuterApi.Object, _orchestratorLogger.Object, _sessionService.Object);
+            _controller = new ReviewAnswersController(_sessionService.Object, _orchestrator.Object, _config, _employerFeedbackOuterApi.Object, _userService.Object, _controllerLoggerMock.Object, _trainingProviderServiceMock.Object);
 
             _controller.ControllerContext = new Microsoft.AspNetCore.Mvc.ControllerContext
             {
@@ -63,7 +74,7 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.EmployerFeedback.Controllers
         public async Task Index_ReturnsView()
         {
             //Arrange
-            _sessionService.Setup(s => s.Get<SurveyModel>(It.IsAny<string>())).ReturnsAsync(new SurveyModel());
+            _sessionService.Setup(s => s.GetSurveyModel(It.IsAny<string>())).ReturnsAsync(new SurveyModel());
 
             //Act
             var result = await _controller.Index();
@@ -102,10 +113,11 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.EmployerFeedback.Controllers
                 }
             };
 
-            _sessionService.Setup(s => s.Get<SurveyModel>(It.IsAny<string>())).ReturnsAsync(surveyModel);
+            _sessionService.Setup(s => s.GetSurveyModel(It.IsAny<string>())).ReturnsAsync(surveyModel);
             _employerFeedbackOuterApi
                 .Setup(m => m.GetTrainingProviderSearch(It.IsAny<long>(), It.IsAny<Guid>()))
                 .ReturnsAsync(providerFeedback);
+            _trainingProviderServiceMock.Setup(s => s.CanSubmitFeedback(It.IsAny<DateTime?>())).Returns(true);
 
             //Act
             var result = await _controller.Confirmation();
@@ -150,7 +162,7 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.EmployerFeedback.Controllers
                 }
             };
 
-            _sessionService.Setup(s => s.Get<SurveyModel>(It.IsAny<string>())).ReturnsAsync(surveyModel);
+            _sessionService.Setup(s => s.GetSurveyModel(It.IsAny<string>())).ReturnsAsync(surveyModel);
             _employerFeedbackOuterApi
                 .Setup(m => m.GetTrainingProviderSearch(It.IsAny<long>(), It.IsAny<Guid>()))
                 .ReturnsAsync(providerFeedback);

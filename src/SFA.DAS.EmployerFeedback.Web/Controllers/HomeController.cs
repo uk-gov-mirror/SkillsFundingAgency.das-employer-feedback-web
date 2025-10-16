@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using SFA.DAS.EmployerFeedback.Infrastructure.Configuration.Routing;
-using SFA.DAS.EmployerFeedback.Infrastructure.Services.SessionStorage;
 using SFA.DAS.EmployerFeedback.Web.Models;
 using SFA.DAS.EmployerFeedback.Web.Models.Home;
 using SFA.DAS.GovUK.Auth.Models;

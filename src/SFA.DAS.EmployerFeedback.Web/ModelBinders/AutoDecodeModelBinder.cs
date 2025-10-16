@@ -19,7 +19,7 @@ namespace SFA.DAS.EmployerFeedback.Web.ModelBinders
             _encodingService = encodingService;
             _fallbackBinder = fallbackBinder;
         }
-        
+
         public Task BindModelAsync(ModelBindingContext bindingContext)
         {
             if (bindingContext == null)

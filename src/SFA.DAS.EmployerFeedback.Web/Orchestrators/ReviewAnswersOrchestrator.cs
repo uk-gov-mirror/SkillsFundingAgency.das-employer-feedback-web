@@ -3,22 +3,26 @@ using SFA.DAS.EmployerFeedback.Domain.Entities.Models;
 using SFA.DAS.EmployerFeedback.Infrastructure.Api.OuterApi;
 using SFA.DAS.EmployerFeedback.Web.Extensions;
 using SFA.DAS.EmployerFeedback.Web.Models.Shared;
+using SFA.DAS.EmployerFeedback.Web.Services.SessionStorage;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using static Microsoft.ApplicationInsights.MetricDimensionNames.TelemetryContext;
 
 namespace SFA.DAS.EmployerFeedback.Web.Orchestrators
 {
     public class ReviewAnswersOrchestrator
     {
         private readonly IEmployerFeedbackOuterApi _employerFeedbackOuterApi;
+        private readonly ISessionStorageService _sessionStorageService;
         private readonly ILogger<ReviewAnswersOrchestrator> _logger;
 
-        public ReviewAnswersOrchestrator(IEmployerFeedbackOuterApi employerFeedbackOuterApi, ILogger<ReviewAnswersOrchestrator> logger)
+        public ReviewAnswersOrchestrator(IEmployerFeedbackOuterApi employerFeedbackOuterApi, ILogger<ReviewAnswersOrchestrator> logger, ISessionStorageService sessionStorageService)
         {
             _employerFeedbackOuterApi = employerFeedbackOuterApi;
             _logger = logger;
+            _sessionStorageService = sessionStorageService;
         }
 
         public async Task SubmitConfirmedEmployerFeedback(SurveyModel surveyModel)
@@ -34,6 +38,8 @@ namespace SFA.DAS.EmployerFeedback.Web.Orchestrators
                     ProviderAttributes = await ConvertSurveyToProviderAttributes(surveyModel),
                     UserRef = surveyModel.UserRef
                 });
+                surveyModel.Submitted = true;
+                await _sessionStorageService.Set(surveyModel.ToString(), surveyModel);
             }
             catch (Exception ex)
             {

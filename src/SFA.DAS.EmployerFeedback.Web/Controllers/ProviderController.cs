@@ -6,13 +6,13 @@ using SFA.DAS.Employer.Shared.UI;
 using SFA.DAS.EmployerFeedback.Domain.Types;
 using SFA.DAS.EmployerFeedback.Infrastructure.Api.OuterApi;
 using SFA.DAS.EmployerFeedback.Infrastructure.Configuration.Routing;
-using SFA.DAS.EmployerFeedback.Infrastructure.Services.SessionStorage;
 using SFA.DAS.EmployerFeedback.Infrastructure.Services.UserService;
 using SFA.DAS.EmployerFeedback.Services;
 using SFA.DAS.EmployerFeedback.Web.Authorization;
 using SFA.DAS.EmployerFeedback.Web.Configuration.Routing;
 using SFA.DAS.EmployerFeedback.Web.Models.Shared;
 using SFA.DAS.EmployerFeedback.Web.Paging;
+using SFA.DAS.EmployerFeedback.Web.Services.SessionStorage;
 using SFA.DAS.EmployerFeedback.Web.ViewModels;
 using System;
 using System.Linq;
@@ -56,6 +56,7 @@ namespace SFA.DAS.EmployerFeedback.Web.Controllers
                 await SetPagingState(pagingState);
 
                 var model = await _trainingProviderService.GetTrainingProviderSearchViewModel(
+                    request.AccountId,
                     request.EncodedAccountId,
                     userId,
                     pagingState.SelectedProviderName,
@@ -88,7 +89,7 @@ namespace SFA.DAS.EmployerFeedback.Web.Controllers
             try
             {
                 var userId = GetUserId().Value;
-                var pagingState = await _sessionService.Get<PagingState>($"{userId}_PagingState");
+                var pagingState = await _sessionService.GetPagingState($"{userId}_PagingState");
                 if (null == pagingState)
                 {
                     pagingState = new PagingState();
@@ -99,6 +100,7 @@ namespace SFA.DAS.EmployerFeedback.Web.Controllers
                 await _sessionService.Set($"{userId}_PagingState", pagingState);
 
                 var model = await _trainingProviderService.GetTrainingProviderSearchViewModel(
+                    postedModel.AccountId,
                     postedModel.EncodedAccountId,
                     userId,
                     pagingState.SelectedProviderName,
@@ -203,11 +205,12 @@ namespace SFA.DAS.EmployerFeedback.Web.Controllers
 
                 var providerAttributesModel = providerAttributes.Select(s => new ProviderAttributeModel { Name = s.AttributeName }).ToList();
                 var userId = GetUserId().Value;
-                var feedbackSource = await _sessionService.Get<FeedbackSource>($"{userId}_FeedbackSource");
+                var feedbackSource = await _sessionService.GetFeedbackSource($"{userId}_FeedbackSource");
 
                 var newSurveyModel = new SurveyModel
                 {
                     AccountId = postedModel.AccountId,
+                    EncodedAccountId = postedModel.EncodedAccountId,
                     Ukprn = postedModel.ProviderId,
                     UserRef = userId,
                     Submitted = false,
@@ -235,8 +238,8 @@ namespace SFA.DAS.EmployerFeedback.Web.Controllers
             try
             {
                 _logger.LogInformation("StartFeedback called");
-                var userId = GetUserId().Value;
-                var surveyModel = await _sessionService.Get<SurveyModel>(userId.ToString());
+                var userId = GetUserId().Value.ToString();
+                var surveyModel = await _sessionService.GetSurveyModel(userId);
 
                 if (surveyModel == null)
                 {
@@ -256,7 +259,7 @@ namespace SFA.DAS.EmployerFeedback.Web.Controllers
         private PagingState GetPagingState()
         {
             var userId = GetUserId().Value;
-            var pagingState = _sessionService.Get<PagingState>($"{userId}_PagingState").Result;
+            var pagingState = _sessionService.GetPagingState($"{userId}_PagingState").Result;
             if (null == pagingState)
             {
                 pagingState = new PagingState();

@@ -2,12 +2,12 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using SFA.DAS.Employer.Shared.UI;
-using SFA.DAS.EmployerFeedback.Infrastructure;
 using SFA.DAS.EmployerFeedback.Infrastructure.Configuration;
 using SFA.DAS.EmployerFeedback.Infrastructure.Configuration.Routing;
-using SFA.DAS.EmployerFeedback.Infrastructure.Services.SessionStorage;
+using SFA.DAS.EmployerFeedback.Infrastructure.Services.UserService;
 using SFA.DAS.EmployerFeedback.Web.Authorization;
 using SFA.DAS.EmployerFeedback.Web.Models.Shared;
+using SFA.DAS.EmployerFeedback.Web.Services.SessionStorage;
 using System.Threading.Tasks;
 
 namespace SFA.DAS.EmployerFeedback.Web.Controllers
@@ -15,7 +15,7 @@ namespace SFA.DAS.EmployerFeedback.Web.Controllers
     [Authorize(Policy = nameof(PolicyNames.NoneRole))]
     [Route(RoutePrefixPaths.FeedbackRoutePath)]
     [ServiceFilter(typeof(EnsureSessionExists))]
-    public class ConfirmationController : Controller
+    public class ConfirmationController : ControllerBase
     {
         private readonly ISessionStorageService _sessionService;
         private readonly ILogger<ConfirmationController> _logger;
@@ -26,7 +26,8 @@ namespace SFA.DAS.EmployerFeedback.Web.Controllers
             ISessionStorageService sessionService,
             EmployerFeedbackWebConfiguration config,
             UrlBuilder urlBuilder,
-            ILogger<ConfirmationController> logger)
+            ILogger<ConfirmationController> logger,
+            IUserService userService) : base(userService, logger)
         {
             _sessionService = sessionService;
             _logger = logger;
@@ -37,10 +38,10 @@ namespace SFA.DAS.EmployerFeedback.Web.Controllers
         [HttpGet("feedback-confirmation", Name = RouteNames.Confirmation_Get)]
         public async Task<IActionResult> Index(string encodedAccountId)
         {
-            var idClaim = HttpContext.User.FindFirst(EmployerClaims.UserId);
-            var surveyModel = await _sessionService.Get<SurveyModel>(idClaim.Value);
-            var providerCount = await _sessionService.Get<int>($"{idClaim.Value}_ProviderCount");
-            await _sessionService.Remove($"{idClaim.Value}_PagingState");  // remove paging state incase we loop round for another provider
+            var userId = GetUserId().Value.ToString();
+            var surveyModel = await _sessionService.GetSurveyModel(userId);
+            var providerCount = await _sessionService.GetProviderCount($"{userId}_ProviderCount");
+            await _sessionService.Remove($"{userId}_PagingState");  // remove paging state incase we loop round for another provider
             var hasMultipleProviders = providerCount > 0;
 
             var confirmationVm = new ConfirmationViewModel

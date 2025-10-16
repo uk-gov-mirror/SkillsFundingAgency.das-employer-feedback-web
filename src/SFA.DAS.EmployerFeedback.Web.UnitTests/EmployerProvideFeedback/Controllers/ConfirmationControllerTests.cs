@@ -8,9 +8,11 @@ using NUnit.Framework;
 using SFA.DAS.Employer.Shared.UI;
 using SFA.DAS.EmployerFeedback.Infrastructure;
 using SFA.DAS.EmployerFeedback.Infrastructure.Configuration;
-using SFA.DAS.EmployerFeedback.Infrastructure.Services.SessionStorage;
+using SFA.DAS.EmployerFeedback.Infrastructure.Services.UserService;
 using SFA.DAS.EmployerFeedback.Web.Controllers;
 using SFA.DAS.EmployerFeedback.Web.Models.Shared;
+using SFA.DAS.EmployerFeedback.Web.Services.SessionStorage;
+using System;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
@@ -21,6 +23,8 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Controllers
         private readonly ConfirmationController _controller;
         private readonly IFixture _fixture = new Fixture();
         private readonly SurveyModel _cachedSurveyModel;
+        private Mock<IUserService> _userServiceMock = new Mock<IUserService>();
+
         private ExternalLinksConfiguration _externalLinks = new ExternalLinksConfiguration
         {
             FindApprenticeshipTrainingSiteUrl = "findanapprentice.sfa.gov.uk"
@@ -29,6 +33,9 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Controllers
         public ConfirmationControllerTests()
         {
             _cachedSurveyModel = _fixture.Create<SurveyModel>();
+            _userServiceMock = new Mock<IUserService>();
+            _userServiceMock.Setup(m => m.GetUserId()).Returns(new Guid().ToString());
+
             var sessionServiceMock = new Mock<ISessionStorageService>();
             var loggerMock = new Mock<ILogger<ConfirmationController>>();
 
@@ -38,13 +45,14 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Controllers
             };
             var urlBuilder = new UrlBuilder("LOCAL");
             sessionServiceMock
-                .Setup(mock => mock.Get<SurveyModel>(It.IsAny<string>()))
+                .Setup(mock => mock.GetSurveyModel(It.IsAny<string>()))
                     .Returns(Task.FromResult(_cachedSurveyModel));
             _controller = new ConfirmationController(
                 sessionServiceMock.Object,
                 config,
                 urlBuilder,
-                loggerMock.Object);
+                loggerMock.Object,
+                _userServiceMock.Object);
 
             var context = new DefaultHttpContext()
             {
@@ -57,6 +65,8 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Controllers
             {
                 HttpContext = context
             };
+
+
         }
 
         [OneTimeTearDown]

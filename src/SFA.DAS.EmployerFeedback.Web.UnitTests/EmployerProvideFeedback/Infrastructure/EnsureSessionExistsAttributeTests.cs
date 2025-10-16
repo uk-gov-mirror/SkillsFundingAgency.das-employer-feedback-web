@@ -2,17 +2,19 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Abstractions;
+using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
-using SFA.DAS.EmployerFeedback.Infrastructure;
 using SFA.DAS.EmployerFeedback.Infrastructure.Configuration;
 using SFA.DAS.EmployerFeedback.Infrastructure.Configuration.Routing;
-using SFA.DAS.EmployerFeedback.Infrastructure.Services.SessionStorage;
+using SFA.DAS.EmployerFeedback.Infrastructure.Services.UserService;
+using SFA.DAS.EmployerFeedback.Services;
 using SFA.DAS.EmployerFeedback.Web.Controllers;
+using SFA.DAS.EmployerFeedback.Web.Services.SessionStorage;
 using System;
 using System.Collections.Generic;
 using System.Security.Claims;
@@ -21,24 +23,27 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Infrastructure
 {
     public class EnsureSessionExistsAttributeTests
     {
-        private readonly HomeController _controller;
+        private readonly ProviderController _controller;
         private readonly Mock<ISessionStorageService> _sessionServiceMock;
-        private readonly Mock<ILogger<HomeController>> _controllerLoggerMock;
+        private readonly Mock<ITrainingProviderService> _iTrainingProviderServiceMock;
+        private readonly Mock<ILogger<ProviderController>> _controllerLoggerMock;
         private readonly Mock<ILogger<EnsureSessionExists>> _loggerMock;
         private readonly Mock<IConfiguration> _configurationMock = new Mock<IConfiguration>();
+        private readonly Mock<IUserService> _userServiceMock;
 
         public EnsureSessionExistsAttributeTests()
         {
-            _controllerLoggerMock = new Mock<ILogger<HomeController>>();
+            _controllerLoggerMock = new Mock<ILogger<ProviderController>>();
             _loggerMock = new Mock<ILogger<EnsureSessionExists>>();
             _sessionServiceMock = new Mock<ISessionStorageService>();
-
-            _controller = new HomeController(
+            _userServiceMock = new Mock<IUserService>();
+            _controller = new ProviderController(
                             _sessionServiceMock.Object,
-                            _controllerLoggerMock.Object,
-                            _configurationMock.Object,
                             null,
-                            null);
+                            _controllerLoggerMock.Object,
+                            null,
+                            null,
+                            _userServiceMock.Object);
             var context = new DefaultHttpContext()
             {
                 User = new ClaimsPrincipal(new ClaimsIdentity(new Claim[]
@@ -67,9 +72,8 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Infrastructure
                 new List<IFilterMetadata>(),
                 new Dictionary<string, object>(),
                _controller);
-            context.ActionArguments.Add("uniqueCode", Guid.NewGuid());
 
-            var ensureSession = new EnsureSessionExists(_sessionServiceMock.Object, _loggerMock.Object);
+            var ensureSession = new EnsureSessionExists(_sessionServiceMock.Object, _loggerMock.Object, _userServiceMock.Object);
 
             // Act
             ensureSession.OnActionExecuting(context);

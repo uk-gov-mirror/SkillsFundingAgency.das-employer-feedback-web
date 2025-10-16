@@ -20,7 +20,6 @@ namespace SFA.DAS.EmployerFeedback.Web.Helpers
                         modelState.AddModelError(error.PropertyName, error.ErrorMessage);
                 }
             }
-
             return result;
         }
     }

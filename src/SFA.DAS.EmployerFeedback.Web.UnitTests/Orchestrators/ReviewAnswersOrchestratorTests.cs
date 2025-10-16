@@ -5,8 +5,10 @@ using NUnit.Framework;
 using SFA.DAS.EmployerFeedback.Domain.Entities.Models;
 using SFA.DAS.EmployerFeedback.Infrastructure.Api.OuterApi;
 using SFA.DAS.EmployerFeedback.Infrastructure.Api.Responses;
+using SFA.DAS.EmployerFeedback.Services;
 using SFA.DAS.EmployerFeedback.Web.Models.Shared;
 using SFA.DAS.EmployerFeedback.Web.Orchestrators;
+using SFA.DAS.EmployerFeedback.Web.Services.SessionStorage;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -19,6 +21,7 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Orchestrators
         private ReviewAnswersOrchestrator _orchestrator;
         private Mock<IEmployerFeedbackOuterApi> _employerFeedbackOuterApi;
         private Mock<ILogger<ReviewAnswersOrchestrator>> _logger;
+        private Mock<ISessionStorageService> _sessionStorageServiceMock;
         private Mock<EmployerFeedbackResult> _employerFeedback;
 
         [SetUp]
@@ -26,8 +29,8 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Orchestrators
         {
             _employerFeedbackOuterApi = new Mock<IEmployerFeedbackOuterApi>();
             _logger = new Mock<ILogger<ReviewAnswersOrchestrator>>();
-            _orchestrator = new ReviewAnswersOrchestrator(_employerFeedbackOuterApi.Object, _logger.Object);
-
+            _sessionStorageServiceMock = new Mock<ISessionStorageService>();
+            _orchestrator = new ReviewAnswersOrchestrator(_employerFeedbackOuterApi.Object, _logger.Object, _sessionStorageServiceMock.Object);
             _employerFeedback = new Mock<EmployerFeedbackResult>();
         }
 

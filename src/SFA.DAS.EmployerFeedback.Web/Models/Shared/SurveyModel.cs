@@ -12,6 +12,7 @@ namespace SFA.DAS.EmployerFeedback.Web.Models.Shared
         public Guid UserRef { get; set; }
         public long Ukprn { get; set; }
         public long AccountId { get; set; }
+        public string EncodedAccountId { get; set; }  
 
         [EnsureMaxThreeProviderAttribute]
         public List<ProviderAttributeModel> Attributes { get; set; } = new List<ProviderAttributeModel>();

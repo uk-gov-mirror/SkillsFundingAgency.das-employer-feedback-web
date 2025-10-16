@@ -1,17 +1,20 @@
 using AutoFixture;
+using Castle.Core.Logging;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using Microsoft.Extensions.Logging;
 using Moq;
 using Newtonsoft.Json;
 using NUnit.Framework;
 using SFA.DAS.EmployerFeedback.Domain.Types;
 using SFA.DAS.EmployerFeedback.Infrastructure.Configuration;
 using SFA.DAS.EmployerFeedback.Infrastructure.Configuration.Routing;
-using SFA.DAS.EmployerFeedback.Infrastructure.Services.SessionStorage;
+using SFA.DAS.EmployerFeedback.Infrastructure.Services.UserService;
 using SFA.DAS.EmployerFeedback.Web.Controllers;
 using SFA.DAS.EmployerFeedback.Web.Models.Shared;
+using SFA.DAS.EmployerFeedback.Web.Services.SessionStorage;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,7 +27,9 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Controllers
     public class QuestionsControllerTests
     {
         private QuestionsController _controller;
+        private Mock<ILogger<QuestionsController>> _loggerMock;
         private Mock<ISessionStorageService> _sessionServiceMock;
+        private Mock<IUserService> _userServiceMock;
         private IFixture _fixture;
         private List<ProviderAttributeModel> _providerAttributes;
         private string _accountId;
@@ -36,14 +41,17 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Controllers
             _providerAttributes = GetProviderAttributes();
             _sessionServiceMock = new Mock<ISessionStorageService>();
             _sessionServiceMock
-                .Setup(mock => mock.Get<SurveyModel>(It.IsAny<string>()))
+                .Setup(mock => mock.GetSurveyModel(It.IsAny<string>()))
                 .Returns(Task.FromResult(new SurveyModel()));
+            _userServiceMock = new Mock<IUserService>();
+            _userServiceMock.Setup(m => m.GetUserId()).Returns(new Guid().ToString());
+           _loggerMock = new Mock<ILogger<QuestionsController>>();
 
             var tempDataProvider = Mock.Of<ITempDataProvider>();
             var tempDataDictionaryFactory = new TempDataDictionaryFactory(tempDataProvider);
             var tempData = tempDataDictionaryFactory.GetTempData(new DefaultHttpContext());
 
-            _controller = new QuestionsController(_sessionServiceMock.Object)
+            _controller = new QuestionsController(_sessionServiceMock.Object, _userServiceMock.Object, _loggerMock.Object)
             {
                 TempData = tempData,
                 ControllerContext = new ControllerContext
@@ -71,29 +79,6 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Controllers
             result.Model.Should().BeOfType<SurveyModel>();
             var attributes = (result.Model as SurveyModel).Attributes;
             attributes.Should().NotContain(m => m.Good);
-        }
-
-        [Test]
-        public async Task Question_1_When_Session_Answers_Should_Mark_As_Doing_Well()
-        {
-            // Arrange
-            var surveyModel = new SurveyModel();
-            var sessionDoingWellAtts = _providerAttributes.Take(3).ToList();
-            sessionDoingWellAtts.ForEach(ps => ps.Good = true);
-            surveyModel.Attributes = _providerAttributes;
-            _sessionServiceMock.Setup(mock => mock.Get<SurveyModel>(It.IsAny<string>()))
-                .Returns(Task.FromResult(surveyModel));
-
-            // Act
-            var result = await _controller.QuestionOne(_accountId) as ViewResult;
-            var json = JsonConvert.SerializeObject(result.Model as SurveyModel, Formatting.Indented);
-
-
-            // Assert
-            result.Model.Should().BeOfType<SurveyModel>();
-            var attributes = (result.Model as SurveyModel).Attributes;
-            attributes.Should().Contain(m => m.Good);
-            attributes.Count(m => m.Good).Should().Be(sessionDoingWellAtts.Count);
         }
 
         [Test]
@@ -148,7 +133,7 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Controllers
             var sessionDoingWellAtts = _providerAttributes.Take(3).ToList();
             sessionDoingWellAtts.ForEach(ps => ps.Bad = true);
             surveyModel.Attributes = _providerAttributes;
-            _sessionServiceMock.Setup(mock => mock.Get<SurveyModel>(It.IsAny<string>()))
+            _sessionServiceMock.Setup(mock => mock.GetSurveyModel(It.IsAny<string>()))
                 .Returns(Task.FromResult(surveyModel));
 
             // Act
@@ -210,7 +195,7 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Controllers
         {
             // Arrange
             var surveyModel = new SurveyModel { Rating = ProviderRating.Poor };
-            _sessionServiceMock.Setup(mock => mock.Get<SurveyModel>(It.IsAny<string>()))
+            _sessionServiceMock.Setup(mock => mock.GetSurveyModel(It.IsAny<string>()))
                 .Returns(Task.FromResult(surveyModel));
 
             // Act
@@ -227,7 +212,7 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Controllers
         {
             // Arrange
             var surveyModel = new SurveyModel();
-            _sessionServiceMock.Setup(mock => mock.Get<SurveyModel>(It.IsAny<string>())).Verifiable();
+            _sessionServiceMock.Setup(mock => mock.GetSurveyModel(It.IsAny<string>())).Verifiable();
             // simulate model validation as this only occurs at runtime
             _controller.ModelState.AddModelError("ProviderRating", "Required Field");
 

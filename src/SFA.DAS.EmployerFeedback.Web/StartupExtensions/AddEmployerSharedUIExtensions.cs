@@ -12,7 +12,6 @@ namespace SFA.DAS.EmployerFeedback.Web.StartupExtensions
         public static IServiceCollection AddEmployerSharedUi(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddMaMenuConfiguration("signout", configuration["ResourceEnvironmentName"]);
-
             services.AddSingleton<ICookieBannerViewModel>(provider =>
             {
                 var maLinkGenerator = provider.GetService<UrlBuilder>();
@@ -22,7 +21,6 @@ namespace SFA.DAS.EmployerFeedback.Web.StartupExtensions
                     CookieConsentUrl = maLinkGenerator.AccountsLink("Cookies"),
                 };
             });
-
             return services;
         }
     }

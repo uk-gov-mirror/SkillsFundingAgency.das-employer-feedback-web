@@ -42,12 +42,12 @@ namespace SFA.DAS.EmployerFeedback.Web.Helpers
                 {
                     content.Append($" class=\"{ItemClass}\"");
                 }
-                
+
                 content.Append('>');
                 content.Append($"{tag.Description}");
                 content.Append("</li>");
             }
-            
+
             content.Append("</ul>");
             output.PostContent.SetHtmlContent(content.ToString());
             output.Attributes.Clear();

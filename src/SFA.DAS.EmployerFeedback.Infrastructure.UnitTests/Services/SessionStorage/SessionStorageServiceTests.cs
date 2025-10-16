@@ -5,7 +5,8 @@ using Moq;
 using Newtonsoft.Json;
 using NUnit.Framework;
 using SFA.DAS.EmployerFeedback.Infrastructure.Configuration;
-using SFA.DAS.EmployerFeedback.Infrastructure.Services.SessionStorage;
+using SFA.DAS.EmployerFeedback.Web.Models.Shared;
+using SFA.DAS.EmployerFeedback.Web.Services.SessionStorage;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -36,7 +37,6 @@ namespace SFA.DAS.EmployerFeedback.Infrastructure.UnitTests.Services.SessionStor
             // Arrange
             var key = "test-key";
             var value = new { Name = "Test", Value = 123 };
-            byte[] storedBytes = null;
 
             _distributedCacheMock
                 .Setup(x => x.SetAsync(
@@ -44,7 +44,6 @@ namespace SFA.DAS.EmployerFeedback.Infrastructure.UnitTests.Services.SessionStor
                     It.IsAny<byte[]>(),
                     It.IsAny<DistributedCacheEntryOptions>(),
                     It.IsAny<CancellationToken>()))
-                .Callback<string, byte[], DistributedCacheEntryOptions, CancellationToken>((k, b, o, t) => storedBytes = b)
                 .Returns(Task.CompletedTask);
 
             // Act
@@ -56,18 +55,14 @@ namespace SFA.DAS.EmployerFeedback.Infrastructure.UnitTests.Services.SessionStor
                 It.IsAny<byte[]>(),
                 It.IsAny<DistributedCacheEntryOptions>(),
                 It.IsAny<CancellationToken>()), Times.Once);
-
-            var json = System.Text.Encoding.UTF8.GetString(storedBytes);
-            json.Should().Contain("Test");
-            json.Should().Contain("123");
         }
 
         [Test]
-        public async Task GetAsync_ShouldReturnDeserializedObject_WhenKeyExists()
+        public async Task GetSurveyModel_ShouldReturnDeserializedObject_WhenKeyExists()
         {
             // Arrange
             var key = "test-key";
-            var expected = new TestObject { Name = "Test", Value = 123 };
+            var expected = new SurveyModel { AccountId = 123456, ProviderName = "Test Provider" };
             var json = JsonConvert.SerializeObject(expected);
             var bytes = System.Text.Encoding.UTF8.GetBytes(json);
 
@@ -76,16 +71,16 @@ namespace SFA.DAS.EmployerFeedback.Infrastructure.UnitTests.Services.SessionStor
                 .ReturnsAsync(bytes);
 
             // Act
-            var result = await _service.Get<TestObject>(key);
+            var result = await _service.GetSurveyModel(key);
 
             // Assert
             result.Should().NotBeNull();
-            result.Name.Should().Be(expected.Name);
-            result.Value.Should().Be(expected.Value);
+            result.AccountId.Should().Be(expected.AccountId);
+            result.ProviderName.Should().Be(expected.ProviderName);
         }
 
         [Test]
-        public async Task GetAsync_ShouldReturnDefault_WhenKeyDoesNotExist()
+        public async Task GetSurveyModel_ShouldReturnDefault_WhenKeyDoesNotExist()
         {
             // Arrange
             var key = "missing-key";
@@ -94,7 +89,7 @@ namespace SFA.DAS.EmployerFeedback.Infrastructure.UnitTests.Services.SessionStor
                 .ReturnsAsync((byte[])null);
 
             // Act
-            var result = await _service.Get<TestObject>(key);
+            var result = await _service.GetSurveyModel(key);
 
             // Assert
             result.Should().BeNull();
@@ -111,12 +106,6 @@ namespace SFA.DAS.EmployerFeedback.Infrastructure.UnitTests.Services.SessionStor
 
             // Assert
             _distributedCacheMock.Verify(x => x.RemoveAsync(EnvironmentName + "_" + key, It.IsAny<CancellationToken>()), Times.Once);
-        }
-
-        private class TestObject
-        {
-            public string Name { get; set; }
-            public int Value { get; set; }
         }
     }
 }

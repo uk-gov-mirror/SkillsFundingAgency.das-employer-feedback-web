@@ -77,7 +77,7 @@ namespace SFA.DAS.EmployerFeedback.Infrastructure.UnitTests.Services.EmployerAcc
         }
 
         [Test]
-        public async Task GetUserAccounts_ReturnsEmptyAccounts_WhenNoAccountsExist()
+        public async Task GetUserAccounts_ReturnsEmptyAccounts_WhenMissingDetails()
         {
             // Arrange
             var userId = "test-user-id";
