@@ -110,7 +110,7 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Controllers
             var result = await _controller.QuestionOne(surveyModel);
 
             // Assert
-            _sessionServiceMock.Verify(mock => mock.Set(It.IsAny<string>(), It.IsAny<object>()), Times.Once);
+            _sessionServiceMock.Verify(mock => mock.SetSurveyModel(It.IsAny<string>(), It.IsAny<SurveyModel>()), Times.Once);
             result.Should().BeOfType<RedirectToRouteResult>()
                 .Which.RouteName.Should().Be(RouteNames.QuestionTwo_Get);
         }
@@ -178,7 +178,7 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Controllers
             var result = await _controller.QuestionTwo(surveyModel);
 
             // Assert
-            _sessionServiceMock.Verify(mock => mock.Set(It.IsAny<string>(), It.IsAny<object>()), Times.Once);
+            _sessionServiceMock.Verify(mock => mock.SetSurveyModel(It.IsAny<string>(), It.IsAny<SurveyModel>()), Times.Once);
             result.Should().BeOfType<RedirectToRouteResult>()
                 .Which.RouteName.Should().Be(RouteNames.QuestionThree_Get);
         }
@@ -254,7 +254,7 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Controllers
             var result = await _controller.QuestionThree(surveyModel) as RedirectToRouteResult;
 
             // Assert
-            _sessionServiceMock.Verify(mock => mock.Set(It.IsAny<string>(), It.IsAny<object>()), Times.Once);
+            _sessionServiceMock.Verify(mock => mock.SetSurveyModel(It.IsAny<string>(), It.IsAny<SurveyModel>()), Times.Once);
             result.Should().NotBeNull();
             result.RouteName.Should().Be(RouteNames.ReviewAnswers_Get);
         }
