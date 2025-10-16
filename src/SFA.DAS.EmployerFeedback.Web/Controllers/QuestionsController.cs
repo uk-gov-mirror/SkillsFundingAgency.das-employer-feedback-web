@@ -6,7 +6,6 @@ using Microsoft.Extensions.Logging;
 using SFA.DAS.EmployerFeedback.Infrastructure.Configuration.Routing;
 using SFA.DAS.EmployerFeedback.Infrastructure.Services.UserService;
 using SFA.DAS.EmployerFeedback.Web.Authorization;
-using SFA.DAS.EmployerFeedback.Web.Configuration.Routing;
 using SFA.DAS.EmployerFeedback.Web.Models.Shared;
 using SFA.DAS.EmployerFeedback.Web.Services.SessionStorage;
 using System;
@@ -105,8 +104,7 @@ namespace SFA.DAS.EmployerFeedback.Web.Controllers
             var returnRoute = Convert.ToString(TempData[ReturnUrlKey]);
             string userId = GetUserId().Value.ToString();
             var sessionAnswer = await _sessionService.GetSurveyModel(userId);
-            var accountId = HttpContext.GetRouteData().Values[RouteValueKeys.EncodedAccountId] as string;
-            return await Task.Run(() => RedirectToRoute(string.IsNullOrEmpty(returnRoute) ? nextRoute : returnRoute, new { encodedAccountId = accountId }) as IActionResult);
+            return await Task.Run(() => RedirectToRoute(string.IsNullOrEmpty(returnRoute) ? nextRoute : returnRoute, new { encodedAccountId = sessionAnswer.EncodedAccountId }) as IActionResult);
         }
 
         private bool IsProviderAttributesValid(SurveyModel surveyModel)

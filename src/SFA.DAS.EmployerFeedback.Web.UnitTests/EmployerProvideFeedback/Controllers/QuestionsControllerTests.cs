@@ -85,6 +85,9 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Controllers
         public async Task Question_1_InvalidAttributes_ShouldReturnView()
         {
             var surveyModel = new SurveyModel { Attributes = null };
+            _sessionServiceMock
+                .Setup(mock => mock.GetSurveyModel(It.IsAny<string>()))
+                .Returns(Task.FromResult(surveyModel));
 
             var result = await _controller.QuestionOne(_accountId) as ViewResult;
 
@@ -98,7 +101,10 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Controllers
             // Arrange
             var sessionDoingWellAtts = _providerAttributes.Take(3).ToList();
             sessionDoingWellAtts.ForEach(ps => ps.Good = true);
-            var surveyModel = new SurveyModel { Attributes = _providerAttributes };
+            var surveyModel = new SurveyModel { Attributes = sessionDoingWellAtts };
+            _sessionServiceMock
+                .Setup(mock => mock.GetSurveyModel(It.IsAny<string>()))
+                .Returns(Task.FromResult(surveyModel));
 
             // Act
             var result = await _controller.QuestionOne(surveyModel);
@@ -161,9 +167,12 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Controllers
         public async Task Question_2_When_Answers_Submitted_Should_Update_Session_And_Redirect()
         {
             // Arrange
-            var sessionDoingWellAtts = _providerAttributes.Take(3).ToList();
-            sessionDoingWellAtts.ForEach(ps => ps.Bad = true);
-            var surveyModel = new SurveyModel { Attributes = _providerAttributes };
+            var sessionWeaknesses = _providerAttributes.Take(3).ToList();
+            sessionWeaknesses.ForEach(ps => ps.Bad = true);
+            var surveyModel = new SurveyModel { Attributes = sessionWeaknesses };
+            _sessionServiceMock
+                .Setup(mock => mock.GetSurveyModel(It.IsAny<string>()))
+                .Returns(Task.FromResult(surveyModel));
 
             // Act
             var result = await _controller.QuestionTwo(surveyModel);
