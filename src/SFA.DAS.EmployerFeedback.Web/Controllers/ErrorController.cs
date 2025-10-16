@@ -24,7 +24,7 @@ namespace SFA.DAS.EmployerFeedback.Web.Controllers
                     break;
             }
 
-            return View();//new ErrorViewModel { StatusCode = id, RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            return View();
         }
 
         private IActionResult PageNotFound()
