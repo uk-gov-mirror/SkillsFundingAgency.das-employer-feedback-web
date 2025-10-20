@@ -6,6 +6,7 @@ using SFA.DAS.EmployerFeedback.Infrastructure.Configuration;
 using SFA.DAS.EmployerFeedback.Web.Models.Shared;
 using SFA.DAS.EmployerFeedback.Web.Paging;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace SFA.DAS.EmployerFeedback.Web.Services.SessionStorage
@@ -26,63 +27,70 @@ namespace SFA.DAS.EmployerFeedback.Web.Services.SessionStorage
             _environment = environment.EnvironmentName;
         }
 
-        public async Task<SurveyModel> GetSurveyModel(string key)
+        public async Task<SurveyModel> GetSurveyModel(Guid userId)
         {
-            return await Get<SurveyModel>(key);
+            return await Get<SurveyModel>(userId.ToString());
         }
 
-        public async Task<PagingState> GetPagingState(string key)
+        public async Task SetSurveyModel(Guid userId, SurveyModel surveyModel)
         {
-            return await Get<PagingState>(key);
+            await Set(userId.ToString(), surveyModel);
         }
 
-        public async Task<FeedbackSource> GetFeedbackSource(string key)
+        public async Task<PagingState> GetPagingState(Guid userId)
         {
-            return await Get<FeedbackSource>(key);
+            return await Get<PagingState>($"{userId}_PagingState");
+        }
+        public async Task SetPagingState(Guid userId, PagingState pagingState)
+        {
+            await Set($"{userId}_PagingState", pagingState);
         }
 
-        public async Task<string> GetString(string key)
+        public async Task<PagingState> UpdatePagingState(Guid userId, Action<PagingState> action)
+        {
+            var pagingState = await GetPagingState(userId) ?? new PagingState();
+            action(pagingState);
+            await SetPagingState(userId, pagingState);
+            return pagingState;
+        }
+
+        public async Task<FeedbackSource> GetFeedbackSource(Guid userId)
+        {
+            return await Get<FeedbackSource>($"{userId}_FeedbackSource");
+        }
+
+        public async Task SetFeedbackSource(Guid userId, FeedbackSource feedbackSource)
+        {
+            await Set($"{userId}_FeedbackSource", feedbackSource);
+        }
+
+        public async Task<List<ProviderSearchViewModel.EmployerTrainingProvider>> GetProviders(Guid userId)
+        {
+            return await Get<List<ProviderSearchViewModel.EmployerTrainingProvider>>($"{userId}_Providers");
+        }
+
+        public async Task SetProviders(Guid userId, List<ProviderSearchViewModel.EmployerTrainingProvider> providers)
+        {
+            await Set($"{userId}_Providers", providers);
+        }
+
+        private async Task<string> GetString(string key)
         {
             return await _sessionCache.GetStringAsync(_environment + "_" + key);
-        }
-
-        public async Task<int> GetProviderCount(string key)
-        {
-            return await Get<int>(key);
-        }
-
-        public async Task SetPagingState(string key, PagingState pagingState)
-        {
-            await Set(key, pagingState);
-        }
-
-        public async Task SetSurveyModel(string key, SurveyModel surveyModel)
-        {
-            await Set(key, surveyModel);
-        }
-
-        public async Task Set(string key, object value)
-        {
-            await _sessionCache.SetStringAsync(_environment + "_" + key, JsonConvert.SerializeObject(value), new DistributedCacheEntryOptions
-            {
-                SlidingExpiration = TimeSpan.FromMinutes(_slidingExpirationMinutes)
-            });
-        }
-
-        public async Task Remove(string key)
-        {
-            await _sessionCache.RemoveAsync(_environment + "_" + key);
-        }
-
-        public async Task<bool> ExistsAsync(string key)
-        {
-            return await GetString(key) != null;
         }
 
         private async Task<T> Get<T>(string key)
         {
             var sessionObject = await GetString(key);
             return string.IsNullOrWhiteSpace(sessionObject) ? default(T) : JsonConvert.DeserializeObject<T>(sessionObject);
+        }
+
+        private async Task Set(string key, object value)
+        {
+            await _sessionCache.SetStringAsync(_environment + "_" + key, JsonConvert.SerializeObject(value), new DistributedCacheEntryOptions
+            {
+                SlidingExpiration = TimeSpan.FromMinutes(_slidingExpirationMinutes)
+            });
         }
     }
 }

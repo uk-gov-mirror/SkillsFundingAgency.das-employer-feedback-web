@@ -3,23 +3,30 @@ using Microsoft.AspNetCore.Mvc;
 using SFA.DAS.Employer.Shared.UI;
 using SFA.DAS.EmployerFeedback.Infrastructure.Configuration.Routing;
 using SFA.DAS.EmployerFeedback.Web.Authorization;
+using SFA.DAS.EmployerFeedback.Web.Services;
 
 namespace SFA.DAS.EmployerFeedback.Web.Controllers
 {
     [Authorize(Policy = nameof(PolicyNames.ViewerRole))]
+    [Route(RoutePrefixPaths.FeedbackRoutePath)]
     public class FeedbackSubmittedController : Controller
     {
-        private readonly UrlBuilder _urlBuilder;
+        #region Routes
+        public const string FeedbackAlreadySubmittedGet = nameof(FeedbackAlreadySubmittedGet);
+        #endregion
 
-        public FeedbackSubmittedController(UrlBuilder urlBuilder)
+        private readonly IAccountsLinkService _accountsLinkService;
+
+        public FeedbackSubmittedController(IAccountsLinkService accountsLinkService)
         {
-            _urlBuilder = urlBuilder;
+            _accountsLinkService = accountsLinkService;
         }
 
-        [HttpGet("/{encodedAccountId}/feedback-submitted", Name = RouteNames.FeedbackAlreadySubmitted)]
+        [HttpGet]
+        [Route("feedback-submitted", Name = FeedbackAlreadySubmittedGet)]
         public IActionResult Index(string encodedAccountId)
         {
-            ViewBag.EmployerAccountsHomeUrl = _urlBuilder.AccountsLink("AccountsHome", encodedAccountId);
+            ViewBag.EmployerAccountsHomeUrl = _accountsLinkService.AccountsHome(encodedAccountId);
             return View();
         }
     }

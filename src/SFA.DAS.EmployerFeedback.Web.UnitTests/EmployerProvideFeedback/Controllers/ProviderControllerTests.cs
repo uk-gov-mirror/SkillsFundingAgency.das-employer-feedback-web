@@ -1,437 +1,417 @@
-﻿using FluentAssertions;
-using Microsoft.AspNetCore.Http;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
 using SFA.DAS.Employer.Shared.UI;
 using SFA.DAS.EmployerFeedback.Domain.Entities.Models;
+using SFA.DAS.EmployerFeedback.Domain.Types;
 using SFA.DAS.EmployerFeedback.Infrastructure.Api.OuterApi;
-using SFA.DAS.EmployerFeedback.Infrastructure.Configuration;
 using SFA.DAS.EmployerFeedback.Infrastructure.Services.UserService;
 using SFA.DAS.EmployerFeedback.Paging;
 using SFA.DAS.EmployerFeedback.Services;
-using SFA.DAS.EmployerFeedback.Web.Configuration.Routing;
 using SFA.DAS.EmployerFeedback.Web.Controllers;
+using SFA.DAS.EmployerFeedback.Web.Models.Provider;
 using SFA.DAS.EmployerFeedback.Web.Models.Shared;
 using SFA.DAS.EmployerFeedback.Web.Paging;
+using SFA.DAS.EmployerFeedback.Web.Services;
 using SFA.DAS.EmployerFeedback.Web.Services.SessionStorage;
-using SFA.DAS.EmployerFeedback.Web.ViewModels;
-using System;
-using System.Collections.Generic;
-using System.Security.Claims;
-using System.Threading.Tasks;
+using static SFA.DAS.EmployerFeedback.Web.Models.Shared.ProviderSearchViewModel;
 
 namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Controllers
 {
+    [TestFixture]
     public class ProviderControllerTests
     {
-        private ProviderController _controller;
-        private Mock<ISessionStorageService> _sessionServiceMock;
-        private Mock<ITrainingProviderService> _trainingProviderServiceMock;
-        private Mock<ILogger<ProviderController>> _loggerMock;
-        private Mock<IEmployerFeedbackOuterApi> _employerFeedbackOuterApiMock;
-        private Mock<IUserService> _userServiceMock;
-        private SurveyModel _surveyModel;
-        private UrlBuilder _urlBuilder;
+        private Mock<ISessionStorageService> _session;
+        private Mock<ITrainingProviderService> _providers;
+        private Mock<ILogger<ProviderController>> _logger;
+        private Mock<IEmployerFeedbackOuterApi> _outerApi;
+        private Mock<IAccountsLinkService> _accountsLinkService;
+        private Mock<IUserService> _userService;
+
+        private ProviderController _sut;
+        private Guid _userId;
 
         [SetUp]
         public void SetUp()
         {
-            _surveyModel = new SurveyModel
-            {
-                UserRef = Guid.NewGuid(),
-                ProviderName = "TestProviderName",
-                Ukprn = 10000001,
-                AccountId = 123456,
-                Attributes = new List<ProviderAttributeModel>
-                {
-                    new ProviderAttributeModel
-                    {
-                        Name = "TestAttribute1",
-                        Good = true,
-                        Bad = false
-                    },
-                    new ProviderAttributeModel
-                    {
-                        Name = "TestAttribute2",
-                        Good = false,
-                        Bad = true
-                    }
-                },
-                FeedbackSource = Domain.Types.FeedbackSource.AdHoc,
-            };
+            _session = new Mock<ISessionStorageService>();
+            _providers = new Mock<ITrainingProviderService>();
+            _logger = new Mock<ILogger<ProviderController>>();
+            _outerApi = new Mock<IEmployerFeedbackOuterApi>();
+            _accountsLinkService = new Mock<IAccountsLinkService>();
+            _userService = new Mock<IUserService>();
 
-            _userServiceMock = new Mock<IUserService>();
-            _userServiceMock.Setup(m => m.GetUserId()).Returns(new Guid().ToString());
+            _userId = Guid.NewGuid();
+            _userService.Setup(u => u.GetUserId()).Returns(_userId);
 
-            _sessionServiceMock = new Mock<ISessionStorageService>();
-            _sessionServiceMock
-                .Setup(mock => mock.GetSurveyModel(It.IsAny<string>()))
-                .ReturnsAsync(_surveyModel);
-
-            _trainingProviderServiceMock = new Mock<ITrainingProviderService>();
-            _trainingProviderServiceMock
-                .Setup(m => m.GetTrainingProviderSearchViewModel(
-                    It.IsAny<long>(),
-                    It.IsAny<string>(),
-                    It.IsAny<Guid>(),
-                    It.IsAny<string>(),
-                    It.IsAny<string>(),
-                    It.IsAny<int>(),
-                    It.IsAny<int>(),
-                    It.IsAny<string>(),
-                    It.IsAny<string>()))
-                .ReturnsAsync(new ProviderSearchViewModel
-                {
-                    TrainingProviders = new PaginatedList<ProviderSearchViewModel.EmployerTrainingProvider>(
-                        new List<ProviderSearchViewModel.EmployerTrainingProvider>(), 0, 0, 0, 6)
-                });
-
-            _loggerMock = new Mock<ILogger<ProviderController>>();
-            _urlBuilder = new UrlBuilder("LOCAL");
-            _employerFeedbackOuterApiMock = new Mock<IEmployerFeedbackOuterApi>();
-
-            _controller = new ProviderController(
-                _sessionServiceMock.Object,
-                _trainingProviderServiceMock.Object,
-                _loggerMock.Object,
-                _employerFeedbackOuterApiMock.Object,
-                _urlBuilder,
-                _userServiceMock.Object);
-
-            var context = new DefaultHttpContext
-            {
-                User = new ClaimsPrincipal(new ClaimsIdentity(new[]
-                {
-                    new Claim(EmployerClaims.UserId, new Guid().ToString()),
-                }))
-            };
-
-            _controller.ControllerContext = new ControllerContext
-            {
-                HttpContext = context
-            };
-        }
-
-        public class Index : ProviderControllerTests
-        {
-            [Test]
-            public async Task Valid_AccountId_Should_Return_View()
-            {
-                // Arrange
-                var request = new GetProvidersForFeedbackRequest();
-
-                // Act
-                var result = await _controller.Index(request);
-
-                // Assert
-                result.Should().BeOfType<ViewResult>();
-                _controller.ViewData.Should().HaveCount(1);
-            }
-
-            [Test]
-            public async Task Filter_Should_Return_View()
-            {
-                // Arrange
-                var request = new ProviderSearchViewModel
-                {
-                    SelectedProviderName = "Test",
-                    SelectedFeedbackStatus = "All",
-                    SortColumn = "ProviderName",
-                    SortDirection = "Asc"
-                };
-
-                _trainingProviderServiceMock.Setup(m => m.GetTrainingProviderSearchViewModel(
-                    It.IsAny<long>(),
-                    It.IsAny<string>(),
-                    It.IsAny<Guid>(),
-                    It.IsAny<string>(),
-                    It.IsAny<string>(),
-                    It.IsAny<int>(),
-                    It.IsAny<int>(),
-                    It.IsAny<string>(),
-                    It.IsAny<string>())).ReturnsAsync(request);
-
-                // Act
-                var result = await _controller.Filter(request);
-
-                // Assert
-                result.Should().BeOfType<ViewResult>();
-                _controller.ViewData.Should().HaveCount(1);
-            }
-
-
-            [Test]
-            public async Task Filter_PagingStateExists_Should_Return_View()
-            {
-                // Arrange
-                var request = new ProviderSearchViewModel
-                {
-                    SelectedProviderName = "Test",
-                    SelectedFeedbackStatus = "All",
-                    SortColumn = "ProviderName",
-                    SortDirection = "Asc"
-                };
-
-                _sessionServiceMock.Setup(x => x.GetPagingState(It.IsAny<string>()))
-                    .ReturnsAsync(new PagingState
-                    {
-                        PageIndex = 1,
-                        PageSize = 6,
-                        SortColumn = "ProviderName",
-                        SortDirection = "Asc",
-                        SelectedFeedbackStatus = "All",
-                        SelectedProviderName = "Test"
-                    });
-
-                _trainingProviderServiceMock.Setup(m => m.GetTrainingProviderSearchViewModel(
-                    It.IsAny<long>(),
-                    It.IsAny<string>(),
-                    It.IsAny<Guid>(),
-                    It.IsAny<string>(),
-                    It.IsAny<string>(),
-                    It.IsAny<int>(),
-                    It.IsAny<int>(),
-                    It.IsAny<string>(),
-                    It.IsAny<string>())).ReturnsAsync(request);
-
-                // Act
-                var result = await _controller.Filter(request);
-
-                // Assert
-                result.Should().BeOfType<ViewResult>();
-                _controller.ViewData.Should().HaveCount(1);
-            }
-
-            [Test]
-            public async Task SortProviders_ShouldRedirectToIndex()
-            {
-                // Arrange
-                string encodedAccountId = "ENCODED123";
-                string sortColumn = "ProviderName";
-                string sortDirection = "Asc";
-
-                // Act
-                var result = await _controller.SortProviders(encodedAccountId, sortColumn, sortDirection);
-
-                // Assert
-                result.Should().BeOfType<RedirectToActionResult>();
-                var redirectResult = (RedirectToActionResult)result;
-                redirectResult.ActionName.Should().Be(nameof(_controller.Index));
-            }
-
-            [Test]
-            public async Task ClearFilters_ShouldRedirectToIndex()
-            {
-                // Arrange
-                string encodedAccountId = "ENCODED123";
-
-                // Act
-                var result = await _controller.ClearFilters(encodedAccountId);
-
-                // Assert
-                result.Should().BeOfType<RedirectToActionResult>();
-                var redirectResult = (RedirectToActionResult)result;
-                redirectResult.ActionName.Should().Be(nameof(_controller.Index));
-            }
-
-            [Test]
-            public async Task ConfirmProvider_ShoulReturnViewWithModel()
-            {
-                // Arrange
-                var providerSearchModel = new ProviderSearchConfirmationViewModel
-                {
-                    EncodedAccountId = "ENCODED123",
-                    ProviderId = 10000001,
-                    ProviderName = "Test Provider",
-                    Confirmed = true
-                };
-
-
-                _trainingProviderServiceMock.Setup(m => m.GetTrainingProviderConfirmationViewModel(
-                        It.IsAny<long>(),
-                        It.IsAny<Guid>(),
-                        It.IsAny<long>()))
-                    .ReturnsAsync(providerSearchModel);
-
-
-                // Act
-                var result = await _controller.ConfirmProvider(providerSearchModel);
-
-                // Assert
-                result.Should().BeOfType<ViewResult>();
-                _controller.ViewData.Model.Should().NotBeNull();
-
-                var providerSearchedConfirmedViewModel = _controller.ViewData.Model as ProviderSearchConfirmationViewModel;
-                providerSearchedConfirmedViewModel.Should().NotBeNull();
-                providerSearchedConfirmedViewModel.Should().BeEquivalentTo(providerSearchModel);
-            }
-
-            [Test]
-            public async Task ProviderConfirmed_RedirecToLandingPage()
-            {
-                // Arrange
-                string encodedAccountId = "ENCODED123";
-                long ukprn = 10000001;
-
-                var postedModel = new ProviderSearchConfirmationViewModel
-                {
-                    EncodedAccountId = encodedAccountId,
-                    ProviderId = ukprn,
-                    ProviderName = "Test Provider",
-                    Confirmed = true
-                };
-
-                // Ensure training provider service returns something reasonable if the controller calls it
-                _trainingProviderServiceMock.Setup(m => m.GetTrainingProviderConfirmationViewModel(
-                        It.IsAny<long>(),
-                        It.IsAny<Guid>(),
-                        It.IsAny<long>()))
-                    .ReturnsAsync(new ProviderSearchConfirmationViewModel
-                    {
-                        EncodedAccountId = encodedAccountId,
-                        ProviderId = ukprn,
-                        ProviderName = "Test Provider",
-                        Confirmed = true
-                    });
-
-                // Act
-                var result = await _controller.ProviderConfirmed(postedModel);
-
-                // Assert
-                result.Should().BeOfType<RedirectToActionResult>();
-                var redirectResult = (RedirectToActionResult)result;
-                redirectResult.ActionName.Should().Be("StartFeedback");
-
-                var surveyModel = _sessionServiceMock.Object.GetSurveyModel("TEST_USER_ID").Result;
-                surveyModel.Should().BeEquivalentTo(_surveyModel);
-            }
-
-            [Test]
-            public async Task ProviderConfirmed_NullConfirmedProvider_ShouldRedirectToConfirmProvider()
-            {
-                // Arrange
-                string encodedAccountId = "ENCODED123";
-                long ukprn = 10000001;
-
-                var postedModel = new ProviderSearchConfirmationViewModel
-                {
-                    EncodedAccountId = encodedAccountId,
-                    ProviderId = ukprn,
-                    ProviderName = "Test Provider",
-                    Confirmed = null
-                };
-
-                // Act
-                var result = await _controller.ProviderConfirmed(postedModel);
-
-                // Assert
-                result.Should().BeOfType<ViewResult>();
-                _controller.ViewData.Model.Should().Be(postedModel);
-            }
-
-            [Test]
-            public async Task ProviderConfirmed_DoesNotHaveConfirmedValue_ShouldRedirectToIndex()
-            {
-                // Arrange
-                string encodedAccountId = "ENCODED123";
-                long ukprn = 10000001;
-
-                var postedModel = new ProviderSearchConfirmationViewModel
-                {
-                    EncodedAccountId = encodedAccountId,
-                    ProviderId = ukprn,
-                    ProviderName = "Test Provider",
-                    Confirmed = false
-                };
-
-                _controller.Request.RouteValues.Add(RouteValueKeys.EncodedAccountId, encodedAccountId);
-                _controller.Request.RouteValues.Add(RouteValueKeys.ProviderId, ukprn);
-
-                // Act
-                var result = await _controller.ProviderConfirmed(postedModel);
-
-                // Assert
-                result.Should().BeOfType<RedirectToActionResult>();
-                var redirectResult = (RedirectToActionResult)result;
-                redirectResult.ActionName.Should().Be("Index");
-                redirectResult.RouteValues.Should().ContainKey("encodedAccountId");
-                redirectResult.RouteValues["encodedAccountId"].Should().Be(encodedAccountId);
-                redirectResult.RouteValues.Should().ContainKey("providerId");
-                redirectResult.RouteValues["providerId"].Should().Be(ukprn);
-            }
-
-            [Test]
-            public async Task ProviderConfirmed_AttributesError_RedirectToError()
-            {
-                // Arrange
-                string encodedAccountId = "ENCODED123";
-                long ukprn = 10000001;
-                var postedModel = new ProviderSearchConfirmationViewModel
-                {
-                    EncodedAccountId = encodedAccountId,
-                    ProviderId = ukprn,
-                    ProviderName = "Test Provider",
-                    Confirmed = true
-                };
-
-                _employerFeedbackOuterApiMock.Setup(m => m.GetAllAttributes()).ReturnsAsync((List<FeedbackQuestionAttribute>)null);
-
-                // Act
-                var result = await _controller.ProviderConfirmed(postedModel);
-
-                // Assert
-                result.Should().BeOfType<RedirectToActionResult>();
-                var redirectResult = (RedirectToActionResult)result;
-                redirectResult.ActionName.Should().Be("Error");
-                redirectResult.ControllerName.Should().Be("Error");
-            }
-
-            [Test]
-            public async Task ProviderConfirmed_UserCannotBeFound_RedirectToError()
-            {
-                // Arrange
-                string encodedAccountId = "ENCODED123";
-                long ukprn = 10000001;
-                var postedModel = new ProviderSearchConfirmationViewModel
-                {
-                    EncodedAccountId = encodedAccountId,
-                    ProviderId = ukprn,
-                    ProviderName = "Test Provider",
-                    Confirmed = true
-                };
-
-                _userServiceMock.Setup(m => m.GetUserId()).Returns((string)null);
-
-                // Act
-                var result = await _controller.ProviderConfirmed(postedModel);
-
-                // Assert
-                result.Should().BeOfType<RedirectToActionResult>();
-                var redirectResult = (RedirectToActionResult)result;
-                redirectResult.ActionName.Should().Be("Error");
-                redirectResult.ControllerName.Should().Be("Error");
-            }
-
-            [Test]
-            public async Task SessionSurvey_DoesNotExist_ShouldRedirectToNotFoundError()
-            {
-                //  Arrange
-                _sessionServiceMock.Setup(mock => mock.GetSurveyModel(It.IsAny<string>())).ReturnsAsync((SurveyModel)null);
-
-                // Act
-                var result = await _controller.StartFeedback();
-
-                // Assert
-                result.Should().BeOfType<NotFoundResult>();
-            }
+            _sut = new ProviderController(
+                _session.Object,
+                _providers.Object,
+                _logger.Object,
+                _outerApi.Object,
+                _accountsLinkService.Object,
+                _userService.Object);
         }
 
         [TearDown]
-        public void DisposeController()
+        public void TearDown() => _sut?.Dispose();
+
+        [Test]
+        public async Task ProviderSearch_GET_ShouldReturnView_WithViewModel_AndPersistSessionBits()
         {
-            _controller.Dispose();
+            // Arrange
+            var requestModel = new ProviderSearchRequestModel
+            {
+                AccountId = 12345,
+                EncodedAccountId = "ABC123",
+                FeedbackSource = FeedbackSource.AdHoc
+            };
+
+            var pagingStateReturned = new PagingState
+            {
+                PageIndex = 1,
+                PageSize = 10,
+                SelectedFeedbackStatus = "All",
+                SelectedProviderName = "Acme",
+                SortColumn = "Name",
+                SortDirection = "asc"
+            };
+
+            _session
+                .Setup(s => s.UpdatePagingState(_userId, It.IsAny<Action<PagingState>>()))
+                .ReturnsAsync(pagingStateReturned);
+
+            var list = new List<EmployerTrainingProvider>
+            {
+                new EmployerTrainingProvider { ProviderId = 12345678, ProviderName = "Acme Training" }
+            };
+
+            var searchVm = new ProviderSearchViewModel
+            {
+                AccountId = requestModel.AccountId,
+                EncodedAccountId = requestModel.EncodedAccountId,
+                Providers = new PaginatedList<EmployerTrainingProvider>(list, list.Count, 1, 10, 6)
+            };
+
+            _providers
+                .Setup(p => p.GetTrainingProviderSearchViewModel(
+                    requestModel.AccountId,
+                    requestModel.EncodedAccountId,
+                    _userId,
+                    pagingStateReturned.SelectedProviderName,
+                    pagingStateReturned.SelectedFeedbackStatus,
+                    pagingStateReturned.PageSize,
+                    pagingStateReturned.PageIndex,
+                    pagingStateReturned.SortColumn,
+                    pagingStateReturned.SortDirection))
+                .ReturnsAsync(searchVm);
+
+            _accountsLinkService
+                .Setup(u => u.AccountsHome(requestModel.EncodedAccountId))
+                .Returns("https://example/accounts/A12B34/home");
+
+            // Act
+            var result = await _sut.ProviderSearch(requestModel) as ViewResult;
+
+            // Assert
+            result.Should().NotBeNull();
+            var vm = result.Model as ProviderSearchViewModel;
+            vm.Should().NotBeNull();
+            vm.Providers.Items.Should().HaveCount(1);
+            vm.BackUrl.Should().Be("https://example/accounts/A12B34/home");
+            vm.ChangePageAction.Should().Be(nameof(ProviderController.ProviderSearch));
+
+            _session.Verify(s => s.SetProviders(_userId, list), Times.Once);
+            _session.Verify(s => s.SetFeedbackSource(_userId, requestModel.FeedbackSource), Times.Once);
+        }
+
+        [Test]
+        public async Task ProviderSearch_GET_OnException_ShouldRedirectToErrorRoute()
+        {
+            // Arrange
+            var req = new ProviderSearchRequestModel { AccountId = 1, EncodedAccountId = "X" };
+            _session
+                .Setup(s => s.UpdatePagingState(_userId, It.IsAny<Action<PagingState>>()))
+                .ThrowsAsync(new Exception("boom"));
+
+            // Act
+            var result = await _sut.ProviderSearch(req) as RedirectToRouteResult;
+
+            // Assert
+            result.Should().NotBeNull();
+            result!.RouteName.Should().Be(ErrorController.ErrorGet);
+        }
+
+        [Test]
+        public async Task ProviderSearch_POST_ShouldUpdatePagingState_AndRedirectToGet()
+        {
+            // Arrange
+            var vm = new ProviderSearchViewModel
+            {
+                EncodedAccountId = "ABC123",
+                SelectedProviderName = "Acme",
+                SelectedFeedbackStatus = "All"
+            };
+
+            _session
+                .Setup(s => s.UpdatePagingState(_userId, It.IsAny<Action<PagingState>>()))
+                .ReturnsAsync(new PagingState());
+
+            // Act
+            var result = await _sut.ProviderSearch(vm) as RedirectToRouteResult;
+
+            // Assert
+            result.Should().NotBeNull();
+            result!.RouteName.Should().Be(ProviderController.ProviderSearchGet);
+            result.RouteValues!["EncodedAccountId"].Should().Be(vm.EncodedAccountId);
+
+            _session.Verify(s => s.UpdatePagingState(_userId, It.IsAny<Action<PagingState>>()), Times.Once);
+        }
+
+        [Test]
+        public async Task ProviderSearch_POST_OnException_ShouldRedirectToErrorRoute()
+        {
+            // Arrange
+            var vm = new ProviderSearchViewModel { EncodedAccountId = "Y" };
+            _session.Setup(s => s.UpdatePagingState(_userId, It.IsAny<Action<PagingState>>()))
+                    .ThrowsAsync(new Exception("boom"));
+
+            // Act
+            var result = await _sut.ProviderSearch(vm) as RedirectToRouteResult;
+
+            // Assert
+            result.Should().NotBeNull();
+            result!.RouteName.Should().Be(ErrorController.ErrorGet);
+        }
+
+        [Test]
+        public async Task SortProviders_ShouldUpdateSort_AndRedirectToGet()
+        {
+            // Arrange
+            var acc = new AccountModel { EncodedAccountId = "ABC123", AccountId = 12345 };
+            _session.Setup(s => s.UpdatePagingState(_userId, It.IsAny<Action<PagingState>>()))
+                    .ReturnsAsync(new PagingState());
+
+            // Act
+            var result = await _sut.SortProviders(acc, "Name", "desc") as RedirectToRouteResult;
+
+            // Assert
+            result.Should().NotBeNull();
+            result.RouteName.Should().Be(ProviderController.ProviderSearchGet);
+            result.RouteValues!["EncodedAccountId"].Should().Be(acc.EncodedAccountId);
+            _session.Verify(s => s.UpdatePagingState(_userId, It.IsAny<Action<PagingState>>()), Times.Once);
+        }
+
+        [Test]
+        public async Task SortProviders_OnException_ShouldRedirectToErrorRoute()
+        {
+            // Arrange
+            var acc = new AccountModel { EncodedAccountId = "ABC123" };
+            _session.Setup(s => s.UpdatePagingState(_userId, It.IsAny<Action<PagingState>>()))
+                    .ThrowsAsync(new Exception("boom"));
+
+            // Act
+            var result = await _sut.SortProviders(acc, "Name", "asc") as RedirectToRouteResult;
+
+            // Assert
+            result.Should().NotBeNull();
+            result.RouteName.Should().Be(ErrorController.ErrorGet);
+        }
+
+        [Test]
+        public async Task ClearFilters_ShouldResetPagingState_AndRedirectToGet()
+        {
+            // Arrange
+            var acc = new AccountModel { EncodedAccountId = "ABC123" };
+
+            // Act
+            var result = await _sut.ClearFilters(acc) as RedirectToRouteResult;
+
+            // Assert
+            result.Should().NotBeNull();
+            result.RouteName.Should().Be(ProviderController.ProviderSearchGet);
+            result.RouteValues["EncodedAccountId"].Should().Be(acc.EncodedAccountId);
+
+            _session.Verify(s => s.SetPagingState(_userId, It.Is<PagingState>(p => p.PageIndex == PagingState.DefaultPageIndex)), Times.Once);
+        }
+
+        [Test]
+        public async Task ClearFilters_OnException_ShouldRedirectToErrorRoute()
+        {
+            // Arrange
+            var acc = new AccountModel { EncodedAccountId = "ABC123" };
+            _session
+                .Setup(s => s.SetPagingState(_userId, It.IsAny<PagingState>()))
+                .ThrowsAsync(new Exception("boom"));
+
+            // Act
+            var result = await _sut.ClearFilters(acc) as RedirectToRouteResult;
+
+            // Assert
+            result.Should().NotBeNull();
+            result.RouteName.Should().Be(ErrorController.ErrorGet);
+        }
+
+        [Test]
+        public async Task ProviderConfirm_GET_ShouldBuildViewModel_FromSessionProviders()
+        {
+            // Arrange
+            var req = new ProviderConfirmRequestModel
+            {
+                EncodedAccountId = "ABC123",
+                ProviderId = 12345678
+            };
+
+            _session.Setup(s => s.GetProviders(_userId))
+                .ReturnsAsync(new List<EmployerTrainingProvider>
+                {
+                    new EmployerTrainingProvider { ProviderId = 12345678, ProviderName = "Acme Training" }
+                });
+
+            // Act
+            var result = await _sut.ProviderConfirm(req) as ViewResult;
+
+            // Assert
+            result.Should().NotBeNull();
+            var vm = result!.Model as ProviderConfirmViewModel;
+            vm.Should().NotBeNull();
+            vm.EncodedAccountId.Should().Be(req.EncodedAccountId);
+            vm.ProviderId.Should().Be(req.ProviderId);
+            vm.ProviderName.Should().Be("Acme Training");
+        }
+
+        [Test]
+        public async Task ProviderConfirm_GET_OnException_ShouldRedirectToErrorRoute()
+        {
+            // Arrange
+            var req = new ProviderConfirmRequestModel { EncodedAccountId = "X", ProviderId = 1 };
+            _session.Setup(s => s.GetProviders(_userId))
+                    .ThrowsAsync(new Exception("boom"));
+
+            // Act
+            var result = await _sut.ProviderConfirm(req) as RedirectToRouteResult;
+
+            // Assert
+            result.Should().NotBeNull();
+            result.RouteName.Should().Be(ErrorController.ErrorGet);
+        }
+
+        [Test]
+        public async Task ProviderConfirm_POST_WhenNoSelection_ShouldRedirectBackToConfirm()
+        {
+            // Arrange
+            var vm = new ProviderConfirmViewModel
+            {
+                EncodedAccountId = "ABC123",
+                ProviderId = 12345678,
+                Confirmed = null
+            };
+
+            // Act
+            var result = await _sut.ProviderConfirm(vm) as RedirectToRouteResult;
+
+            // Assert
+            result.Should().NotBeNull();
+            result.RouteName.Should().Be(ProviderController.ProviderConfirmGet);
+            result.RouteValues!["encodedAccountId"].Should().Be(vm.EncodedAccountId);
+            result.RouteValues!["providerId"].Should().Be(vm.ProviderId);
+        }
+
+        [Test]
+        public async Task ProviderConfirm_POST_WhenNoSelected_ShouldRedirectToSearch()
+        {
+            // Arrange
+            var vm = new ProviderConfirmViewModel
+            {
+                EncodedAccountId = "ABC123",
+                ProviderId = 12345678,
+                Confirmed = false
+            };
+
+            // Act
+            var result = await _sut.ProviderConfirm(vm) as RedirectToRouteResult;
+
+            // Assert
+            result.Should().NotBeNull();
+            result.RouteName.Should().Be(ProviderController.ProviderSearchGet);
+            result.RouteValues["encodedAccountId"].Should().Be(vm.EncodedAccountId);
+        }
+
+        [Test]
+        public async Task ProviderConfirm_POST_WhenYesSelected_AndAttributesMissing_ShouldRedirectToError()
+        {
+            // Arrange
+            var vm = new ProviderConfirmViewModel
+            {
+                EncodedAccountId = "ABC123",
+                AccountId = 98765,
+                ProviderId = 12345678,
+                ProviderName = "Acme Training",
+                Confirmed = true
+            };
+
+            _outerApi.Setup(o => o.GetAllAttributes()).ReturnsAsync((IEnumerable<FeedbackQuestionAttribute>)null);
+
+            // Act
+            var result = await _sut.ProviderConfirm(vm) as RedirectToRouteResult;
+
+            // Assert
+            result.Should().NotBeNull();
+            result!.RouteName.Should().Be(ErrorController.ErrorGet);
+        }
+
+        [Test]
+        public async Task ProviderConfirm_POST_WhenYesSelected_ShouldCreateSurveyModel_AndRedirectToStart()
+        {
+            // Arrange
+            var vm = new ProviderConfirmViewModel
+            {
+                EncodedAccountId = "ABC123",
+                AccountId = 98765,
+                ProviderId = 12345678,
+                ProviderName = "Acme Training",
+                Confirmed = true
+            };
+
+            var attributes = new[]
+            {
+                new FeedbackQuestionAttribute { AttributeName = "Comm" },
+                new FeedbackQuestionAttribute { AttributeName = "Quality" }
+            };
+            _outerApi.Setup(o => o.GetAllAttributes()).ReturnsAsync(attributes);
+
+            _session.Setup(s => s.GetFeedbackSource(_userId)).ReturnsAsync(FeedbackSource.AdHoc);
+
+            SurveyModel capturedSurvey = null;
+            _session
+                .Setup(s => s.SetSurveyModel(_userId, It.IsAny<SurveyModel>()))
+                .Callback<Guid, SurveyModel>((_, m) => capturedSurvey = m)
+                .Returns(Task.CompletedTask);
+
+            // Act
+            var result = await _sut.ProviderConfirm(vm) as RedirectToRouteResult;
+
+            // Assert
+            result.Should().NotBeNull();
+            result.RouteName.Should().Be(QuestionsController.StartFeedbackGet);
+            result.RouteValues!["EncodedAccountId"].Should().Be(vm.EncodedAccountId);
+
+            capturedSurvey.Should().NotBeNull();
+            capturedSurvey.AccountId.Should().Be(vm.AccountId);
+            capturedSurvey.EncodedAccountId.Should().Be(vm.EncodedAccountId);
+            capturedSurvey.Ukprn.Should().Be(vm.ProviderId);
+            capturedSurvey.UserRef.Should().Be(_userId);
+            capturedSurvey.ProviderName.Should().Be(vm.ProviderName);
+            capturedSurvey.Attributes.Select(a => a.Name).Should().BeEquivalentTo("Comm", "Quality");
+            capturedSurvey.FeedbackSource.Should().Be(FeedbackSource.AdHoc);
+
+            _session.Verify(s => s.SetSurveyModel(_userId, It.IsAny<SurveyModel>()), Times.Once);
         }
     }
 }

@@ -1,6 +1,6 @@
 ﻿using SFA.DAS.EmployerFeedback.Domain.Types;
 
-namespace SFA.DAS.EmployerFeedback.Web.Models.Shared
+namespace SFA.DAS.EmployerFeedback.Web.Models.Confirmation
 {
     public class ConfirmationViewModel
     {

@@ -17,16 +17,18 @@ using System.Threading.Tasks;
 
 namespace SFA.DAS.EmployerFeedback.Web.Controllers
 {
+    [Route("")]
     public class HomeController : Controller
     {
+        #region Routes
+        public const string ErrorRouteGet = nameof(ErrorRouteGet);
+        public const string SignoutGet = nameof(SignoutGet);
+        #endregion
+
         private readonly ILogger<HomeController> _logger;
         private readonly IConfiguration _config;
         private readonly IStubAuthenticationService _stubAuthenticationService;
         private readonly IHttpContextAccessor _contextAccessor;
-
-        #region Routes
-        public const string ErrorRouteGet = nameof(ErrorRouteGet);
-        #endregion
 
         public HomeController(
             ILogger<HomeController> logger,
@@ -40,6 +42,7 @@ namespace SFA.DAS.EmployerFeedback.Web.Controllers
             _stubAuthenticationService = stubAuthenticationService;
         }
 
+        [HttpGet]
         [Route("error", Name = ErrorRouteGet)]
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error(string errorMessage)
@@ -48,7 +51,8 @@ namespace SFA.DAS.EmployerFeedback.Web.Controllers
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? _contextAccessor.HttpContext.TraceIdentifier, ErrorMessage = errorMessage });
         }
 
-        [Route("signout", Name = RouteNames.Signout)]
+        [HttpGet]
+        [Route("signout", Name = SignoutGet)]
         public new async Task<IActionResult> SignOut()
         {
             var idToken = await _contextAccessor.HttpContext.GetTokenAsync("id_token");

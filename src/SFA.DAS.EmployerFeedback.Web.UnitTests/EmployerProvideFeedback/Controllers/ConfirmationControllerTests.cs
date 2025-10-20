@@ -10,7 +10,9 @@ using SFA.DAS.EmployerFeedback.Infrastructure;
 using SFA.DAS.EmployerFeedback.Infrastructure.Configuration;
 using SFA.DAS.EmployerFeedback.Infrastructure.Services.UserService;
 using SFA.DAS.EmployerFeedback.Web.Controllers;
+using SFA.DAS.EmployerFeedback.Web.Models.Confirmation;
 using SFA.DAS.EmployerFeedback.Web.Models.Shared;
+using SFA.DAS.EmployerFeedback.Web.Services;
 using SFA.DAS.EmployerFeedback.Web.Services.SessionStorage;
 using System;
 using System.Security.Claims;
@@ -32,9 +34,10 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Controllers
 
         public ConfirmationControllerTests()
         {
+            var userId = Guid.NewGuid();
             _cachedSurveyModel = _fixture.Create<SurveyModel>();
             _userServiceMock = new Mock<IUserService>();
-            _userServiceMock.Setup(m => m.GetUserId()).Returns(new Guid().ToString());
+            _userServiceMock.Setup(m => m.GetUserId()).Returns(userId);
 
             var sessionServiceMock = new Mock<ISessionStorageService>();
             var loggerMock = new Mock<ILogger<ConfirmationController>>();
@@ -43,14 +46,16 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Controllers
             {
                 ExternalLinks = _externalLinks
             };
-            var urlBuilder = new UrlBuilder("LOCAL");
+
+            var accountsLinkService = new AccountsLinkService(new UrlBuilder("LOCAL"));
+
             sessionServiceMock
-                .Setup(mock => mock.GetSurveyModel(It.IsAny<string>()))
+                .Setup(mock => mock.GetSurveyModel(userId))
                     .Returns(Task.FromResult(_cachedSurveyModel));
             _controller = new ConfirmationController(
                 sessionServiceMock.Object,
                 config,
-                urlBuilder,
+                accountsLinkService,
                 loggerMock.Object,
                 _userServiceMock.Object);
 

@@ -9,15 +9,27 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="ApplicationServices\**" />
+    <Compile Remove="Handlers\**" />
+    <Compile Remove="OuterApi\**" />
     <Compile Remove="StartupExtensions\**" />
     <Compile Remove="TagHelpers\**" />
     <Compile Remove="ValidatorInteceptors\**" />
+    <Compile Remove="Web\**" />
+    <EmbeddedResource Remove="ApplicationServices\**" />
+    <EmbeddedResource Remove="Handlers\**" />
+    <EmbeddedResource Remove="OuterApi\**" />
     <EmbeddedResource Remove="StartupExtensions\**" />
     <EmbeddedResource Remove="TagHelpers\**" />
     <EmbeddedResource Remove="ValidatorInteceptors\**" />
+    <EmbeddedResource Remove="Web\**" />
+    <None Remove="ApplicationServices\**" />
+    <None Remove="Handlers\**" />
+    <None Remove="OuterApi\**" />
     <None Remove="StartupExtensions\**" />
     <None Remove="TagHelpers\**" />
     <None Remove="ValidatorInteceptors\**" />
+    <None Remove="Web\**" />
   </ItemGroup>
 
   <ItemGroup>
@@ -43,13 +55,6 @@
     <ProjectReference Include="..\SFA.DAS.EmployerFeedback.Infrastructure\SFA.DAS.EmployerFeedback.Infrastructure.csproj" />
     <ProjectReference Include="..\SFA.DAS.EmployerFeedback.TestHelper\SFA.DAS.EmployerFeedback.TestHelper.csproj" />
     <ProjectReference Include="..\SFA.DAS.EmployerFeedback.Web\SFA.DAS.EmployerFeedback.Web.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="ApplicationServices\" />
-    <Folder Include="Handlers\" />
-    <Folder Include="OuterApi\" />
-    <Folder Include="Web\Authentication\" />
   </ItemGroup>
 
 </Project>

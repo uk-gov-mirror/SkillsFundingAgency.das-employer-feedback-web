@@ -34,11 +34,13 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.EmployerFeedback.Controllers
         private Mock<ReviewAnswersOrchestrator> _orchestrator;
         private ReviewAnswersController _controller;
         private EmployerFeedbackWebConfiguration _config;
+        private Guid _userId;
         
 
         [SetUp]
         public void Arrange()
         {
+            _userId = Guid.NewGuid();
             _sessionService = new Mock<ISessionStorageService>();
             _employerFeedbackOuterApi = new Mock<IEmployerFeedbackOuterApi>();
             _orchestratorLogger = new Mock<ILogger<ReviewAnswersOrchestrator>>();
@@ -46,7 +48,7 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.EmployerFeedback.Controllers
             Mock<IHttpContextAccessor> _httpContextAccessorMock = new Mock<IHttpContextAccessor>();
 
             _userService = new Mock<IUserService>();
-            _userService.Setup(m => m.GetUserId()).Returns(new Guid().ToString());
+            _userService.Setup(m => m.GetUserId()).Returns(_userId);
             _controllerLoggerMock = new Mock<ILogger<ReviewAnswersController>>();
 
             _config = new EmployerFeedbackWebConfiguration();
@@ -57,7 +59,7 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.EmployerFeedback.Controllers
             _orchestrator = new Mock<ReviewAnswersOrchestrator>(_employerFeedbackOuterApi.Object, _orchestratorLogger.Object, _sessionService.Object);
             _controller = new ReviewAnswersController(_sessionService.Object, _orchestrator.Object, _config, _employerFeedbackOuterApi.Object, _userService.Object, _controllerLoggerMock.Object, _trainingProviderServiceMock.Object);
 
-            _controller.ControllerContext = new Microsoft.AspNetCore.Mvc.ControllerContext
+            /*_controller.ControllerContext = new Microsoft.AspNetCore.Mvc.ControllerContext
             {
                 HttpContext = new DefaultHttpContext
                 {
@@ -67,14 +69,14 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.EmployerFeedback.Controllers
                     },
                 }))
                 }
-            };
+            };*/
         }
 
         [Test]
         public async Task Index_ReturnsView()
         {
             //Arrange
-            _sessionService.Setup(s => s.GetSurveyModel(It.IsAny<string>())).ReturnsAsync(new SurveyModel());
+            _sessionService.Setup(s => s.GetSurveyModel(_userId)).ReturnsAsync(new SurveyModel());
 
             //Act
             var result = await _controller.Index();
@@ -113,7 +115,7 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.EmployerFeedback.Controllers
                 }
             };
 
-            _sessionService.Setup(s => s.GetSurveyModel(It.IsAny<string>())).ReturnsAsync(surveyModel);
+            _sessionService.Setup(s => s.GetSurveyModel(_userId)).ReturnsAsync(surveyModel);
             _employerFeedbackOuterApi
                 .Setup(m => m.GetTrainingProviderSearch(It.IsAny<long>(), It.IsAny<Guid>()))
                 .ReturnsAsync(providerFeedback);
@@ -126,7 +128,7 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.EmployerFeedback.Controllers
             Assert.IsNotNull(result);
             Assert.That(result, Is.TypeOf<RedirectToRouteResult>());
             var redirectResult = (RedirectToRouteResult)result;
-            Assert.That(redirectResult.RouteName, Is.EqualTo(RouteNames.Confirmation_Get));
+            Assert.That(redirectResult.RouteName, Is.EqualTo(ConfirmationController.ConfirmationGet));
         }
 
         [Test]
@@ -162,7 +164,7 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.EmployerFeedback.Controllers
                 }
             };
 
-            _sessionService.Setup(s => s.GetSurveyModel(It.IsAny<string>())).ReturnsAsync(surveyModel);
+            _sessionService.Setup(s => s.GetSurveyModel(_userId)).ReturnsAsync(surveyModel);
             _employerFeedbackOuterApi
                 .Setup(m => m.GetTrainingProviderSearch(It.IsAny<long>(), It.IsAny<Guid>()))
                 .ReturnsAsync(providerFeedback);
@@ -174,7 +176,7 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.EmployerFeedback.Controllers
             Assert.IsNotNull(result);
             Assert.That(result, Is.TypeOf<RedirectToRouteResult>());
             var redirectResult = (RedirectToRouteResult)result;
-            Assert.That(redirectResult.RouteName, Is.EqualTo(RouteNames.FeedbackAlreadySubmitted));
+            Assert.That(redirectResult.RouteName, Is.EqualTo(FeedbackSubmittedController.FeedbackAlreadySubmittedGet));
         }
 
         [TearDown]

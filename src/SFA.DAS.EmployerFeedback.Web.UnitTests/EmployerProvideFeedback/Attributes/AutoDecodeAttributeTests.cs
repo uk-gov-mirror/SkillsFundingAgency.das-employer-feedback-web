@@ -2,7 +2,7 @@
 using Moq;
 using NUnit.Framework;
 using SFA.DAS.EmployerFeedback.Web.Attributes;
-using SFA.DAS.EmployerFeedback.Web.Models.Shared;
+using SFA.DAS.EmployerFeedback.Web.Models.Provider;
 using SFA.DAS.Encoding;
 using System.Linq;
 
@@ -23,7 +23,7 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Attributes
         public void AutoDecodeAttribute_Should_Be_Applied_To_AccountId_Property()
         {
             // Arrange
-            var type = typeof(ProviderSearchConfirmationViewModel);
+            var type = typeof(ProviderConfirmViewModel);
             var property = type.GetProperty("AccountId");
 
             // Act
@@ -43,13 +43,13 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Attributes
             var expectedAccountId = 12345;
             _encodingServiceMock.Setup(x => x.Decode(encodedAccountId, EncodingType.AccountId)).Returns(expectedAccountId);
 
-            var parameters = new ProviderSearchConfirmationViewModel
+            var parameters = new ProviderConfirmViewModel
             {
                 EncodedAccountId = encodedAccountId
             };
 
             // Act
-            var type = typeof(ProviderSearchConfirmationViewModel);
+            var type = typeof(ProviderConfirmViewModel);
             var property = type.GetProperty("AccountId");
             var attribute = property.GetCustomAttributes(typeof(AutoDecodeAttribute), false).FirstOrDefault() as AutoDecodeAttribute;
 

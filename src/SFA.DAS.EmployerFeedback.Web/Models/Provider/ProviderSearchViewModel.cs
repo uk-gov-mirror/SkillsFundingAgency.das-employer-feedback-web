@@ -1,19 +1,12 @@
-﻿using SFA.DAS.EmployerFeedback.Paging;
-using SFA.DAS.EmployerFeedback.Web.Attributes;
-using SFA.DAS.Encoding;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using SFA.DAS.EmployerFeedback.Paging;
 
 namespace SFA.DAS.EmployerFeedback.Web.Models.Shared
 {
-    public class ProviderSearchViewModel
+    public class ProviderSearchViewModel : AccountModel
     {
-        [AutoDecode(nameof(EncodedAccountId), EncodingType.AccountId)]
-        public long AccountId { get; set; }
-        public Guid UserRef { get; set; }
-        public string EncodedAccountId { get; set; }
-
         [Display(Name = "Training provider")]
         public string SelectedProviderName { get; set; }
         public IEnumerable<string> ProviderNameFilter { get; set; }
@@ -22,12 +15,14 @@ namespace SFA.DAS.EmployerFeedback.Web.Models.Shared
         public string SelectedFeedbackStatus { get; set; }
         public IEnumerable<string> FeedbackStatusFilter { get; set; }
 
-        public PaginatedList<ProviderSearchViewModel.EmployerTrainingProvider> TrainingProviders { get; set; }
+        public PaginatedList<EmployerTrainingProvider> Providers { get; set; }
         public string Fragment { get; set; }
         public string SortColumn { get; set; }
         public string SortDirection { get; set; }
         public int UnfilteredTotalRecordCount { get; set; }
         public string ChangePageAction { get; set; }
+
+        public string BackUrl { get; set; }
 
         public class EmployerTrainingProvider
         {

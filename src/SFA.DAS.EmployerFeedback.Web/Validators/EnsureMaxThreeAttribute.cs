@@ -1,4 +1,4 @@
-﻿using SFA.DAS.EmployerFeedback.Web.Models.Shared;
+﻿using SFA.DAS.EmployerFeedback.Web.Models.Questions;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SFA.DAS.EmployerFeedback.Web.Models.Shared
+namespace SFA.DAS.EmployerFeedback.Web.Models.Questions
 {
     [Serializable]
     public class ProviderAttributeModel

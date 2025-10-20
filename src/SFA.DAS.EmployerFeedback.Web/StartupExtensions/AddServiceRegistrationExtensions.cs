@@ -37,7 +37,7 @@ namespace SFA.DAS.EmployerFeedback.Web.StartupExtensions
             services.AddTransient<ISessionStorageService, SessionStorageService>();
             services.AddTransient<ICacheStorageService, CacheStorageService>();
             services.AddTransient<ValidateRequiredQueryParametersAttribute>();
-            services.AddTransient<EnsureSessionExists>();
+            services.AddTransient<EnsureSessionExistsAttribute>();
             services.AddTransient<ITrainingProviderService, TrainingProviderService>();
             services.AddTransient<ReviewAnswersOrchestrator>();
 

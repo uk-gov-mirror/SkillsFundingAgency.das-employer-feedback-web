@@ -1,10 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace SFA.DAS.EmployerFeedback.Infrastructure.Services.UserService
 {
     public interface IUserService
     {
-        string GetUserId();
+        Guid? GetUserId();
 
         string GetUserDisplayName();
 

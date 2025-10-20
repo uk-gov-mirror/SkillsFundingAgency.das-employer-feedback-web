@@ -1,6 +1,7 @@
 ﻿using SFA.DAS.EmployerFeedback.Infrastructure.Api.OuterApi;
 using SFA.DAS.EmployerFeedback.Infrastructure.Configuration;
 using SFA.DAS.EmployerFeedback.Paging;
+using SFA.DAS.EmployerFeedback.Web.Models.Provider;
 using SFA.DAS.EmployerFeedback.Web.Models.Shared;
 using SFA.DAS.EmployerFeedback.Web.Paging;
 using SFA.DAS.Encoding;
@@ -94,30 +95,10 @@ namespace SFA.DAS.EmployerFeedback.Services
 
             // Page
             var pagedFilteredProviders = filteredProviders.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
-            model.TrainingProviders = new PaginatedList<ProviderSearchViewModel.EmployerTrainingProvider>(pagedFilteredProviders, filteredProviders.Count(), pageIndex, pageSize, 6);
+            model.Providers = new PaginatedList<ProviderSearchViewModel.EmployerTrainingProvider>(pagedFilteredProviders, filteredProviders.Count(), pageIndex, pageSize, 6);
             return model;
         }
-
-        public async Task<ProviderSearchConfirmationViewModel> GetTrainingProviderConfirmationViewModel(long accountId, Guid userref, long providerId)
-        {
-            var response = await _employerFeedbackOuterApi.GetTrainingProviderSearch(accountId, userref);
-            if (null == response)
-            {
-                return null;
-            }
-
-            var provider = response.Providers.FirstOrDefault(p => p.Ukprn == providerId);
-            if (null == provider)
-            {
-                return null;
-            }
-
-            var model = new ProviderSearchConfirmationViewModel();
-            model.ProviderId = provider.Ukprn;
-            model.ProviderName = provider.ProviderName;
-            return model;
-        }
-
+        
         private async Task<List<ProviderSearchViewModel.EmployerTrainingProvider>> SelectAllProvidersForAccount(long accountId, Guid userref)
         {
             // Select all 

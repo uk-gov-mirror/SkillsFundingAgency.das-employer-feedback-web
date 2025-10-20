@@ -1,4 +1,5 @@
-﻿@model ProviderSearchViewModel
+﻿@using SFA.DAS.EmployerFeedback.Web.Controllers
+@model ProviderSearchViewModel
 
 <h1 class="govuk-heading-xl">Select a training provider</h1>
 
@@ -39,7 +40,9 @@ new SelectList(Model.FeedbackStatusFilter.Select(n => n)),
                 @{
                     if (!string.IsNullOrWhiteSpace(Model.SelectedProviderName) || (!string.IsNullOrWhiteSpace(Model.SelectedFeedbackStatus)))
                     {
-                        <div class="govuk-body" style="display: inline-block; padding-left: 16px; padding-top: 8px"><a href="/@Model.EncodedAccountId/providers/unfilter">Clear filters</a></div>
+                        <div class="govuk-body" style="display: inline-block; padding-left: 16px; padding-top: 8px">
+                            <a asp-route="@ProviderController.ClearFiltersGet" asp-route-encodedAccountId="@Model.EncodedAccountId">Clear filters</a>
+                        </div>
                     }
                 }
             </div>
@@ -49,7 +52,7 @@ new SelectList(Model.FeedbackStatusFilter.Select(n => n)),
 <div class="govuk-grid-row govuk-!-margin-bottom-2">
     <div class="govuk-grid-column-two-thirds">
         <p class="govuk-body">
-            @Model.TrainingProviders.TotalRecordCount training provider record@{if (Model.TrainingProviders.TotalRecordCount != 1)
+            @Model.Providers.TotalRecordCount training provider record@{if (Model.Providers.TotalRecordCount != 1)
                 { <text>s</text> } }
             @{
                 var providerCaptionDisplayed = false;
@@ -77,7 +80,7 @@ new SelectList(Model.FeedbackStatusFilter.Select(n => n)),
     </div>
 
 </div>
-@if (Model.TrainingProviders.TotalRecordCount > 0)
+@if (Model.Providers.TotalRecordCount > 0)
 {
 
 
@@ -125,7 +128,7 @@ new SelectList(Model.FeedbackStatusFilter.Select(n => n)),
     </thead>
     <tbody class="govuk-table__body">
 
-        @foreach (var provider in Model.TrainingProviders.Items)
+        @foreach (var provider in Model.Providers.Items)
         {
             <tr class="govuk-table__row">
 
@@ -151,7 +154,7 @@ new SelectList(Model.FeedbackStatusFilter.Select(n => n)),
                 <td class="govuk-table__cell govuk-table__cell--numeric" data-label="Action">
                     @if (provider.CanSubmitFeedback)
                     {
-                        <a class="govuk-link govuk-link--no-visited-state" href="/@Model.EncodedAccountId/providers/@provider.ProviderId">Select<span class="govuk-visually-hidden">@provider.ProviderName</span></a>
+                        <a asp-route="@ProviderController.ProviderConfirmGet" asp-route-encodedAccountId="@Model.EncodedAccountId" asp-route-providerId="@provider.ProviderId">Select<span class="govuk-visually-hidden">@provider.ProviderName</span></a>
                     }
                 </td>
 
@@ -164,11 +167,11 @@ new SelectList(Model.FeedbackStatusFilter.Select(n => n)),
 
 <nav role="navigation" aria-label="Pagination">
 
-    <div class="das-pagination__summary">Showing @Model.TrainingProviders.FirstVisibleItem to @Model.TrainingProviders.LastVisibleItem of @Model.TrainingProviders.TotalRecordCount training providers</div>
+    <div class="das-pagination__summary">Showing @Model.Providers.FirstVisibleItem to @Model.Providers.LastVisibleItem of @Model.Providers.TotalRecordCount training providers</div>
 
     @{await Html.RenderPartialAsync("_PaginationLinksPartial", new PaginationLinksViewModel
         {
-            PaginatedList = Model.TrainingProviders,
+            PaginatedList = Model.Providers,
             ChangePageAction = Model.ChangePageAction,
             ChangePageController = "Provider",
             //Fragment = Model.Fragment

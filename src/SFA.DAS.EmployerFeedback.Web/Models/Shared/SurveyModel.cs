@@ -1,4 +1,5 @@
 using SFA.DAS.EmployerFeedback.Domain.Types;
+using SFA.DAS.EmployerFeedback.Web.Models.Questions;
 using SFA.DAS.EmployerFeedback.Web.Validators.Attributes;
 using System;
 using System.Collections.Generic;
@@ -22,7 +23,6 @@ namespace SFA.DAS.EmployerFeedback.Web.Models.Shared
 
         public bool HasStrengths => Attributes.Any(attr => attr.Good);
         public bool HasWeaknesses => Attributes.Any(attr => attr.Bad);
-        public bool Submitted { get; internal set; }
         public string ProviderName { get; set; }
         public string FatUrl { get; internal set; }
         public FeedbackSource FeedbackSource { get; set; }

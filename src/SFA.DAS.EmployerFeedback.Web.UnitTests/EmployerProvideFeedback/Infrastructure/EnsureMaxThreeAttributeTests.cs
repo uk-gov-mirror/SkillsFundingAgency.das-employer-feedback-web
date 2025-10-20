@@ -1,5 +1,5 @@
 ﻿using NUnit.Framework;
-using SFA.DAS.EmployerFeedback.Web.Models.Shared;
+using SFA.DAS.EmployerFeedback.Web.Models.Questions;
 using SFA.DAS.EmployerFeedback.Web.Validators.Attributes;
 using System.Collections.Generic;
 using System.Linq;

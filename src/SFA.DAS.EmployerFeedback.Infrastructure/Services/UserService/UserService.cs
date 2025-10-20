@@ -19,9 +19,9 @@ namespace SFA.DAS.EmployerFeedback.Infrastructure.Services.UserService
             _httpContextAccessor = httpContextAccessor;
         }
 
-        public string GetUserId()
+        public Guid? GetUserId()
         {
-            return GetUserClaimAsString(EmployerClaims.UserId);
+            return Guid.TryParse(GetUserClaimAsString(EmployerClaims.UserId), out Guid userId) ? userId : null;
         }
 
         public string GetUserDisplayName()

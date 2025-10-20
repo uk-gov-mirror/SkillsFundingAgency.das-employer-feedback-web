@@ -1,3 +1,5 @@
+using System.Diagnostics.CodeAnalysis;
+using System.Threading.Tasks;
 using FluentValidation;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics;
@@ -16,8 +18,7 @@ using SFA.DAS.EmployerFeedback.Web.Controllers;
 using SFA.DAS.EmployerFeedback.Web.Filters;
 using SFA.DAS.EmployerFeedback.Web.ModelBinders;
 using SFA.DAS.EmployerFeedback.Web.StartupExtensions;
-using System.Diagnostics.CodeAnalysis;
-using System.Threading.Tasks;
+using SFA.DAS.Validation.Mvc.Extensions;
 
 namespace SFA.DAS.EmployerFeedback.Web
 {
@@ -54,6 +55,7 @@ namespace SFA.DAS.EmployerFeedback.Web
             services
                 .AddMvc(options =>
                 {
+                    options.AddValidation();
                     options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute());
                     options.Filters.Add(new HideAccountNavigationAttribute(false));
                     options.Filters.Add(new EnableGoogleAnalyticsAttribute(_configuration.GetSection<GoogleAnalytics>()));
@@ -128,7 +130,7 @@ namespace SFA.DAS.EmployerFeedback.Web
             {
                 endpoints.MapControllerRoute(
                     name: "default",
-                    pattern: "{controller=Home}/{action=Index}/{id?}");
+                    pattern: "{controller=Home}/{action=TrainingProviderSearch}/{id?}");
             });
         }
     }

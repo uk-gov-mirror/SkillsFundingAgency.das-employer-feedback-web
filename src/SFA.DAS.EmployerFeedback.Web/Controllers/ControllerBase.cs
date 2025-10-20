@@ -16,16 +16,16 @@ namespace SFA.DAS.EmployerFeedback.Web.Controllers
             _logger = logger;
         }
 
-        public ActionResult<Guid> GetUserId()
+        public Guid GetUserId()
         {
-            string userId = _userService.GetUserId();
-            if (userId == null)
+            var userId = _userService.GetUserId();
+            if (!userId.HasValue)
             {
                 _logger.LogError($"User id not found in user claims.");
                 throw new InvalidOperationException("User id not found in user claims.");
             }
 
-            return Guid.Parse(userId);
+            return userId.Value;
         }
     }
 }

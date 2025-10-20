@@ -1,9 +1,12 @@
-﻿@model SurveyModel
-@{ ViewBag.PageID = "page-overall-quality-question";
-                ViewBag.Title = "Provide Feedback"; 
-    var accountId = ViewContext.RouteData.Values[RouteValueKeys.EncodedAccountId] as string;
-            }
-<a asp-route="@RouteNames.QuestionTwo_Get" asp-route-encodedAccountId="@accountId" class="govuk-back-link">Back</a>
+﻿@using SFA.DAS.EmployerFeedback.Web.Controllers
+@model SurveyModel
+@{ 
+    ViewBag.PageID = "page-overall-quality-question";
+    ViewBag.Title = "Provide Feedback"; 
+}
+
+<a asp-route="@QuestionsController.QuestionTwoGet" asp-route-encodedAccountId="@Model.EncodedAccountId" class="govuk-back-link">Back</a>
+
 <main class="govuk-main-wrapper govuk-main-wrapper--auto-spacing" id="main-content">
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
@@ -22,7 +25,7 @@
                     </div>
                 </div>
             }
-        <form asp-route="@RouteNames.QuestionThree_Post">
+        <form asp-route="@QuestionsController.QuestionThreePost">
             <div class="govuk-form-group error-message-container" sfa-anyvalidationerror-class="govuk-form-group--error">
                 <h1 class="govuk-heading-l">Overall rating</h1>
                 <fieldset name="doing-well" aria-describedby="doing-well-hint" class="govuk-fieldset checkbox-limit @(!ViewData.ModelState.IsValid ? "form-group-error" : "")">

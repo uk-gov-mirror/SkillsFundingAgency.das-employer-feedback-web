@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using SFA.DAS.Employer.Shared.UI;
@@ -6,43 +7,49 @@ using SFA.DAS.EmployerFeedback.Infrastructure.Configuration;
 using SFA.DAS.EmployerFeedback.Infrastructure.Configuration.Routing;
 using SFA.DAS.EmployerFeedback.Infrastructure.Services.UserService;
 using SFA.DAS.EmployerFeedback.Web.Authorization;
-using SFA.DAS.EmployerFeedback.Web.Models.Shared;
+using SFA.DAS.EmployerFeedback.Web.Models.Confirmation;
+using SFA.DAS.EmployerFeedback.Web.Services;
 using SFA.DAS.EmployerFeedback.Web.Services.SessionStorage;
-using System.Threading.Tasks;
 
 namespace SFA.DAS.EmployerFeedback.Web.Controllers
 {
     [Authorize(Policy = nameof(PolicyNames.NoneRole))]
     [Route(RoutePrefixPaths.FeedbackRoutePath)]
-    [ServiceFilter(typeof(EnsureSessionExists))]
+    [ServiceFilter(typeof(EnsureSessionExistsAttribute))]
     public class ConfirmationController : ControllerBase
     {
+        #region Routes
+        public const string ConfirmationGet = nameof(ConfirmationGet);
+        #endregion
+
         private readonly ISessionStorageService _sessionService;
         private readonly ILogger<ConfirmationController> _logger;
         private readonly EmployerFeedbackWebConfiguration _config;
-        private readonly UrlBuilder _urlBuilder;
+        private readonly IAccountsLinkService _accountsLinkService;
 
         public ConfirmationController(
             ISessionStorageService sessionService,
             EmployerFeedbackWebConfiguration config,
-            UrlBuilder urlBuilder,
+            IAccountsLinkService accountsLinkService,
             ILogger<ConfirmationController> logger,
             IUserService userService) : base(userService, logger)
         {
             _sessionService = sessionService;
             _logger = logger;
             _config = config;
-            _urlBuilder = urlBuilder;
+            _accountsLinkService = accountsLinkService;
         }
 
-        [HttpGet("feedback-confirmation", Name = RouteNames.Confirmation_Get)]
+        [HttpGet]
+        [Route("feedback-confirmation", Name = ConfirmationGet)]
         public async Task<IActionResult> Index(string encodedAccountId)
         {
-            var userId = GetUserId().Value.ToString();
+            var userId = GetUserId();
+
             var surveyModel = await _sessionService.GetSurveyModel(userId);
-            var providerCount = await _sessionService.GetProviderCount($"{userId}_ProviderCount");
-            await _sessionService.Remove($"{userId}_PagingState");  // remove paging state incase we loop round for another provider
-            var hasMultipleProviders = providerCount > 0;
+            var providers = await _sessionService.GetProviders(userId);
+            await _sessionService.SetPagingState(userId, null);
+            var hasMultipleProviders = providers.Count > 0;
 
             var confirmationVm = new ConfirmationViewModel
             {
@@ -53,7 +60,7 @@ namespace SFA.DAS.EmployerFeedback.Web.Controllers
                 ComplaintToProviderSiteUrl = _config.ExternalLinks.ComplaintToProviderSiteUrl,
                 HasMultipleProviders = hasMultipleProviders,
                 EncodedAccountId = encodedAccountId,
-                EmployerAccountsHomeUrl = _urlBuilder.AccountsLink("AccountsHome", encodedAccountId)
+                EmployerAccountsHomeUrl = _accountsLinkService.AccountsHome(encodedAccountId)
             };
 
             return View(confirmationVm);

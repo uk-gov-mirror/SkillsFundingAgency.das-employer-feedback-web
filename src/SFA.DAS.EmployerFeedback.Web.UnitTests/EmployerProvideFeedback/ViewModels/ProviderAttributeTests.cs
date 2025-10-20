@@ -1,6 +1,6 @@
 ﻿using FluentAssertions;
 using NUnit.Framework;
-using SFA.DAS.EmployerFeedback.Web.Models.Shared;
+using SFA.DAS.EmployerFeedback.Web.Models.Questions;
 
 namespace SFA.DAS.EmployerFeedback.Web.UnitTests.ViewModels
 {

@@ -68,43 +68,8 @@ namespace UnitTests.Services
                     testAccountIdEncoded, userRef, selectedProviderName, selectedFeedbackStatus, pageSize, pageIndex, sortColumn, sortDirection);
 
                 // Assert
-                model.TrainingProviders.TotalRecordCount.Should().Be(expectedTotalRecordCount);
-                model.TrainingProviders.TotalPages.Should().Be(expectedTotalPages);
-            }
-        }
-
-        public class GetTrainingProviderConfirmationViewModel
-        {
-            [Test]
-            public async Task When_Provider_Exists_Then_Return_ProviderViewModel()
-            {
-                // Arrange
-                var testAccountId = 2;
-                var testUserRef = new System.Guid();
-                var testAccountIdEncoded = "CONFIRMATIONMODELTEST1";
-                _encodingServiceMock.Setup(m => m.Decode(testAccountIdEncoded, EncodingType.AccountId)).Returns(testAccountId);
-                _employerFeedbackOuterApiMock
-                    .Setup(m => m.GetTrainingProviderSearch(testAccountId, testUserRef)).ReturnsAsync(new GetProviderFeedback()
-                    {
-                        AccountId = testAccountId,
-                        Providers = new List<ProviderFeedback>() {
-                        new ProviderFeedback { Ukprn = 1, ProviderName = "Test Provider" }
-                    }
-                    });
-
-
-                ITrainingProviderService sut = new TrainingProviderService(
-                    _encodingServiceMock.Object,
-                    _config,
-                    _employerFeedbackOuterApiMock.Object);
-
-                // Act
-                var model = await sut.GetTrainingProviderConfirmationViewModel(testAccountId, testUserRef, 1);
-
-                // Assert
-                model.Should().NotBeNull();
-                model.ProviderId.Should().Be(1);
-                model.ProviderName.Should().Be("Test Provider");
+                model.Providers.TotalRecordCount.Should().Be(expectedTotalRecordCount);
+                model.Providers.TotalPages.Should().Be(expectedTotalPages);
             }
         }
     }

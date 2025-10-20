@@ -1,10 +1,12 @@
-﻿@model SurveyModel
+﻿@using SFA.DAS.EmployerFeedback.Web.Controllers
+@model SurveyModel
 @{
     ViewBag.PageID = "page-strengths-question";
     ViewBag.Title = "Providers Strengths";
-    var accountId = ViewContext.RouteData.Values[RouteValueKeys.EncodedAccountId] as string;
 }
-<a asp-route="@RouteNames.Landing_Get" asp-route-encodedAccountId="@accountId" class="govuk-back-link">Back</a>
+
+<a asp-route="@QuestionsController.StartFeedbackGet" asp-route-encodedAccountId="@Model.EncodedAccountId" class="govuk-back-link">Back</a>
+
 <main class="govuk-main-wrapper govuk-main-wrapper--auto-spacing" id="main-content">
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
@@ -20,7 +22,7 @@
                     </ul>
                 </div>
             }
-            <form asp-route="@RouteNames.QuestionOne_Post" method="post">
+            <form asp-route="@QuestionsController.QuestionOnePost" method="post">
                 <div class="govuk-form-group">
                     <h1 class="govuk-heading-l">@(Model.ProviderName.EndsWith("'s") ? @Model.ProviderName : $"{@Model.ProviderName}'s") strengths</h1>
                 
