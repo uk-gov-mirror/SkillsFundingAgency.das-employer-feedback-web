@@ -1,5 +1,6 @@
 ﻿@using SFA.DAS.EmployerFeedback.Web.Controllers
-@model SurveyModel
+@using SFA.DAS.EmployerFeedback.Web.Models.Questions
+@model QuestionOneStrengthsViewModel
 @{
     ViewBag.PageID = "page-strengths-question";
     ViewBag.Title = "Providers Strengths";
@@ -10,22 +11,11 @@
 <main class="govuk-main-wrapper govuk-main-wrapper--auto-spacing" id="main-content">
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
-            @if (!ViewData.ModelState.IsValid)
-            {
-                <div class="govuk-error-summary" role="alert" aria-labelledby="error-summary-heading" tabindex="-1">
-                    @*<h2 class="heading-medium error-summary-heading" id="error-summary-heading">
-                        Error on page
-                        </h2>*@
-                    <ul class="govuk-list govuk-error-summary__list">
-                        <!--TODO: Match this text to content-->
-                    <li><a href="#error">Choose up to 3 options</a></li>
-                    </ul>
-                </div>
-            }
+            <partial name="_ValidationSummary" />
             <form asp-route="@QuestionsController.QuestionOnePost" method="post">
-                <div class="govuk-form-group">
-                    <h1 class="govuk-heading-l">@(Model.ProviderName.EndsWith("'s") ? @Model.ProviderName : $"{@Model.ProviderName}'s") strengths</h1>
-                
+                <h1 class="govuk-heading-l">@(Model.ProviderName.EndsWith("'s") ? @Model.ProviderName : $"{@Model.ProviderName}'s") strengths</h1>
+                <div id="Attributes" class="govuk-form-group" das-highlight-error-for="Attributes" error-class="govuk-form-group--error">
+                    <p das-validation-for="Attributes" class="govuk-error-message"></p>
                     <fieldset name="doing-well" aria-describedby="doing-well-hint" class="govuk-fieldset checkbox-limit @(!ViewData.ModelState.IsValid ? "form-group-error" : "")">
                         <legend class="govuk-fieldset_legend govuk-fieldset_legend--1">
                             <h2 class="govuk-heading-m">What is @Model.ProviderName doing very well?</h2>
@@ -37,8 +27,8 @@
                         <div class="govuk-checkboxes" data-module="govuk-checkboxes">
                         @for (var i = 0; i < Model.Attributes.Count; i++)
                         {
-                                <div class="govuk-checkboxes__item" style="@(Model.Attributes[i].Bad ? "display: none" : "");">
-                                <input asp-for="@Model.Attributes[i].Good" id="col1-@(i)" type="checkbox" class="govuk-checkboxes__input" />
+                            <div class="govuk-checkboxes__item" style="@(Model.Attributes[i].Bad ? "display: none" : "")">
+                                <checkbox asp-for="@Model.Attributes[i].Good" id="col1-@(i)" type="checkbox" class="govuk-checkboxes__input" />
                                 <label for="col1-@i" class="govuk-label govuk-checkboxes__label">@Model.Attributes[i].Name</label>
                                 <input asp-for="@Model.Attributes[i].Name" type="hidden" />
                             </div>

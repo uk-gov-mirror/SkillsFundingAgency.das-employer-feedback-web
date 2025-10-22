@@ -36,6 +36,14 @@ namespace SFA.DAS.EmployerFeedback.Web.Services.SessionStorage
         {
             await Set(userId.ToString(), surveyModel);
         }
+        
+        public async Task<SurveyModel> UpdateSurveyModel(Guid userId, Action<SurveyModel> action)
+        {
+            var surveyModel = await GetSurveyModel(userId) ?? new SurveyModel();
+            action(surveyModel);
+            await SetSurveyModel(userId, surveyModel);
+            return surveyModel;
+        }
 
         public async Task<PagingState> GetPagingState(Guid userId)
         {

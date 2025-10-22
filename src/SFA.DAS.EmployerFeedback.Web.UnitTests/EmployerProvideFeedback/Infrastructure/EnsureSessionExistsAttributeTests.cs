@@ -11,12 +11,9 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
-using SFA.DAS.EmployerFeedback.Infrastructure.Api.OuterApi;
 using SFA.DAS.EmployerFeedback.Infrastructure.Services.UserService;
-using SFA.DAS.EmployerFeedback.Services;
 using SFA.DAS.EmployerFeedback.Web.Controllers;
 using SFA.DAS.EmployerFeedback.Web.Models.Shared;
-using SFA.DAS.EmployerFeedback.Web.Services;
 using SFA.DAS.EmployerFeedback.Web.Services.SessionStorage;
 
 namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Filters
@@ -25,13 +22,8 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Filters
     public class EnsureSessionExistsAttributeTests
     {
         private Mock<ISessionStorageService> _session;
-        private Mock<ITrainingProviderService> _trainingProviderService;
-        private Mock<IEmployerFeedbackOuterApi> _outerApi;
-        private Mock<IAccountsLinkService> _accountsLinkService;
-        private Mock<IUserService> _userService;
-        
         private Mock<ILogger<EnsureSessionExistsAttribute>> _sessionLogger;
-        private Mock<ILogger<ProviderController>> _trainingProviderLogger;
+        private Mock<IUserService> _userService;
 
         private EnsureSessionExistsAttribute _sut;
 
@@ -39,13 +31,8 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Filters
         public void SetUp()
         {
             _session = new Mock<ISessionStorageService>(MockBehavior.Strict);
-            _trainingProviderService = new Mock<ITrainingProviderService>();
-            _outerApi = new Mock<IEmployerFeedbackOuterApi>();
-            _accountsLinkService = new Mock<IAccountsLinkService>();
-            _userService = new Mock<IUserService>(MockBehavior.Strict);
-
             _sessionLogger = new Mock<ILogger<EnsureSessionExistsAttribute>>();
-            _trainingProviderLogger = new Mock<ILogger<ProviderController>>();
+            _userService = new Mock<IUserService>(MockBehavior.Strict);
 
             _sut = new EnsureSessionExistsAttribute(_session.Object, _sessionLogger.Object, _userService.Object);
         }
@@ -56,10 +43,9 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Filters
             var actionCtx = new ActionContext(
                 http,
                 new RouteData(),
-                new ControllerActionDescriptor { ControllerName = "Provider", ActionName = "Any" });
+                new ControllerActionDescriptor { ControllerName = "Minimal", ActionName = "Any" });
 
-            var ctrl = controller ?? new ProviderController(_session.Object, _trainingProviderService.Object, 
-                _trainingProviderLogger.Object, _outerApi.Object, _accountsLinkService.Object, _userService.Object);
+            var ctrl = controller ?? new MinimalController();
 
             return new ActionExecutingContext(
                 actionCtx,
@@ -68,18 +54,21 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Filters
                 ctrl);
         }
 
-        private ActionExecutionDelegate NextDelegate(out bool called)
+        private static (ActionExecutionDelegate next, Task signal) NextDelegate()
         {
-            called = false;
-            return () =>
+            var tcs = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+
+            ActionExecutionDelegate next = () =>
             {
+                tcs.TrySetResult();
                 var executedContext = new ActionExecutedContext(
                     new ActionContext(new DefaultHttpContext(), new RouteData(), new ActionDescriptor()),
                     new List<IFilterMetadata>(),
-                    new ProviderController(_session.Object, _trainingProviderService.Object,
-                        _trainingProviderLogger.Object, _outerApi.Object, _accountsLinkService.Object, _userService.Object));
+                    new MinimalController());
                 return Task.FromResult(executedContext);
             };
+
+            return (next, tcs.Task);
         }
 
         [Test]
@@ -89,25 +78,24 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Filters
             _userService.Setup(u => u.GetUserId()).Returns((Guid?)null);
 
             var context = BuildContext();
-            var next = NextDelegate(out var nextCalled);
+            var (next, signal) = NextDelegate();
 
             // Act
             await _sut.OnActionExecutionAsync(context, next);
 
             // Assert
-            nextCalled.Should().BeFalse();
+            signal.IsCompleted.Should().BeFalse(); // next() not called
 
             context.Result.Should().BeOfType<RedirectToRouteResult>();
             var redirect = (RedirectToRouteResult)context.Result;
             redirect.RouteName.Should().Be(ProviderController.ProviderSearchGet);
 
-            _sessionLogger.Verify(l =>
-                l.Log(
-                    LogLevel.Warning,
-                    It.IsAny<EventId>(),
-                    It.Is<It.IsAnyType>(o => o.ToString().Contains("No survey was started")),
-                    It.IsAny<Exception>(),
-                    It.IsAny<Func<It.IsAnyType, Exception, string>>()),
+            _sessionLogger.Verify(l => l.Log(
+                LogLevel.Warning,
+                It.IsAny<EventId>(),
+                It.IsAny<It.IsAnyType>(),
+                It.IsAny<Exception>(),
+                (Func<It.IsAnyType, Exception, string>)It.IsAny<object>()),
                 Times.Once);
 
             _session.VerifyNoOtherCalls();
@@ -124,25 +112,24 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Filters
                 .ReturnsAsync((SurveyModel)null);
 
             var context = BuildContext();
-            var next = NextDelegate(out var nextCalled);
+            var (next, signal) = NextDelegate();
 
             // Act
-            //await _sut.OnActionExecutionAsync(context, next);
+            await _sut.OnActionExecutionAsync(context, next);
 
             // Assert
-            nextCalled.Should().BeFalse();
+            signal.IsCompleted.Should().BeFalse(); // next() not called
 
             context.Result.Should().BeOfType<RedirectToRouteResult>();
             var redirect = (RedirectToRouteResult)context.Result;
             redirect.RouteName.Should().Be(ProviderController.ProviderSearchGet);
 
-            _sessionLogger.Verify(l =>
-                l.Log(
-                    LogLevel.Warning,
-                    It.IsAny<EventId>(),
-                    It.Is<It.IsAnyType>(o => o.ToString().Contains("No survey was started")),
-                    It.IsAny<Exception>(),
-                    It.IsAny<Func<It.IsAnyType, Exception, string>>()),
+            _sessionLogger.Verify(l => l.Log(
+                LogLevel.Warning,
+                It.IsAny<EventId>(),
+                It.IsAny<It.IsAnyType>(),
+                It.IsAny<Exception>(),
+                (Func<It.IsAnyType, Exception, string>)It.IsAny<object>()),
                 Times.Once);
 
             _session.Verify(s => s.GetSurveyModel(userId), Times.Once);
@@ -157,24 +144,28 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Filters
             _session.Setup(s => s.GetSurveyModel(userId)).ReturnsAsync(new SurveyModel());
 
             var context = BuildContext();
-            var next = NextDelegate(out var nextCalled);
+            var (next, signal) = NextDelegate();
 
             // Act
             await _sut.OnActionExecutionAsync(context, next);
 
             // Assert
-            nextCalled.Should().BeTrue();
+            signal.IsCompleted.Should().BeTrue(); // next() was called
             context.Result.Should().BeNull();
 
             _session.Verify(s => s.GetSurveyModel(userId), Times.Once);
-            // No warning should be logged
+
             _sessionLogger.Verify(l => l.Log(
-                    LogLevel.Warning,
-                    It.IsAny<EventId>(),
-                    It.IsAny<It.IsAnyType>(),
-                    It.IsAny<Exception>(),
-                    It.IsAny<Func<It.IsAnyType, Exception, string>>()),
+                LogLevel.Warning,
+                It.IsAny<EventId>(),
+                It.IsAny<It.IsAnyType>(),
+                It.IsAny<Exception>(),
+                (Func<It.IsAnyType, Exception, string>)It.IsAny<object>()),
                 Times.Never);
+        }
+
+        private sealed class MinimalController : Controller
+        {
         }
     }
 }

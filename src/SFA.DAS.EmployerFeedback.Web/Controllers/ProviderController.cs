@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Logging;
-using SFA.DAS.Employer.Shared.UI;
 using SFA.DAS.EmployerFeedback.Infrastructure.Api.OuterApi;
 using SFA.DAS.EmployerFeedback.Infrastructure.Configuration.Routing;
 using SFA.DAS.EmployerFeedback.Infrastructure.Services.UserService;
@@ -18,6 +18,7 @@ using SFA.DAS.EmployerFeedback.Web.Models.Shared;
 using SFA.DAS.EmployerFeedback.Web.Paging;
 using SFA.DAS.EmployerFeedback.Web.Services;
 using SFA.DAS.EmployerFeedback.Web.Services.SessionStorage;
+using SFA.DAS.EmployerFeedback.Web.Validators.Questions;
 
 namespace SFA.DAS.EmployerFeedback.Web.Controllers
 {
@@ -35,24 +36,27 @@ namespace SFA.DAS.EmployerFeedback.Web.Controllers
         #endregion
 
         private readonly ISessionStorageService _sessionService;
-        private readonly ITrainingProviderService _trainingProviderService;
         private readonly ILogger<ProviderController> _logger;
+        private readonly ITrainingProviderService _trainingProviderService;
         private readonly IEmployerFeedbackOuterApi _employerFeedbackOuterApi;
         private readonly IAccountsLinkService _accountsLinkService;
+        private readonly IValidator<ProviderConfirmViewModel> _providerConfirmViewModelValidator;
 
         public ProviderController(ISessionStorageService sessionService,
-            ITrainingProviderService trainingProviderService,
+            IUserService userService,
             ILogger<ProviderController> logger,
+            ITrainingProviderService trainingProviderService,
             IEmployerFeedbackOuterApi employerFeedbackOuterApi,
             IAccountsLinkService accountsLinkService,
-            IUserService userService) 
+            IValidator<ProviderConfirmViewModel> providerConfirmViewModelValidator) 
             : base(userService, logger)
         {
             _sessionService = sessionService;
-            _trainingProviderService = trainingProviderService;
             _logger = logger;
+            _trainingProviderService = trainingProviderService;
             _employerFeedbackOuterApi = employerFeedbackOuterApi;
             _accountsLinkService = accountsLinkService;
+            _providerConfirmViewModelValidator = providerConfirmViewModelValidator;
         }
 
         [HttpGet]
@@ -181,11 +185,8 @@ namespace SFA.DAS.EmployerFeedback.Web.Controllers
         {
             try
             {
-                if (!viewModel.Confirmed.HasValue)
-                {
-                    ModelState.AddModelError(nameof(viewModel.Confirmed), "Please choose an option");
+                if (!await ViewModelIsValid(_providerConfirmViewModelValidator, viewModel, ModelState))
                     return RedirectToRoute(ProviderConfirmGet, new { encodedAccountId = viewModel.EncodedAccountId, providerId = viewModel.ProviderId });
-                }
 
                 if (!viewModel.Confirmed.Value)
                 {

@@ -1,10 +1,10 @@
-﻿using FluentValidation;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Threading.Tasks;
+using FluentValidation;
 using FluentValidation.Results;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
-using System.Diagnostics.CodeAnalysis;
-using System.Threading.Tasks;
 
-namespace SFA.DAS.EmployerFeedback.Web.Helpers
+namespace SFA.DAS.EmployerFeedback.Web.Extensions
 {
     [ExcludeFromCodeCoverage]
     public static class IValidatorExtensions
@@ -20,6 +20,7 @@ namespace SFA.DAS.EmployerFeedback.Web.Helpers
                         modelState.AddModelError(error.PropertyName, error.ErrorMessage);
                 }
             }
+
             return result;
         }
     }

@@ -1,6 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
 
-namespace SFA.DAS.EmployerFeedback.Web.Models
+namespace SFA.DAS.EmployerFeedback.Web.Models.Error
 {
     [ExcludeFromCodeCoverage]
     public class ErrorViewModel

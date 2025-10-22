@@ -1,16 +1,17 @@
-﻿using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Logging;
-using SFA.DAS.EmployerFeedback.Infrastructure.Api.OuterApi;
 using SFA.DAS.EmployerFeedback.Infrastructure.Configuration;
 using SFA.DAS.EmployerFeedback.Infrastructure.Configuration.Routing;
 using SFA.DAS.EmployerFeedback.Infrastructure.Services.UserService;
 using SFA.DAS.EmployerFeedback.Services;
 using SFA.DAS.EmployerFeedback.Web.Authorization;
-using SFA.DAS.EmployerFeedback.Web.Orchestrators;
+using SFA.DAS.EmployerFeedback.Web.Models.Confirmation;
+using SFA.DAS.EmployerFeedback.Web.Models.ReviewAnswers;
+using SFA.DAS.EmployerFeedback.Web.Models.ReviewAnswers.ReviewAnswers;
+using SFA.DAS.EmployerFeedback.Web.Services;
 using SFA.DAS.EmployerFeedback.Web.Services.SessionStorage;
 
 
@@ -24,47 +25,93 @@ namespace SFA.DAS.EmployerFeedback.Web.Controllers
         #region Routes
         public const string ReviewAnswersGet = nameof(ReviewAnswersGet);
         public const string ReviewAnswersPost = nameof(ReviewAnswersPost);
+        public const string FeedbackConfirmationGet = nameof(FeedbackConfirmationGet);
+        public const string FeedbackAlreadySubmittedGet = nameof(FeedbackAlreadySubmittedGet);
         #endregion
 
         private readonly ISessionStorageService _sessionService;
-        private readonly IEmployerFeedbackOuterApi _employerFeedbackOuterApi;
         private readonly ITrainingProviderService _trainingProviderService;
-        private readonly ReviewAnswersOrchestrator _orchestrator;
+        private readonly IAccountsLinkService _accountsLinkService;
         private readonly EmployerFeedbackWebConfiguration _config;
 
-        public ReviewAnswersController(ISessionStorageService sessionService, ReviewAnswersOrchestrator orchestrator
-            , EmployerFeedbackWebConfiguration config, IEmployerFeedbackOuterApi employerFeedbackOuterApi, IUserService userService, ILogger<ReviewAnswersController> logger, ITrainingProviderService trainingProviderService) : base(userService, logger)
+        public ReviewAnswersController(IUserService userService, 
+            ILogger<ReviewAnswersController> logger, 
+            ISessionStorageService sessionService, 
+            ITrainingProviderService trainingProviderService,
+            IAccountsLinkService accountsLinkService,
+            EmployerFeedbackWebConfiguration config) 
+            : base(userService, logger)
         {
             _sessionService = sessionService;
-            _orchestrator = orchestrator;
-            _config = config;
-            _employerFeedbackOuterApi = employerFeedbackOuterApi;
             _trainingProviderService = trainingProviderService;
+            _accountsLinkService = accountsLinkService;
+            _config = config;
         }
 
-        [HttpGet("review-answers", Name = ReviewAnswersGet)]
-        public async Task<IActionResult> Index()
+        [HttpGet]
+        [Route("review-answers", Name = ReviewAnswersGet)]
+        public async Task<IActionResult> ReviewAnswers()
         {
-            var vm = await _sessionService.GetSurveyModel(GetUserId());
-            vm.FatUrl = _config.ExternalLinks.FindApprenticeshipTrainingSiteUrl;
-            return View(vm);
+            var survey = await _sessionService.GetSurveyModel(GetUserId());
+            var viewModel = new ReviewAnswersViewModel
+            {
+                Survey = survey,
+                FatSiteUrl = _config.ExternalLinks.FindApprenticeshipTrainingSiteUrl
+            };
+
+            return View(viewModel);
         }
 
-        [HttpPost("review-answers", Name = ReviewAnswersPost)]
-        public async Task<IActionResult> Confirmation()
+        [HttpPost]
+        [Route("review-answers", Name = ReviewAnswersPost)]
+        public async Task<IActionResult> ReviewAnswersConfirmed()
         {
             var userId = GetUserId();
-            var answers = await _sessionService.GetSurveyModel(userId);
-            var trainingProviders = await _employerFeedbackOuterApi.GetTrainingProviderSearch(answers.AccountId, userId);
-            var providerFeedback = trainingProviders.Providers.Where(x => x.Ukprn == answers.Ukprn).First();
+            var surveyModel = await _sessionService.GetSurveyModel(userId);
 
-            if (! _trainingProviderService.CanSubmitFeedback(providerFeedback.Feedback?.DateTimeCompleted))
+            var canSubmitFeedback = await _trainingProviderService.CanSubmitFeedback(surveyModel, userId);
+            if (!canSubmitFeedback)
             {
-                return RedirectToRoute(FeedbackSubmittedController.FeedbackAlreadySubmittedGet);
+                return RedirectToRoute(FeedbackAlreadySubmittedGet);
             }
             
-            await _orchestrator.SubmitConfirmedEmployerFeedback(answers);
-            return RedirectToRoute(ConfirmationController.ConfirmationGet, new { encodedAccountId = answers.EncodedAccountId });
+            await _trainingProviderService.SubmitConfirmedEmployerFeedback(surveyModel);
+            return RedirectToRoute(FeedbackConfirmationGet, new { encodedAccountId = surveyModel.EncodedAccountId });
+        }
+
+        [HttpGet]
+        [Route("feedback-confirmation", Name = FeedbackConfirmationGet)]
+        public async Task<IActionResult> FeedbackConfirmation(string encodedAccountId)
+        {
+            var userId = GetUserId();
+
+            var surveyModel = await _sessionService.GetSurveyModel(userId);
+            await _sessionService.SetPagingState(userId, null);
+
+            var viewModel = new ConfirmationViewModel
+            {
+                ProviderName = surveyModel.ProviderName,
+                FeedbackRating = surveyModel.Rating.Value,
+                FatUrl = _config.ExternalLinks.FindApprenticeshipTrainingSiteUrl,
+                ComplaintSiteUrl = _config.ExternalLinks.ComplaintSiteUrl,
+                ComplaintToProviderSiteUrl = _config.ExternalLinks.ComplaintToProviderSiteUrl,
+                EncodedAccountId = encodedAccountId,
+                EmployerAccountsHomeUrl = _accountsLinkService.AccountsHome(encodedAccountId)
+            };
+
+            return View(viewModel);
+        }
+
+        [HttpGet]
+        [Route("feedback-submitted", Name = FeedbackAlreadySubmittedGet)]
+        public IActionResult FeedbackAlreadySubmitted(string encodedAccountId)
+        {
+            var viewModel = new FeedbackAlreadySubmittedViewModel
+            {
+                EmployerAccountsHomeUrl = _accountsLinkService.AccountsHome(encodedAccountId)
+            };
+
+            return View(viewModel);
         }
     }
 }

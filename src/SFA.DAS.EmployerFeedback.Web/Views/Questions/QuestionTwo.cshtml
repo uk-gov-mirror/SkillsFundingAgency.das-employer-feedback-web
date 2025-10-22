@@ -1,5 +1,6 @@
 ﻿@using SFA.DAS.EmployerFeedback.Web.Controllers
-@model SurveyModel
+@using SFA.DAS.EmployerFeedback.Web.Models.Questions
+@model QuestionTwoWeaknessesViewModel
 @{
     ViewBag.PageID = "page-weaknesses-question";
     ViewBag.Title = "Providers Weaknesses";
@@ -10,18 +11,11 @@
 <main class="govuk-main-wrapper govuk-main-wrapper--auto-spacing" id="main-content">
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
-            @if (!ViewData.ModelState.IsValid)
-            {
-                <div class="govuk-error-summary" role="alert" aria-labelledby="error-summary-heading" tabindex="-1">
-                    <ul class="govuk-list govuk-error-summary__list">
-                        <li><a href="#error">Choose up to 3 options</a></li>
-                    </ul>
-                </div>
-            }
-            <form asp-route="@QuestionsController.QuestionTwoPost">
-                <div class="govuk-form-group">
-                    <h1 class="govuk-heading-l">How could @Model.ProviderName improve?</h1>
-                    
+            <partial name="_ValidationSummary" />
+            <form asp-route="@QuestionsController.QuestionTwoPost" method="post">
+                <h1 class="govuk-heading-l">How could @Model.ProviderName improve?</h1>
+                <div id="Attributes" class="govuk-form-group" das-highlight-error-for="Attributes" error-class="govuk-form-group--error">
+                    <p das-validation-for="Attributes" class="govuk-error-message"></p>
                     <fieldset name="areas-to-improve" aria-describedby="areas-to-improve-hint" class="govuk-fieldset checkbox-limit @(!ViewData.ModelState.IsValid ? " form-group-error" : "" )">
                          <legend class="govuk-fieldset_legend govuk-fieldset_legend--1">
                              <h2 class="govuk-heading-m">Does @Model.ProviderName need to improve any of these?</h2>
@@ -29,13 +23,12 @@
                         <div id="areas-to-improve-hint" class="govuk-hint">
                             It's optional. You can choose up to 3.
                         </div>
-
                         <input type="hidden" asp-for="@Model.ProviderName" />
                         <div class="govuk-checkboxes" data-module="govuk-checkboxes">
                             @for (var i = 0; i < Model.Attributes.Count; i++)
                             {
                                 <div class="govuk-checkboxes__item" style="@(Model.Attributes[i].Good ? "display: none" : "");">
-                                    <input asp-for="@Model.Attributes[i].Bad" id="col1-@i" type="checkbox" class="govuk-checkboxes__input">
+                                    <checkbox asp-for="@Model.Attributes[i].Bad" id="col1-@i" type="checkbox" class="govuk-checkboxes__input" />
                                     <label for="col1-@i" class="govuk-label govuk-checkboxes__label">@Model.Attributes[i].Name</label>
                                     <input asp-for="@Model.Attributes[i].Name" type="hidden" />
                                 </div>

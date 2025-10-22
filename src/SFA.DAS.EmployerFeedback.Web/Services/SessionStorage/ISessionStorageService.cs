@@ -9,14 +9,15 @@ namespace SFA.DAS.EmployerFeedback.Web.Services.SessionStorage
 {
     public interface ISessionStorageService
     {
-        public Task<SurveyModel> GetSurveyModel(Guid userId);
-        public Task SetSurveyModel(Guid userId, SurveyModel surveyModel);
-        public Task<PagingState> GetPagingState(Guid userId);
-        public Task SetPagingState(Guid userId, PagingState pagingState);
-        public Task<PagingState> UpdatePagingState(Guid userId, Action<PagingState> action);
-        public Task<FeedbackSource> GetFeedbackSource(Guid userId);
-        public Task SetFeedbackSource(Guid userId, FeedbackSource feedbackSource);
-        public Task<List<ProviderSearchViewModel.EmployerTrainingProvider>> GetProviders(Guid userId);
-        public Task SetProviders(Guid userId, List<ProviderSearchViewModel.EmployerTrainingProvider> providers);
+        Task<SurveyModel> GetSurveyModel(Guid userId);
+        Task SetSurveyModel(Guid userId, SurveyModel surveyModel);
+        Task<SurveyModel> UpdateSurveyModel(Guid userId, Action<SurveyModel> action);
+        Task<PagingState> GetPagingState(Guid userId);
+        Task SetPagingState(Guid userId, PagingState pagingState);
+        Task<PagingState> UpdatePagingState(Guid userId, Action<PagingState> action);
+        Task<FeedbackSource> GetFeedbackSource(Guid userId);
+        Task SetFeedbackSource(Guid userId, FeedbackSource feedbackSource);
+        Task<List<ProviderSearchViewModel.EmployerTrainingProvider>> GetProviders(Guid userId);
+        Task SetProviders(Guid userId, List<ProviderSearchViewModel.EmployerTrainingProvider> providers);
     }
 }

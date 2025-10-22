@@ -24,8 +24,8 @@
     <PackageReference Include="SFA.DAS.Encoding" Version="1.1.76" />
     <PackageReference Include="SFA.DAS.GovUK.Auth" Version="17.1.141" />
     <PackageReference Include="SFA.DAS.Http" Version="3.2.69" />
-    <PackageReference Include="SFA.DAS.Validation" Version="6.0.30" />
-    <PackageReference Include="SFA.DAS.Validation.Mvc" Version="6.0.30" />
+    <PackageReference Include="SFA.DAS.Validation" Version="6.0.31" />
+    <PackageReference Include="SFA.DAS.Validation.Mvc" Version="6.0.31" />
     <PackageReference Include="System.Formats.Asn1" Version="8.0.1" />
     <PackageReference Include="System.Security.Cryptography.Pkcs" Version="8.0.1" />
     <PackageReference Include="System.Text.Json" Version="9.0.9" />

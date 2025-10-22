@@ -1,30 +1,31 @@
-﻿using SFA.DAS.EmployerFeedback.Infrastructure.Api.OuterApi;
-using SFA.DAS.EmployerFeedback.Infrastructure.Configuration;
-using SFA.DAS.EmployerFeedback.Paging;
-using SFA.DAS.EmployerFeedback.Web.Models.Provider;
-using SFA.DAS.EmployerFeedback.Web.Models.Shared;
-using SFA.DAS.EmployerFeedback.Web.Paging;
-using SFA.DAS.Encoding;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using static Microsoft.ApplicationInsights.MetricDimensionNames.TelemetryContext;
+using Microsoft.Extensions.Logging;
+using SFA.DAS.EmployerFeedback.Domain.Entities.Models;
+using SFA.DAS.EmployerFeedback.Infrastructure.Api.OuterApi;
+using SFA.DAS.EmployerFeedback.Infrastructure.Configuration;
+using SFA.DAS.EmployerFeedback.Paging;
+using SFA.DAS.EmployerFeedback.Web.Extensions;
+using SFA.DAS.EmployerFeedback.Web.Models.Shared;
+using SFA.DAS.EmployerFeedback.Web.Paging;
 
 namespace SFA.DAS.EmployerFeedback.Services
 {
     public class TrainingProviderService : ITrainingProviderService
     {
-        private readonly IEncodingService _encodingService;
-        private readonly EmployerFeedbackWebConfiguration _config;
         private readonly IEmployerFeedbackOuterApi _employerFeedbackOuterApi;
+        private readonly ILogger<TrainingProviderService> _logger;
+        private readonly EmployerFeedbackWebConfiguration _config;
+
         private const string NOT_YET_SUBMITTED = "Not yet submitted";
 
-        public TrainingProviderService(IEncodingService encodingService, EmployerFeedbackWebConfiguration config, IEmployerFeedbackOuterApi employerFeedbackOuterApi)
+        public TrainingProviderService(IEmployerFeedbackOuterApi employerFeedbackOuterApi, ILogger<TrainingProviderService> logger, EmployerFeedbackWebConfiguration config)
         {
-            _encodingService = encodingService;
-            _config = config;
             _employerFeedbackOuterApi = employerFeedbackOuterApi;
+            _logger = logger;
+            _config = config;
         }
 
         public async Task<ProviderSearchViewModel> GetTrainingProviderSearchViewModel(
@@ -46,22 +47,20 @@ namespace SFA.DAS.EmployerFeedback.Services
             model.SortColumn = sortColumn;
             model.SortDirection = sortDirection;
 
-            // Select all the providers for this employer.
+            // select all the providers for this employer
             var providers = await SelectAllProvidersForAccount(model.AccountId, userRef);
 
-            // Initialise the filter options.
-
+            // initialise the filter options
             model.UnfilteredTotalRecordCount = providers.Count;
             model.ProviderNameFilter = providers.Select(p => p.ProviderName).OrderBy(p => p).ToList();
             model.FeedbackStatusFilter = new string[] { NOT_YET_SUBMITTED };
 
-            // Apply filters.
-
+            // filter providers
             var filteredProviders = providers.AsQueryable();
             filteredProviders = ApplyProviderNameFilter(filteredProviders, selectedProviderName);
             filteredProviders = ApplyFeedbackStatusFilter(filteredProviders, selectedFeedbackStatus);
 
-            // Sort
+            // sort filtered providers
             if (PagingState.SortDescending == model.SortDirection)
             {
                 if (!string.IsNullOrWhiteSpace(model.SortColumn) && model.SortColumn.Equals("FeedbackStatus", StringComparison.InvariantCultureIgnoreCase))
@@ -93,7 +92,7 @@ namespace SFA.DAS.EmployerFeedback.Services
                 }
             }
 
-            // Page
+            // take the single page of filtered sorted providers
             var pagedFilteredProviders = filteredProviders.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
             model.Providers = new PaginatedList<ProviderSearchViewModel.EmployerTrainingProvider>(pagedFilteredProviders, filteredProviders.Count(), pageIndex, pageSize, 6);
             return model;
@@ -101,9 +100,7 @@ namespace SFA.DAS.EmployerFeedback.Services
         
         private async Task<List<ProviderSearchViewModel.EmployerTrainingProvider>> SelectAllProvidersForAccount(long accountId, Guid userref)
         {
-            // Select all 
             var apprenticeshipsResponse = await _employerFeedbackOuterApi.GetTrainingProviderSearch(accountId, userref);
-
             var providers = apprenticeshipsResponse.Providers.GroupBy(p => p.Ukprn)
                 .Select(a => new ProviderSearchViewModel.EmployerTrainingProvider()
                 {
@@ -117,20 +114,74 @@ namespace SFA.DAS.EmployerFeedback.Services
 
             return providers;
         }
-        public bool CanSubmitFeedback(DateTime? dateTimeCompleted)
+
+        public async Task<bool> CanSubmitFeedback(SurveyModel surveyModel, Guid userId)
+        {
+            var trainingProviders = await _employerFeedbackOuterApi.GetTrainingProviderSearch(surveyModel.AccountId, userId);
+            var dateTimeCompleted = trainingProviders
+                .Providers
+                .FirstOrDefault(x => x.Ukprn == surveyModel.Ukprn)?.Feedback?.DateTimeCompleted;
+
+            return CanSubmitFeedback(dateTimeCompleted);
+        }
+
+        public async Task SubmitConfirmedEmployerFeedback(SurveyModel surveyModel)
+        {
+            try
+            {
+                await _employerFeedbackOuterApi.SubmitEmployerFeedback(new EmployerFeedbackResult
+                {
+                    Ukprn = surveyModel.Ukprn,
+                    AccountId = surveyModel.AccountId,
+                    ProviderRating = surveyModel.Rating.GetDisplayName(),
+                    FeedbackSource = surveyModel.FeedbackSource,
+                    ProviderAttributes = await ConvertSurveyToProviderAttributes(surveyModel),
+                    UserRef = surveyModel.UserRef
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to submit feedback");
+            }
+        }
+
+        private bool CanSubmitFeedback(DateTime? dateTimeCompleted)
         {
             if (!dateTimeCompleted.HasValue)
             {
                 return true;
             }
+
             if ((DateTime.UtcNow - dateTimeCompleted.Value).TotalDays < _config.FeedbackWaitPeriodDays)
             {
                 return false;
             }
+
             return true;
         }
 
-        private IQueryable<ProviderSearchViewModel.EmployerTrainingProvider> ApplyProviderNameFilter(IQueryable<ProviderSearchViewModel.EmployerTrainingProvider> providers, string providerName)
+        private async Task<IEnumerable<ProviderAttribute>> ConvertSurveyToProviderAttributes(SurveyModel surveyModel)
+        {
+            var feedbackQuestionAttributes = await _employerFeedbackOuterApi.GetAllAttributes();
+            var providerAttributes = new List<ProviderAttribute>();
+
+            foreach (var attribute in surveyModel.Attributes.Where(s => s.Good || s.Bad))
+            {
+                var providerAttribute = feedbackQuestionAttributes.FirstOrDefault(s => s.AttributeName == attribute.Name);
+                if (providerAttribute != null)
+                {
+                    providerAttributes.Add(new ProviderAttribute
+                    {
+                        AttributeId = providerAttribute.AttributeId,
+                        AttributeValue = attribute.Score,
+                    });
+                }
+            }
+
+            return providerAttributes;
+        }
+
+        private static IQueryable<ProviderSearchViewModel.EmployerTrainingProvider> ApplyProviderNameFilter(IQueryable<ProviderSearchViewModel.EmployerTrainingProvider> providers, string providerName)
         {
             if (!string.IsNullOrWhiteSpace(providerName) && providerName != "All")
             {
@@ -139,7 +190,7 @@ namespace SFA.DAS.EmployerFeedback.Services
             return providers;
         }
 
-        private IQueryable<ProviderSearchViewModel.EmployerTrainingProvider> ApplyFeedbackStatusFilter(IQueryable<ProviderSearchViewModel.EmployerTrainingProvider> providers, string feedbackStatus)
+        private static IQueryable<ProviderSearchViewModel.EmployerTrainingProvider> ApplyFeedbackStatusFilter(IQueryable<ProviderSearchViewModel.EmployerTrainingProvider> providers, string feedbackStatus)
         {
             if (feedbackStatus == NOT_YET_SUBMITTED)
             {

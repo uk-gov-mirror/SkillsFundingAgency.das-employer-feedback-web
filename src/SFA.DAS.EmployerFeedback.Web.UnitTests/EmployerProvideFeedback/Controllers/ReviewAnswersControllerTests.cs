@@ -1,4 +1,7 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -8,17 +11,11 @@ using SFA.DAS.EmployerFeedback.Domain.Types;
 using SFA.DAS.EmployerFeedback.Infrastructure;
 using SFA.DAS.EmployerFeedback.Infrastructure.Api.OuterApi;
 using SFA.DAS.EmployerFeedback.Infrastructure.Configuration;
-using SFA.DAS.EmployerFeedback.Infrastructure.Configuration.Routing;
 using SFA.DAS.EmployerFeedback.Infrastructure.Services.UserService;
 using SFA.DAS.EmployerFeedback.Services;
 using SFA.DAS.EmployerFeedback.Web.Controllers;
 using SFA.DAS.EmployerFeedback.Web.Models.Shared;
-using SFA.DAS.EmployerFeedback.Web.Orchestrators;
 using SFA.DAS.EmployerFeedback.Web.Services.SessionStorage;
-using System;
-using System.Collections.Generic;
-using System.Security.Claims;
-using System.Threading.Tasks;
 
 namespace SFA.DAS.EmployerFeedback.Web.UnitTests.EmployerFeedback.Controllers
 {
@@ -28,10 +25,8 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.EmployerFeedback.Controllers
         private Mock<IUserService> _userService;
         private Mock<ILogger<ReviewAnswersController>> _controllerLoggerMock;
         private Mock<ISessionStorageService> _sessionService;
-        private Mock<ILogger<ReviewAnswersOrchestrator>> _orchestratorLogger;
         private Mock<IEmployerFeedbackOuterApi> _employerFeedbackOuterApi;
         private Mock<ITrainingProviderService> _trainingProviderServiceMock;
-        private Mock<ReviewAnswersOrchestrator> _orchestrator;
         private ReviewAnswersController _controller;
         private EmployerFeedbackWebConfiguration _config;
         private Guid _userId;
@@ -43,7 +38,6 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.EmployerFeedback.Controllers
             _userId = Guid.NewGuid();
             _sessionService = new Mock<ISessionStorageService>();
             _employerFeedbackOuterApi = new Mock<IEmployerFeedbackOuterApi>();
-            _orchestratorLogger = new Mock<ILogger<ReviewAnswersOrchestrator>>();
             _trainingProviderServiceMock = new Mock<ITrainingProviderService>();
             Mock<IHttpContextAccessor> _httpContextAccessorMock = new Mock<IHttpContextAccessor>();
 
@@ -56,20 +50,7 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.EmployerFeedback.Controllers
             _config.ExternalLinks = new ExternalLinksConfiguration();
             _config.ExternalLinks.FindApprenticeshipTrainingSiteUrl = "https://findapprenticeshiptraining.sfa.gov.uk/";
 
-            _orchestrator = new Mock<ReviewAnswersOrchestrator>(_employerFeedbackOuterApi.Object, _orchestratorLogger.Object, _sessionService.Object);
-            _controller = new ReviewAnswersController(_sessionService.Object, _orchestrator.Object, _config, _employerFeedbackOuterApi.Object, _userService.Object, _controllerLoggerMock.Object, _trainingProviderServiceMock.Object);
-
-            /*_controller.ControllerContext = new Microsoft.AspNetCore.Mvc.ControllerContext
-            {
-                HttpContext = new DefaultHttpContext
-                {
-                    User = new ClaimsPrincipal(new ClaimsIdentity(new[]
-                    {
-                    new Claim(EmployerClaims.UserId, new Guid().ToString()){
-                    },
-                }))
-                }
-            };*/
+            _controller = new ReviewAnswersController(_userService.Object, _controllerLoggerMock.Object, _sessionService.Object, _trainingProviderServiceMock.Object, _config);
         }
 
         [Test]
@@ -119,7 +100,7 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.EmployerFeedback.Controllers
             _employerFeedbackOuterApi
                 .Setup(m => m.GetTrainingProviderSearch(It.IsAny<long>(), It.IsAny<Guid>()))
                 .ReturnsAsync(providerFeedback);
-            _trainingProviderServiceMock.Setup(s => s.CanSubmitFeedback(It.IsAny<DateTime?>())).Returns(true);
+            _trainingProviderServiceMock.Setup(s => s.CanSubmitFeedback(It.IsAny<SurveyModel>(), It.IsAny<Guid>())).ReturnsAsync(true);
 
             //Act
             var result = await _controller.Confirmation();

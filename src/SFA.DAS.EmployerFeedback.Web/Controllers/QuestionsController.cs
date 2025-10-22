@@ -1,16 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Logging;
 using SFA.DAS.EmployerFeedback.Infrastructure.Configuration.Routing;
 using SFA.DAS.EmployerFeedback.Infrastructure.Services.UserService;
 using SFA.DAS.EmployerFeedback.Web.Authorization;
-using SFA.DAS.EmployerFeedback.Web.Models.Provider;
 using SFA.DAS.EmployerFeedback.Web.Models.Questions;
 using SFA.DAS.EmployerFeedback.Web.Models.Shared;
 using SFA.DAS.EmployerFeedback.Web.Services.SessionStorage;
@@ -33,15 +30,23 @@ namespace SFA.DAS.EmployerFeedback.Web.Controllers
         #endregion
 
         private const string ReturnUrlKey = "ReturnUrl";
-        
         private readonly ISessionStorageService _sessionService;
         private readonly ILogger<QuestionsController> _logger;
+        private readonly IValidator<QuestionOneStrengthsViewModel> _questionOneStrengthsViewModelValidator;
+        private readonly IValidator<QuestionTwoWeaknessesViewModel> _questionTwoWeaknessesViewModelValidator;
+        private readonly IValidator<QuestionThreeRatingViewModel> _questionThreeRatingViewModelValidator;
 
-        public QuestionsController(ISessionStorageService sessionService, IUserService userService, ILogger<QuestionsController> logger) 
+        public QuestionsController(ISessionStorageService sessionService, IUserService userService, ILogger<QuestionsController> logger,
+            IValidator<QuestionOneStrengthsViewModel> questionOneStrengthsViewModelValidator,
+            IValidator<QuestionTwoWeaknessesViewModel> questionTwoWeaknessesViewModelValidator,
+            IValidator<QuestionThreeRatingViewModel> questionThreeRatingViewModelValidator)
             : base(userService, logger)
         {
             _sessionService = sessionService;
             _logger = logger;
+            _questionOneStrengthsViewModelValidator = questionOneStrengthsViewModelValidator;
+            _questionTwoWeaknessesViewModelValidator = questionTwoWeaknessesViewModelValidator;
+            _questionThreeRatingViewModelValidator = questionThreeRatingViewModelValidator;
         }
 
         [HttpGet]
@@ -50,14 +55,13 @@ namespace SFA.DAS.EmployerFeedback.Web.Controllers
         {
             try
             {
-                var surveyModel = await _sessionService.GetSurveyModel(GetUserId());
-                var viewModel = new StartFeedbackViewModel
+                var survey = await _sessionService.GetSurveyModel(GetUserId());
+                var vm = new StartFeedbackViewModel
                 {
                     EncodedAccountId = model.EncodedAccountId,
-                    ProviderName = surveyModel.ProviderName
+                    ProviderName = survey.ProviderName
                 };
-
-                return View(viewModel);
+                return View(vm);
             }
             catch (Exception ex)
             {
@@ -70,22 +74,39 @@ namespace SFA.DAS.EmployerFeedback.Web.Controllers
         public async Task<IActionResult> QuestionOne(string encodedAccountId, string returnUrl = null)
         {
             TempData[ReturnUrlKey] = returnUrl;
-            var cachedAnswers = await _sessionService.GetSurveyModel(GetUserId());
-            return View(cachedAnswers);
+            var survey = await _sessionService.GetSurveyModel(GetUserId());
+
+            var viewModel = new QuestionOneStrengthsViewModel
+            {
+                EncodedAccountId = survey.EncodedAccountId,
+                ProviderName = survey.ProviderName,
+                Attributes = survey.Attributes.Select(a => new ProviderAttributeModel
+                {
+                    Name = a.Name,
+                    Good = a.Good,
+                    Bad = a.Bad
+                }).ToList()
+            };
+
+            return View(viewModel);
         }
 
         [HttpPost("question-one", Name = QuestionOnePost)]
-        public async Task<IActionResult> QuestionOne(SurveyModel surveyModel)
+        public async Task<IActionResult> QuestionOne(QuestionOneStrengthsViewModel viewModel)
         {
-            if (!IsProviderAttributesValid(surveyModel))
-            {
-                return View(surveyModel);
-            }
+            if (!await ViewModelIsValid(_questionOneStrengthsViewModelValidator, viewModel, ModelState))
+                return RedirectToRoute(QuestionOneGet, new { encodedAccountId = viewModel.EncodedAccountId });
 
             var userId = GetUserId();
-            var sessionAnswer = await _sessionService.GetSurveyModel(userId);
-            SetStengths(sessionAnswer, surveyModel.Attributes.Where(x => x.Good));
-            await _sessionService.SetSurveyModel(userId, sessionAnswer);
+            await _sessionService.UpdateSurveyModel(userId, (SurveyModel survey) => 
+            {
+                foreach (var a in survey.Attributes)
+                {
+                    var match = viewModel.Attributes.Single(x => x.Name == a.Name);
+                    a.Good = match.Good;
+                }
+            });
+
             return await HandleRedirect(QuestionTwoGet);
         }
 
@@ -93,22 +114,39 @@ namespace SFA.DAS.EmployerFeedback.Web.Controllers
         public async Task<IActionResult> QuestionTwo(string returnUrl = null)
         {
             TempData[ReturnUrlKey] = returnUrl;
-            var sessionAnswers = await _sessionService.GetSurveyModel(GetUserId());
-            return View(sessionAnswers);
+            var survey = await _sessionService.GetSurveyModel(GetUserId());
+
+            var viewModel = new QuestionTwoWeaknessesViewModel
+            {
+                EncodedAccountId = survey.EncodedAccountId,
+                ProviderName = survey.ProviderName,
+                Attributes = survey.Attributes.Select(a => new ProviderAttributeModel
+                {
+                    Name = a.Name,
+                    Good = a.Good,
+                    Bad = a.Bad
+                }).ToList()
+            };
+
+            return View(viewModel);
         }
 
         [HttpPost("question-two", Name = QuestionTwoPost)]
-        public async Task<IActionResult> QuestionTwo(SurveyModel surveyModel)
+        public async Task<IActionResult> QuestionTwo(QuestionTwoWeaknessesViewModel viewModel)
         {
-            if (!IsProviderAttributesValid(surveyModel))
-            {
-                return View(surveyModel);
-            }
+            if (!await ViewModelIsValid(_questionTwoWeaknessesViewModelValidator, viewModel, ModelState))
+                return RedirectToRoute(QuestionTwoGet, new { encodedAccountId = viewModel.EncodedAccountId });
 
             var userId = GetUserId();
-            var sessionAnswer = await _sessionService.GetSurveyModel(userId);
-            SetWeaknesses(sessionAnswer, surveyModel.Attributes.Where(x => x.Bad));
-            await _sessionService.SetSurveyModel(userId, sessionAnswer);
+            await _sessionService.UpdateSurveyModel(userId, (SurveyModel survey) =>
+            {
+                foreach (var a in survey.Attributes)
+                {
+                    var match = viewModel.Attributes.Single(x => x.Name == a.Name);
+                    a.Bad = match.Bad;
+                }
+            });
+
             return await HandleRedirect(QuestionThreeGet);
         }
 
@@ -116,54 +154,40 @@ namespace SFA.DAS.EmployerFeedback.Web.Controllers
         public async Task<IActionResult> QuestionThree(string returnUrl = null)
         {
             TempData[ReturnUrlKey] = returnUrl;
-            var sessionAnswer = await _sessionService.GetSurveyModel(GetUserId());
-            return View(sessionAnswer);
+            var survey = await _sessionService.GetSurveyModel(GetUserId());
+
+            var viewModel = new QuestionThreeRatingViewModel
+            {
+                EncodedAccountId = survey.EncodedAccountId,
+                ProviderName = survey.ProviderName,
+                Rating = survey.Rating
+            };
+
+            return View(viewModel);
         }
 
         [HttpPost("question-three", Name = QuestionThreePost)]
-        public async Task<IActionResult> QuestionThree(SurveyModel surveyModel)
+        public async Task<IActionResult> QuestionThree(QuestionThreeRatingViewModel viewModel)
         {
-            if (!ModelState.IsValid)
-            {
-                return View(surveyModel);
-            }
-
+            if (!await ViewModelIsValid(_questionThreeRatingViewModelValidator, viewModel, ModelState))
+                return RedirectToRoute(QuestionThreeGet, new { encodedAccountId = viewModel.EncodedAccountId });
+            
             var userId = GetUserId();
-            var sessionAnswer = await _sessionService.GetSurveyModel(userId);
-            sessionAnswer.Rating = surveyModel.Rating;
-            await _sessionService.SetSurveyModel(userId, sessionAnswer);
+            await _sessionService.UpdateSurveyModel(userId, (SurveyModel survey) =>
+            {
+                survey.Rating = viewModel.Rating;
+            });
+
             return await HandleRedirect(ReviewAnswersController.ReviewAnswersGet);
         }
-
         private async Task<IActionResult> HandleRedirect(string nextRoute)
         {
             var returnRoute = Convert.ToString(TempData[ReturnUrlKey]);
-            var sessionAnswer = await _sessionService.GetSurveyModel(GetUserId());
-            return await Task.Run(() => RedirectToRoute(string.IsNullOrEmpty(returnRoute) ? nextRoute : returnRoute, new { encodedAccountId = sessionAnswer.EncodedAccountId }) as IActionResult);
-        }
-
-        private bool IsProviderAttributesValid(SurveyModel surveyModel)
-        {
-            ModelState.TryGetValue(nameof(surveyModel.Attributes), out ModelStateEntry modelState);
-            return modelState == null ? true : modelState.ValidationState == ModelValidationState.Valid;
-        }
-
-        private void SetStengths(SurveyModel sessionAnswer, IEnumerable<ProviderAttributeModel> currentAnswerAttributes)
-        {
-            foreach (var attr in sessionAnswer.Attributes)
-            {
-                var match = currentAnswerAttributes.SingleOrDefault(x => x.Name == attr.Name);
-                attr.Good = match != null;
-            }
-        }
-
-        private void SetWeaknesses(SurveyModel sessionAnswer, IEnumerable<ProviderAttributeModel> currentAnswerAttributes)
-        {
-            foreach (var attr in sessionAnswer.Attributes)
-            {
-                var match = currentAnswerAttributes.SingleOrDefault(x => x.Name == attr.Name);
-                attr.Bad = match != null;
-            }
+            var survey = await _sessionService.GetSurveyModel(GetUserId());
+            
+            return RedirectToRoute(
+                string.IsNullOrEmpty(returnRoute) ? nextRoute : returnRoute,
+                new { encodedAccountId = survey.EncodedAccountId });
         }
     }
 }

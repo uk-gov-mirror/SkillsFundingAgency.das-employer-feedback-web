@@ -1,0 +1,19 @@
+﻿@using Microsoft.Extensions.Options;
+@using SFA.DAS.EmployerFeedback.Web.Models.ReviewAnswers.ReviewAnswers
+@model FeedbackAlreadySubmittedViewModel;
+@{ 
+    ViewBag.PageID = "page-feedback-already-submitted";
+    ViewBag.Title = "Feedback Already Submitted"; 
+}
+
+<main class="govuk-main-wrapper govuk-main-wrapper--auto-spacing" id="main-content">
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+            <h1 class="govuk-heading-l">
+                Feedback already submitted
+            </h1>
+            <p class="govuk-body">You'll get chance to leave feedback in a few weeks.</p>
+            <p class="govuk-body"><a href="@Model.EmployerAccountsHomeUrl" class="govuk-link govuk-link--no-visited-state">Return home</a></p>
+        </div>
+    </div>
+</main>

@@ -1,0 +1,99 @@
+﻿@using SFA.DAS.EmployerFeedback.Web.Controllers
+@using SFA.DAS.EmployerFeedback.Web.Models.ReviewAnswers
+@model ReviewAnswersViewModel;
+@{ 
+    ViewBag.PageID = "page-review-answers";
+    ViewBag.Title = "Check your answers"; 
+}
+
+<a asp-route="@QuestionsController.QuestionOneGet" asp-route-encodedAccountId="@Model.Survey.EncodedAccountId" class="govuk-back-link">Back</a>
+
+<main class="govuk-main-wrapper govuk-main-wrapper--auto-spacing" id="main-content">
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+
+            <form asp-route="@ReviewAnswersController.ReviewAnswersPost">
+                <div class="govuk-form-group">
+                    <h1 class="govuk-heading-l">Check your answers</h1>
+
+                    <fieldset name="check-your-answers" class="govuk-fieldset checkbox-limit @(!ViewData.ModelState.IsValid ? "form-group-error" : "")">
+
+                        <legend class="govuk-heading-m">Training provider: @Model.Survey.ProviderName</legend>
+                        <input type="hidden" asp-for="@Model.Survey.ProviderName" />
+
+                        <ul class="govuk-body check-your-answers">
+                            <li>
+                                <span class="question">
+                                    Strengths
+                                </span>
+
+                                <span class="answer">
+                                @{
+                                    if (Model.Survey.HasStrengths)
+                                    {
+                                        <ul class="">
+                                        @foreach (var item in Model.Survey.Attributes.Where(x => x.Good))
+                                        {
+                                            <li>@item.Name</li>
+                                        }
+                                        </ul> 
+                                    }
+                                    else
+                                    {
+                                        <p>You didn't select any</p> 
+                                    }
+                                }
+                                 </span>
+                                <span class="change">
+                                    <a class="govuk-link" asp-route="@QuestionsController.QuestionOneGet" asp-route-encodedAccountId="@Model.Survey.EncodedAccountId" asp-route-returnUrl="@ReviewAnswersController.ReviewAnswersGet">Change<span class="sr-only" /> strength answers</a>
+                                </span>
+                            </li>
+                            <li>
+                                <span class="question">
+                                    Areas to improve
+                                </span>
+                                <span class="answer">
+                                @{
+                                    if (Model.Survey.HasWeaknesses)
+                                    {
+                                        <ul>
+                                        @foreach (var item in Model.Survey.Attributes.Where(x => x.Bad))
+                                        {
+                                            <li>@item.Name</li>
+                                        }
+                                        </ul> 
+                                    }
+                                    else
+                                    {
+                                        <p>You didn't select any</p> 
+                                    }
+                                }
+                                 </span>
+                                <span class="change">
+                                    <a class="govuk-link" asp-route="@QuestionsController.QuestionTwoGet" asp-route-encodedAccountId="@Model.Survey.EncodedAccountId" asp-route-returnUrl="@ReviewAnswersController.ReviewAnswersGet">Change<span class="sr-only" /> improvements answers</a>
+                                </span>
+                            </li>
+                            <li>
+                                <span class="question">
+                                    Overall rating
+                                </span>
+                                <span class="answer">
+                                    <p>@Model.Survey.Rating.GetDisplayName()</p>
+                                </span>
+                                <span class="change">
+                                    <a class="govuk-link" asp-route="@QuestionsController.QuestionThreeGet" asp-route-encodedAccountId="@Model.Survey.EncodedAccountId" asp-route-returnUrl="@ReviewAnswersController.ReviewAnswersGet">Change<span class="sr-only" /> quality rating answer</a>
+                                </span>
+                            </li>
+                        </ul>
+
+
+                    </fieldset>
+                </div>
+                <div class="govuk-button-group">
+                    <p>Your answers will be published anonymously on the <a class="govuk-link" href="@Model.FatSiteUrl" target="_blank">Find apprenticeship training (opens in a new tab)</a> in the near future.</p>
+                    <button type="submit" class="govuk-button">Submit answers</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</main>
