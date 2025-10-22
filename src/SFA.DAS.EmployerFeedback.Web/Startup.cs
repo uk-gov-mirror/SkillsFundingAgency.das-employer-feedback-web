@@ -2,7 +2,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using FluentValidation;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Builder.Extensions;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -20,7 +19,6 @@ using SFA.DAS.EmployerFeedback.Web.Filters;
 using SFA.DAS.EmployerFeedback.Web.ModelBinders;
 using SFA.DAS.EmployerFeedback.Web.StartupExtensions;
 using SFA.DAS.Validation.Mvc.Extensions;
-using SFA.DAS.Validation.Mvc.Filters;
 
 namespace SFA.DAS.EmployerFeedback.Web
 {

@@ -56,12 +56,12 @@ namespace SFA.DAS.EmployerFeedback.Web.Controllers
             try
             {
                 var survey = await _sessionService.GetSurveyModel(GetUserId());
-                var vm = new StartFeedbackViewModel
+                var viewModel = new StartFeedbackViewModel
                 {
                     EncodedAccountId = model.EncodedAccountId,
                     ProviderName = survey.ProviderName
                 };
-                return View(vm);
+                return View(viewModel);
             }
             catch (Exception ex)
             {
