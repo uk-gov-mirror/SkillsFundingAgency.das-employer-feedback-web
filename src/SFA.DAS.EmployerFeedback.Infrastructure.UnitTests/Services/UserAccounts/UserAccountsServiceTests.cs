@@ -14,7 +14,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 
-namespace SFA.DAS.EmployerRequestApprenticeTraining.Infrastructure.UnitTests.Services.UserAccounts
+namespace SFA.DAS.EmployerFeedback.Infrastructure.UnitTests.Services.UserAccounts
 {
     public class UserAccountsServiceTests
     {

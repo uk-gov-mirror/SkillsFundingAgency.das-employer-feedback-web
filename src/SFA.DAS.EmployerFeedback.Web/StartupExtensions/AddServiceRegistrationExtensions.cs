@@ -35,7 +35,6 @@ namespace SFA.DAS.EmployerFeedback.Web.StartupExtensions
             services.AddTransient<IGovAuthEmployerAccountService, UserAccountsService>();
             services.AddTransient<ISessionStorageService, SessionStorageService>();
             services.AddTransient<ICacheStorageService, CacheStorageService>();
-            services.AddTransient<ValidateRequiredQueryParametersAttribute>(); // dubious used??
             services.AddTransient<EnsureSessionExistsAttribute>();
             services.AddTransient<ITrainingProviderService, TrainingProviderService>();
             services.AddTransient<IAccountsLinkService, AccountsLinkService>();
