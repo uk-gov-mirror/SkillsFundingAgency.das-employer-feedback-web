@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
@@ -18,7 +17,6 @@ using SFA.DAS.EmployerFeedback.Web.Models.Shared;
 using SFA.DAS.EmployerFeedback.Web.Paging;
 using SFA.DAS.EmployerFeedback.Web.Services;
 using SFA.DAS.EmployerFeedback.Web.Services.SessionStorage;
-using SFA.DAS.EmployerFeedback.Web.Validators.Questions;
 
 namespace SFA.DAS.EmployerFeedback.Web.Controllers
 {
@@ -36,7 +34,6 @@ namespace SFA.DAS.EmployerFeedback.Web.Controllers
         #endregion
 
         private readonly ISessionStorageService _sessionService;
-        private readonly ILogger<ProviderController> _logger;
         private readonly ITrainingProviderService _trainingProviderService;
         private readonly IEmployerFeedbackOuterApi _employerFeedbackOuterApi;
         private readonly IAccountsLinkService _accountsLinkService;
@@ -52,7 +49,6 @@ namespace SFA.DAS.EmployerFeedback.Web.Controllers
             : base(userService, logger)
         {
             _sessionService = sessionService;
-            _logger = logger;
             _trainingProviderService = trainingProviderService;
             _employerFeedbackOuterApi = employerFeedbackOuterApi;
             _accountsLinkService = accountsLinkService;
