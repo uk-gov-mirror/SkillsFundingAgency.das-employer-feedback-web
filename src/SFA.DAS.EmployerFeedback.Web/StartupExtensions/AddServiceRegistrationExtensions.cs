@@ -8,8 +8,8 @@ using SFA.DAS.EmployerFeedback.Infrastructure.Services.CacheStorage;
 using SFA.DAS.EmployerFeedback.Infrastructure.Services.UserAccounts;
 using SFA.DAS.EmployerFeedback.Infrastructure.Services.UserService;
 using SFA.DAS.EmployerFeedback.Services;
-using SFA.DAS.EmployerFeedback.Web.Attributes;
 using SFA.DAS.EmployerFeedback.Web.Authorization;
+using SFA.DAS.EmployerFeedback.Web.Orchestrators;
 using SFA.DAS.EmployerFeedback.Web.Services;
 using SFA.DAS.EmployerFeedback.Web.Services.EmployerRoleAuthorization;
 using SFA.DAS.EmployerFeedback.Web.Services.SessionStorage;
@@ -39,7 +39,11 @@ namespace SFA.DAS.EmployerFeedback.Web.StartupExtensions
             services.AddTransient<ITrainingProviderService, TrainingProviderService>();
             services.AddTransient<IAccountsLinkService, AccountsLinkService>();
             services.AddTransient<IUserService, UserService>();
-            
+
+            services.AddTransient<IProviderOrchestrator,  ProviderOrchestrator>();
+            services.AddTransient<IQuestionsOrchestrator, QuestionsOrchestrator>();
+            services.AddTransient<IReviewAnswersOrchestrator, ReviewAnswersOrchestrator>();
+
             services.AddSingleton<IEncodingService, EncodingService>();
 
             return services;

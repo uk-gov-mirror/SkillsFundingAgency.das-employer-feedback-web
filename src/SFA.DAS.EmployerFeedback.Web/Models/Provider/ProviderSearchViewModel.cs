@@ -20,7 +20,7 @@ namespace SFA.DAS.EmployerFeedback.Web.Models.Shared
         public string SortColumn { get; set; }
         public string SortDirection { get; set; }
         public int UnfilteredTotalRecordCount { get; set; }
-        public string ChangePageAction { get; set; }
+        public string ChangePageRouteName { get; set; }
 
         public string BackUrl { get; set; }
 

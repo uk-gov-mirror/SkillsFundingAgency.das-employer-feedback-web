@@ -1,8 +1,8 @@
 ﻿using SFA.DAS.EmployerFeedback.Domain.Types;
 
-namespace SFA.DAS.EmployerFeedback.Web.Models.Confirmation
+namespace SFA.DAS.EmployerFeedback.Web.Models.ReviewAnswers
 {
-    public class ConfirmationViewModel
+    public class FeedbackConfirmationViewModel
     {
         public string ProviderName { get; set; }
         public ProviderRating FeedbackRating { get; set; }

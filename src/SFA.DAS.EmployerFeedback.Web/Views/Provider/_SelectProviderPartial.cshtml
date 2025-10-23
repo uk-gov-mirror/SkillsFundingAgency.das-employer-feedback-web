@@ -172,9 +172,8 @@ new SelectList(Model.FeedbackStatusFilter.Select(n => n)),
     @{await Html.RenderPartialAsync("_PaginationLinksPartial", new PaginationLinksViewModel
         {
             PaginatedList = Model.Providers,
-            ChangePageAction = Model.ChangePageAction,
-            ChangePageController = "Provider",
-            //Fragment = Model.Fragment
+            RouteName = Model.ChangePageRouteName,
+            Fragment = Model.Fragment
         });}
 
 </nav>
