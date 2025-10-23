@@ -125,7 +125,7 @@ namespace SFA.DAS.EmployerFeedback.Services
             return CanSubmitFeedback(dateTimeCompleted);
         }
 
-        public async Task SubmitConfirmedEmployerFeedback(SurveyModel surveyModel)
+        public async Task<bool> SubmitConfirmedEmployerFeedback(SurveyModel surveyModel)
         {
             try
             {
@@ -142,7 +142,10 @@ namespace SFA.DAS.EmployerFeedback.Services
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Failed to submit feedback");
+                return false;
             }
+
+            return true;
         }
 
         private bool CanSubmitFeedback(DateTime? dateTimeCompleted)

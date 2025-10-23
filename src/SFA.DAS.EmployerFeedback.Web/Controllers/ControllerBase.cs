@@ -20,7 +20,7 @@ namespace SFA.DAS.EmployerFeedback.Web.Controllers
             _logger = logger;
         }
 
-        public Guid GetUserId()
+        protected Guid GetUserId()
         {
             var userId = _userService.GetUserId();
             if (!userId.HasValue)

@@ -11,11 +11,10 @@
 <main class="govuk-main-wrapper govuk-main-wrapper--auto-spacing" id="main-content">
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
-
             <form asp-route="@ReviewAnswersController.ReviewAnswersPost">
                 <div class="govuk-form-group">
+                    <partial name="_ValidationSummary" />
                     <h1 class="govuk-heading-l">Check your answers</h1>
-
                     <fieldset name="check-your-answers" class="govuk-fieldset checkbox-limit @(!ViewData.ModelState.IsValid ? "form-group-error" : "")">
 
                         <legend class="govuk-heading-m">Training provider: @Model.Survey.ProviderName</legend>

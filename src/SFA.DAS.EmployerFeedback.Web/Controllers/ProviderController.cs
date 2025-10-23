@@ -63,165 +63,117 @@ namespace SFA.DAS.EmployerFeedback.Web.Controllers
         [Route("providers", Name = ProviderSearchGet)]
         public async Task<IActionResult> ProviderSearch(ProviderSearchRequestModel model, int pageIndex = PagingState.DefaultPageIndex)
         {
-            try
+            var userId = GetUserId();
+            var pagingState = await _sessionService.UpdatePagingState(userId, (PagingState pagingState) =>
             {
-                var userId = GetUserId();
-                var pagingState = await _sessionService.UpdatePagingState(userId, (PagingState pagingState) =>
-                {
-                    pagingState.PageIndex = pageIndex;
-                });
+                pagingState.PageIndex = pageIndex;
+            });
 
-                var viewModel = await _trainingProviderService.GetTrainingProviderSearchViewModel(
-                    model.AccountId,
-                    model.EncodedAccountId,
-                    userId,
-                    pagingState.SelectedProviderName,
-                    pagingState.SelectedFeedbackStatus,
-                    pagingState.PageSize,
-                    pagingState.PageIndex,
-                    pagingState.SortColumn,
-                    pagingState.SortDirection);
-                
-                viewModel.ChangePageAction = nameof(ProviderSearch);
-                viewModel.BackUrl = _accountsLinkService.AccountsHome(model.EncodedAccountId);
-                
-                await _sessionService.SetProviders(userId, viewModel.Providers.Items);
-                await _sessionService.SetFeedbackSource(userId, model.FeedbackSource);
+            var viewModel = await _trainingProviderService.GetTrainingProviderSearchViewModel(
+                model.AccountId,
+                model.EncodedAccountId,
+                userId,
+                pagingState.SelectedProviderName,
+                pagingState.SelectedFeedbackStatus,
+                pagingState.PageSize,
+                pagingState.PageIndex,
+                pagingState.SortColumn,
+                pagingState.SortDirection);
 
-                return View(viewModel);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error in HttpGet ProviderSearch");
-                return RedirectToRoute(ErrorController.ErrorGet);
-            }
+            viewModel.ChangePageAction = nameof(ProviderSearch);
+            viewModel.BackUrl = _accountsLinkService.AccountsHome(model.EncodedAccountId);
+
+            await _sessionService.SetProviders(userId, viewModel.Providers.Items);
+            await _sessionService.SetFeedbackSource(userId, model.FeedbackSource);
+
+            return View(viewModel);
         }
 
         [HttpPost]
         [Route("providers", Name = ProviderSearchPost)]
         public async Task<IActionResult> ProviderSearch(ProviderSearchViewModel viewModel)
         {
-            try
+            await _sessionService.UpdatePagingState(GetUserId(), (PagingState pagingState) =>
             {
-                await _sessionService.UpdatePagingState(GetUserId(), (PagingState pagingState) =>
-                {
-                    pagingState.PageIndex = PagingState.DefaultPageIndex;
-                    pagingState.SelectedProviderName = viewModel.SelectedProviderName;
-                    pagingState.SelectedFeedbackStatus = viewModel.SelectedFeedbackStatus;
-                });
+                pagingState.PageIndex = PagingState.DefaultPageIndex;
+                pagingState.SelectedProviderName = viewModel.SelectedProviderName;
+                pagingState.SelectedFeedbackStatus = viewModel.SelectedFeedbackStatus;
+            });
 
-                return RedirectToRoute(ProviderSearchGet, new { viewModel.EncodedAccountId });
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error in HttpPost ProviderSearch");
-                return RedirectToRoute(ErrorController.ErrorGet);
-            }
+            return RedirectToRoute(ProviderSearchGet, new { viewModel.EncodedAccountId });
         }
 
         [HttpGet]
         [Route("providers/sort", Name = SortProvidersGet)]
         public async Task<IActionResult> SortProviders(AccountModel model, string sortColumn, string sortDirection)
         {
-            try
+            await _sessionService.UpdatePagingState(GetUserId(), (PagingState pagingState) =>
             {
-                await _sessionService.UpdatePagingState(GetUserId(), (PagingState pagingState) =>
-                {
-                    pagingState.SortColumn = sortColumn;
-                    pagingState.SortDirection = sortDirection;
-                });
+                pagingState.SortColumn = sortColumn;
+                pagingState.SortDirection = sortDirection;
+            });
 
-                return RedirectToRoute(ProviderSearchGet, new { model.EncodedAccountId });
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error in HttpGet SortProviders");
-                return RedirectToRoute(ErrorController.ErrorGet);
-            }
+            return RedirectToRoute(ProviderSearchGet, new { model.EncodedAccountId });
         }
 
         [HttpGet]
         [Route("providers/clearfilters", Name = ClearFiltersGet)]
         public async Task<IActionResult> ClearFilters(AccountModel model)
         {
-            try
-            {
-                await _sessionService.SetPagingState(GetUserId(), new PagingState());
-                return RedirectToRoute(ProviderSearchGet, new { model.EncodedAccountId });
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error in HttpGet ClearFilters");
-                return RedirectToRoute(ErrorController.ErrorGet);
-            }
+            await _sessionService.SetPagingState(GetUserId(), new PagingState());
+            return RedirectToRoute(ProviderSearchGet, new { model.EncodedAccountId });
         }
 
         [HttpGet]
         [Route("providers/{providerId}", Name = ProviderConfirmGet)]
         public async Task<IActionResult> ProviderConfirm(ProviderConfirmRequestModel model)
         {
-            try
+            var providers = await _sessionService.GetProviders(GetUserId());
+            var viewModel = new ProviderConfirmViewModel
             {
-                var providers = await _sessionService.GetProviders(GetUserId());
-                var viewModel = new ProviderConfirmViewModel
-                {
-                    EncodedAccountId = model.EncodedAccountId,
-                    ProviderId = model.ProviderId,
-                    ProviderName = providers.Single(p => p.ProviderId == model.ProviderId).ProviderName
-                };
+                EncodedAccountId = model.EncodedAccountId,
+                ProviderId = model.ProviderId,
+                ProviderName = providers.Single(p => p.ProviderId == model.ProviderId).ProviderName
+            };
 
-                return View(viewModel);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error in HttpGet ProviderConfirm");
-                return RedirectToRoute(ErrorController.ErrorGet);
-            }
+            return View(viewModel);
         }
 
         [HttpPost]
         [Route("providers/{providerId}", Name = ProviderConfirmPost)]
         public async Task<IActionResult> ProviderConfirm(ProviderConfirmViewModel viewModel)
         {
-            try
+            if (!await ViewModelIsValid(_providerConfirmViewModelValidator, viewModel, ModelState))
+                return RedirectToRoute(ProviderConfirmGet, new { encodedAccountId = viewModel.EncodedAccountId, providerId = viewModel.ProviderId });
+
+            if (!viewModel.Confirmed.Value)
             {
-                if (!await ViewModelIsValid(_providerConfirmViewModelValidator, viewModel, ModelState))
-                    return RedirectToRoute(ProviderConfirmGet, new { encodedAccountId = viewModel.EncodedAccountId, providerId = viewModel.ProviderId });
-
-                if (!viewModel.Confirmed.Value)
-                {
-                    return RedirectToRoute(ProviderSearchGet, new { encodedAccountId = viewModel.EncodedAccountId });
-                }
-
-                var providerAttributes = await _employerFeedbackOuterApi.GetAllAttributes();
-                if (providerAttributes == null)
-                {
-                    throw new EmployerFeedbackException("Unable to load Provider Attributes from the database.");
-                }
-
-                var providerAttributesModel = providerAttributes.Select(s => new ProviderAttributeModel { Name = s.AttributeName }).ToList();
-                var userId = GetUserId();
-                var feedbackSource = await _sessionService.GetFeedbackSource(userId);
-
-                var newSurveyModel = new SurveyModel
-                {
-                    AccountId = viewModel.AccountId,
-                    EncodedAccountId = viewModel.EncodedAccountId,
-                    Ukprn = viewModel.ProviderId,
-                    UserRef = userId,
-                    ProviderName = viewModel.ProviderName,
-                    Attributes = providerAttributesModel,
-                    FeedbackSource = feedbackSource
-                };
-
-                await _sessionService.SetSurveyModel(userId, newSurveyModel);
-                return RedirectToRoute(QuestionsController.StartFeedbackGet, new { viewModel.EncodedAccountId });
+                return RedirectToRoute(ProviderSearchGet, new { encodedAccountId = viewModel.EncodedAccountId });
             }
-            catch (Exception ex)
+
+            var providerAttributes = await _employerFeedbackOuterApi.GetAllAttributes();
+            if (providerAttributes == null)
             {
-                _logger.LogError(ex, "Error in HttpPost ProviderConfirmed");
-                return RedirectToRoute(ErrorController.ErrorGet);
+                throw new EmployerFeedbackException("Unable to load Provider Attributes from the database.");
             }
+
+            var providerAttributesModel = providerAttributes.Select(s => new ProviderAttributeModel { Name = s.AttributeName }).ToList();
+            var userId = GetUserId();
+            var feedbackSource = await _sessionService.GetFeedbackSource(userId);
+
+            var newSurveyModel = new SurveyModel
+            {
+                AccountId = viewModel.AccountId,
+                EncodedAccountId = viewModel.EncodedAccountId,
+                Ukprn = viewModel.ProviderId,
+                UserRef = userId,
+                ProviderName = viewModel.ProviderName,
+                Attributes = providerAttributesModel,
+                FeedbackSource = feedbackSource
+            };
+
+            await _sessionService.SetSurveyModel(userId, newSurveyModel);
+            return RedirectToRoute(QuestionsController.StartFeedbackGet, new { viewModel.EncodedAccountId });
         }
     }
 }

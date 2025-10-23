@@ -53,21 +53,13 @@ namespace SFA.DAS.EmployerFeedback.Web.Controllers
         [Route("landing", Name = StartFeedbackGet)]
         public async Task<IActionResult> StartFeedback(AccountModel model)
         {
-            try
+            var survey = await _sessionService.GetSurveyModel(GetUserId());
+            var viewModel = new StartFeedbackViewModel
             {
-                var survey = await _sessionService.GetSurveyModel(GetUserId());
-                var viewModel = new StartFeedbackViewModel
-                {
-                    EncodedAccountId = model.EncodedAccountId,
-                    ProviderName = survey.ProviderName
-                };
-                return View(viewModel);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error in StartFeedback");
-                return RedirectToRoute(ErrorController.ErrorGet);
-            }
+                EncodedAccountId = model.EncodedAccountId,
+                ProviderName = survey.ProviderName
+            };
+            return View(viewModel);
         }
 
         [HttpGet("question-one", Name = QuestionOneGet)]

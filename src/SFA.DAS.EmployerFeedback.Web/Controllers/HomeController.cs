@@ -1,55 +1,37 @@
-﻿using Microsoft.AspNetCore.Authentication;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
-using SFA.DAS.EmployerFeedback.Infrastructure.Configuration.Routing;
-using SFA.DAS.EmployerFeedback.Web.Models;
-using SFA.DAS.EmployerFeedback.Web.Models.Error;
 using SFA.DAS.EmployerFeedback.Web.Models.Home;
 using SFA.DAS.GovUK.Auth.Models;
 using SFA.DAS.GovUK.Auth.Services;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Threading.Tasks;
 
 namespace SFA.DAS.EmployerFeedback.Web.Controllers
 {
     [Route("")]
     public class HomeController : Controller
     {
-        #region Routes
-        public const string ErrorRouteGet = nameof(ErrorRouteGet);
+        #region Routes;
         public const string SignoutGet = nameof(SignoutGet);
         #endregion
 
-        private readonly ILogger<HomeController> _logger;
         private readonly IConfiguration _config;
         private readonly IStubAuthenticationService _stubAuthenticationService;
         private readonly IHttpContextAccessor _contextAccessor;
 
         public HomeController(
-            ILogger<HomeController> logger,
             IConfiguration config,
             IStubAuthenticationService stubAuthenticationService,
             IHttpContextAccessor contextAccessor)
         {
-            _logger = logger;
             _config = config;
             _contextAccessor = contextAccessor;
             _stubAuthenticationService = stubAuthenticationService;
-        }
-
-        [HttpGet]
-        [Route("error", Name = ErrorRouteGet)]
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error(string errorMessage)
-        {
-            _logger.LogError(errorMessage);
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? _contextAccessor.HttpContext.TraceIdentifier, ErrorMessage = errorMessage });
         }
 
         [HttpGet]

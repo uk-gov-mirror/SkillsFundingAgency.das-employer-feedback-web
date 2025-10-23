@@ -75,7 +75,12 @@ namespace SFA.DAS.EmployerFeedback.Web.Controllers
                 return RedirectToRoute(FeedbackAlreadySubmittedGet);
             }
             
-            await _trainingProviderService.SubmitConfirmedEmployerFeedback(surveyModel);
+            if(!await _trainingProviderService.SubmitConfirmedEmployerFeedback(surveyModel))
+            {
+                ModelState.AddModelError(nameof(ReviewAnswersViewModel.Survey), "We couldn't submit your feedback right now. You can try again in a moment.");
+                return RedirectToRoute(ReviewAnswersGet, new { encodedAccountId = surveyModel.EncodedAccountId });
+            }
+
             return RedirectToRoute(FeedbackConfirmationGet, new { encodedAccountId = surveyModel.EncodedAccountId });
         }
 

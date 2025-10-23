@@ -1,6 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Diagnostics;
+using Microsoft.AspNetCore.Diagnostics;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using System.Net;
+using SFA.DAS.EmployerFeedback.Web.Models.Error;
 
 namespace SFA.DAS.EmployerFeedback.Web.Controllers
 {
@@ -11,32 +14,34 @@ namespace SFA.DAS.EmployerFeedback.Web.Controllers
         public const string ErrorGet = nameof(ErrorGet);
         #endregion
 
+        private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ILogger<ErrorController> _logger;
 
-        public ErrorController(ILogger<ErrorController> logger)
+        public ErrorController(IHttpContextAccessor httpContextAccessor, ILogger<ErrorController> logger)
         {
+            _httpContextAccessor = httpContextAccessor;
             _logger = logger;
         }
 
         [HttpGet]
         [Route("error/{id?}", Name = ErrorGet)]
-        public IActionResult Error(int id)
+        public IActionResult Error(int? id)
         {
-            switch (id)
+            var feature = HttpContext.Features.Get<IExceptionHandlerFeature>();
+
+            if (feature?.Error != null)
             {
-                case 404:
-                    return PageNotFound();
-                default:
-                    break;
+                _logger.LogError(feature.Error, "Unhandled exception");
             }
 
-            return View();
-        }
+            if (id == 404)
+            {
+                Response.StatusCode = StatusCodes.Status404NotFound;
+                return View("PageNotFound");
+            }
 
-        private IActionResult PageNotFound()
-        {
-            Response.StatusCode = (int)HttpStatusCode.NotFound;
-            return View("PageNotFound");
+            Response.StatusCode = id ?? StatusCodes.Status500InternalServerError;
+            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? _httpContextAccessor.HttpContext.TraceIdentifier });
         }
     }
 }

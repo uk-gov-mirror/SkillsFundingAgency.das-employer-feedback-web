@@ -7,6 +7,5 @@ namespace SFA.DAS.EmployerFeedback.Web.Models.Error
     {
         public string RequestId { get; set; }
         public bool ShowRequestId => !string.IsNullOrEmpty(RequestId);
-        public string ErrorMessage { get; set; }
     }
 }

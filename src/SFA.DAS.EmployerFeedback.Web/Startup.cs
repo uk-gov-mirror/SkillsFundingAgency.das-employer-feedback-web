@@ -90,7 +90,7 @@ namespace SFA.DAS.EmployerFeedback.Web
 #endif
         }
 
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, LinkGenerator linkGenerator)
+        public static void Configure(IApplicationBuilder app, IWebHostEnvironment env, LinkGenerator linkGenerator)
         {
             if (env.IsDevelopment())
             {
@@ -98,23 +98,12 @@ namespace SFA.DAS.EmployerFeedback.Web
             }
             else
             {
-                app.UseExceptionHandler(errorApp =>
-                {
-                    errorApp.Run(async context =>
-                    {
-                        var exceptionFeature = context.Features.Get<IExceptionHandlerFeature>();
-                        var exception = exceptionFeature?.Error;
-                        var errorMessage = exception?.Message ?? "An unexpected error occurred";
+                // re-executes the pipeline for unhandled exceptions at /error
+                app.UseExceptionHandler("/error");
 
-                        var query = new RouteValueDictionary(new { errorMessage = errorMessage });
-                        var url = linkGenerator.GetPathByName(HomeController.ErrorRouteGet, query);
+                // re-executes the pipeline for non-exception status codes (e.g., 404) at /error/{statusCode}
+                app.UseStatusCodePagesWithReExecute("/error/{0}");
 
-                        context.Response.Redirect(url);
-                        await Task.CompletedTask;
-                    });
-                });
-
-                // The default HSTS value is 30 days.
                 app.UseHsts();
             }
 
@@ -126,6 +115,7 @@ namespace SFA.DAS.EmployerFeedback.Web
             app.UseAuthorization();
             app.UseMiddleware<SecurityHeadersMiddleware>();
             app.UseSession();
+
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(
