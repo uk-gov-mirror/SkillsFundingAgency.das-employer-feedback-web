@@ -7,5 +7,6 @@ namespace SFA.DAS.EmployerFeedback.Web.Models.Questions
     {
         public ProviderRating? Rating { get; set; }
         public string ProviderName { get; set; }
+        public bool ReturnToReviewAnswers { get; set; }
     }
 }

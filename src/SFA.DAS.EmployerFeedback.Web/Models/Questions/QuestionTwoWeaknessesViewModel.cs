@@ -8,5 +8,7 @@ namespace SFA.DAS.EmployerFeedback.Web.Models.Questions
         public string ProviderName { get; set; }
 
         public List<ProviderAttributeModel> Attributes { get; set; } = new();
+
+        public bool ReturnToReviewAnswers { get; set; }
     }
 }

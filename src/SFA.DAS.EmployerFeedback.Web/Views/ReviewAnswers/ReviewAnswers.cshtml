@@ -6,7 +6,7 @@
     ViewBag.Title = "Check your answers"; 
 }
 
-<a asp-route="@QuestionsController.QuestionOneGet" asp-route-encodedAccountId="@Model.Survey.EncodedAccountId" class="govuk-back-link">Back</a>
+<a asp-route="@QuestionsController.QuestionThreeGet" asp-route-encodedAccountId="@Model.Survey.EncodedAccountId" class="govuk-back-link">Back</a>
 
 <main class="govuk-main-wrapper govuk-main-wrapper--auto-spacing" id="main-content">
     <div class="govuk-grid-row">
@@ -44,7 +44,7 @@
                                 }
                                  </span>
                                 <span class="change">
-                                    <a class="govuk-link" asp-route="@QuestionsController.QuestionOneGet" asp-route-encodedAccountId="@Model.Survey.EncodedAccountId" asp-route-returnUrl="@ReviewAnswersController.ReviewAnswersGet">Change<span class="sr-only" /> strength answers</a>
+                                    <a class="govuk-link" asp-route="@QuestionsController.QuestionOneGet" asp-route-encodedAccountId="@Model.Survey.EncodedAccountId" asp-route-returnToReviewAnswers="true">Change<span class="sr-only" /> strength answers</a>
                                 </span>
                             </li>
                             <li>
@@ -69,7 +69,7 @@
                                 }
                                  </span>
                                 <span class="change">
-                                    <a class="govuk-link" asp-route="@QuestionsController.QuestionTwoGet" asp-route-encodedAccountId="@Model.Survey.EncodedAccountId" asp-route-returnUrl="@ReviewAnswersController.ReviewAnswersGet">Change<span class="sr-only" /> improvements answers</a>
+                                    <a class="govuk-link" asp-route="@QuestionsController.QuestionTwoGet" asp-route-encodedAccountId="@Model.Survey.EncodedAccountId" asp-route-returnToReviewAnswers="true">Change<span class="sr-only" /> improvements answers</a>
                                 </span>
                             </li>
                             <li>
@@ -80,7 +80,7 @@
                                     <p>@Model.Survey.Rating.GetDisplayName()</p>
                                 </span>
                                 <span class="change">
-                                    <a class="govuk-link" asp-route="@QuestionsController.QuestionThreeGet" asp-route-encodedAccountId="@Model.Survey.EncodedAccountId" asp-route-returnUrl="@ReviewAnswersController.ReviewAnswersGet">Change<span class="sr-only" /> quality rating answer</a>
+                                    <a class="govuk-link" asp-route="@QuestionsController.QuestionThreeGet" asp-route-encodedAccountId="@Model.Survey.EncodedAccountId" asp-route-returnToReviewAnswers="true">Change<span class="sr-only" /> quality rating answer</a>
                                 </span>
                             </li>
                         </ul>

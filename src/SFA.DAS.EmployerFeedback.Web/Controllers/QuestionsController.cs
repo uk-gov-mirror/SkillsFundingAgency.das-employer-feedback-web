@@ -29,9 +29,7 @@ namespace SFA.DAS.EmployerFeedback.Web.Controllers
         public const string QuestionThreePost = nameof(QuestionThreePost);
         #endregion
 
-        private const string ReturnUrlKey = "ReturnUrl";
         private readonly ISessionStorageService _sessionService;
-        private readonly ILogger<QuestionsController> _logger;
         private readonly IValidator<QuestionOneStrengthsViewModel> _questionOneStrengthsViewModelValidator;
         private readonly IValidator<QuestionTwoWeaknessesViewModel> _questionTwoWeaknessesViewModelValidator;
         private readonly IValidator<QuestionThreeRatingViewModel> _questionThreeRatingViewModelValidator;
@@ -43,7 +41,6 @@ namespace SFA.DAS.EmployerFeedback.Web.Controllers
             : base(userService, logger)
         {
             _sessionService = sessionService;
-            _logger = logger;
             _questionOneStrengthsViewModelValidator = questionOneStrengthsViewModelValidator;
             _questionTwoWeaknessesViewModelValidator = questionTwoWeaknessesViewModelValidator;
             _questionThreeRatingViewModelValidator = questionThreeRatingViewModelValidator;
@@ -63,9 +60,8 @@ namespace SFA.DAS.EmployerFeedback.Web.Controllers
         }
 
         [HttpGet("question-one", Name = QuestionOneGet)]
-        public async Task<IActionResult> QuestionOne(string encodedAccountId, string returnUrl = null)
+        public async Task<IActionResult> QuestionOne(QuestionRequestModel model)
         {
-            TempData[ReturnUrlKey] = returnUrl;
             var survey = await _sessionService.GetSurveyModel(GetUserId());
 
             var viewModel = new QuestionOneStrengthsViewModel
@@ -77,7 +73,8 @@ namespace SFA.DAS.EmployerFeedback.Web.Controllers
                     Name = a.Name,
                     Good = a.Good,
                     Bad = a.Bad
-                }).ToList()
+                }).ToList(),
+                ReturnToReviewAnswers = model.ReturnToReviewAnswers
             };
 
             return View(viewModel);
@@ -87,7 +84,7 @@ namespace SFA.DAS.EmployerFeedback.Web.Controllers
         public async Task<IActionResult> QuestionOne(QuestionOneStrengthsViewModel viewModel)
         {
             if (!await ViewModelIsValid(_questionOneStrengthsViewModelValidator, viewModel, ModelState))
-                return RedirectToRoute(QuestionOneGet, new { encodedAccountId = viewModel.EncodedAccountId });
+                return RedirectToRoute(QuestionOneGet, new { encodedAccountId = viewModel.EncodedAccountId, returnToReviewAnswers = viewModel.ReturnToReviewAnswers });
 
             var userId = GetUserId();
             await _sessionService.UpdateSurveyModel(userId, (SurveyModel survey) => 
@@ -99,13 +96,15 @@ namespace SFA.DAS.EmployerFeedback.Web.Controllers
                 }
             });
 
-            return await HandleRedirect(QuestionTwoGet);
+            if (viewModel.ReturnToReviewAnswers)
+                return RedirectToRoute(ReviewAnswersController.ReviewAnswersGet, new { encodedAccountId = viewModel.EncodedAccountId });
+
+            return RedirectToRoute(QuestionTwoGet, new { encodedAccountId = viewModel.EncodedAccountId });
         }
 
         [HttpGet("question-two", Name = QuestionTwoGet)]
-        public async Task<IActionResult> QuestionTwo(string returnUrl = null)
+        public async Task<IActionResult> QuestionTwo(QuestionRequestModel model)
         {
-            TempData[ReturnUrlKey] = returnUrl;
             var survey = await _sessionService.GetSurveyModel(GetUserId());
 
             var viewModel = new QuestionTwoWeaknessesViewModel
@@ -117,7 +116,8 @@ namespace SFA.DAS.EmployerFeedback.Web.Controllers
                     Name = a.Name,
                     Good = a.Good,
                     Bad = a.Bad
-                }).ToList()
+                }).ToList(),
+                ReturnToReviewAnswers = model.ReturnToReviewAnswers
             };
 
             return View(viewModel);
@@ -127,7 +127,7 @@ namespace SFA.DAS.EmployerFeedback.Web.Controllers
         public async Task<IActionResult> QuestionTwo(QuestionTwoWeaknessesViewModel viewModel)
         {
             if (!await ViewModelIsValid(_questionTwoWeaknessesViewModelValidator, viewModel, ModelState))
-                return RedirectToRoute(QuestionTwoGet, new { encodedAccountId = viewModel.EncodedAccountId });
+                return RedirectToRoute(QuestionTwoGet, new { encodedAccountId = viewModel.EncodedAccountId, returnToReviewAnswers = viewModel.ReturnToReviewAnswers });
 
             var userId = GetUserId();
             await _sessionService.UpdateSurveyModel(userId, (SurveyModel survey) =>
@@ -139,20 +139,23 @@ namespace SFA.DAS.EmployerFeedback.Web.Controllers
                 }
             });
 
-            return await HandleRedirect(QuestionThreeGet);
+            if (viewModel.ReturnToReviewAnswers)
+                return RedirectToRoute(ReviewAnswersController.ReviewAnswersGet, new { encodedAccountId = viewModel.EncodedAccountId });
+
+            return RedirectToRoute(QuestionThreeGet, new { encodedAccountId = viewModel.EncodedAccountId });
         }
 
         [HttpGet("question-three", Name = QuestionThreeGet)]
-        public async Task<IActionResult> QuestionThree(string returnUrl = null)
+        public async Task<IActionResult> QuestionThree(QuestionRequestModel model)
         {
-            TempData[ReturnUrlKey] = returnUrl;
             var survey = await _sessionService.GetSurveyModel(GetUserId());
 
             var viewModel = new QuestionThreeRatingViewModel
             {
                 EncodedAccountId = survey.EncodedAccountId,
                 ProviderName = survey.ProviderName,
-                Rating = survey.Rating
+                Rating = survey.Rating,
+                ReturnToReviewAnswers = model.ReturnToReviewAnswers
             };
 
             return View(viewModel);
@@ -162,7 +165,7 @@ namespace SFA.DAS.EmployerFeedback.Web.Controllers
         public async Task<IActionResult> QuestionThree(QuestionThreeRatingViewModel viewModel)
         {
             if (!await ViewModelIsValid(_questionThreeRatingViewModelValidator, viewModel, ModelState))
-                return RedirectToRoute(QuestionThreeGet, new { encodedAccountId = viewModel.EncodedAccountId });
+                return RedirectToRoute(QuestionThreeGet, new { encodedAccountId = viewModel.EncodedAccountId, returnToReviewAnswers = viewModel.ReturnToReviewAnswers });
             
             var userId = GetUserId();
             await _sessionService.UpdateSurveyModel(userId, (SurveyModel survey) =>
@@ -170,16 +173,7 @@ namespace SFA.DAS.EmployerFeedback.Web.Controllers
                 survey.Rating = viewModel.Rating;
             });
 
-            return await HandleRedirect(ReviewAnswersController.ReviewAnswersGet);
-        }
-        private async Task<IActionResult> HandleRedirect(string nextRoute)
-        {
-            var returnRoute = Convert.ToString(TempData[ReturnUrlKey]);
-            var survey = await _sessionService.GetSurveyModel(GetUserId());
-            
-            return RedirectToRoute(
-                string.IsNullOrEmpty(returnRoute) ? nextRoute : returnRoute,
-                new { encodedAccountId = survey.EncodedAccountId });
+            return RedirectToRoute(ReviewAnswersController.ReviewAnswersGet, new { encodedAccountId = viewModel.EncodedAccountId });
         }
     }
 }

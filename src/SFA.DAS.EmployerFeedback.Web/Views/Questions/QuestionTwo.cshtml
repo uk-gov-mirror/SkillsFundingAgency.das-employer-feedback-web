@@ -4,9 +4,10 @@
 @{
     ViewBag.PageID = "page-weaknesses-question";
     ViewBag.Title = "Providers Weaknesses";
+    var backRoute = Model.ReturnToReviewAnswers ? ReviewAnswersController.ReviewAnswersGet : QuestionsController.QuestionOneGet;
 }
 
-<a asp-route="@QuestionsController.QuestionOneGet" asp-route-encodedAccountId="@Model.EncodedAccountId" class="govuk-back-link">Back</a>
+<a asp-route="@backRoute" asp-route-encodedAccountId="@Model.EncodedAccountId" class="govuk-back-link">Back</a>
 
 <main class="govuk-main-wrapper govuk-main-wrapper--auto-spacing" id="main-content">
     <div class="govuk-grid-row">
@@ -38,6 +39,7 @@
                 <div class="govuk-button-group">
                     <button id="q2-continue" type="submit" class="govuk-button">Continue</button>
                 </div>
+                <input asp-for="@Model.ReturnToReviewAnswers" type="hidden" />
             </form>
         </div>
     </div>
