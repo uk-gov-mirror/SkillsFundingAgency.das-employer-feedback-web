@@ -18,6 +18,9 @@ namespace SFA.DAS.EmployerFeedback.Web.Controllers
     {
         #region Routes;
         public const string SignoutGet = nameof(SignoutGet);
+        public const string SignInStubGet = nameof(SignInStubGet);
+        public const string SignInStubPost = nameof(SignInStubPost);
+        public const string SignedInStubGet = nameof(SignedInStubGet);
         #endregion
 
         private readonly IConfiguration _config;
@@ -40,22 +43,22 @@ namespace SFA.DAS.EmployerFeedback.Web.Controllers
         {
             var idToken = await _contextAccessor.HttpContext.GetTokenAsync("id_token");
 
-            var authenticationProperties = new AuthenticationProperties();
+            var authenticationProperties = new AuthenticationProperties
+            {
+                RedirectUri = string.Empty,
+                AllowRefresh = true
+            };
+
             authenticationProperties.Parameters.Clear();
             authenticationProperties.Parameters.Add("id_token", idToken);
 
-            var schemes = new List<string>
-            {
-                CookieAuthenticationDefaults.AuthenticationScheme
-            };
-            _ = bool.TryParse(_config["StubAuth"], out var stubAuth);
+            List<string> authenticationSchemes = new List<string> { CookieAuthenticationDefaults.AuthenticationScheme };
+            if (!bool.TryParse(_config["StubAuth"], out bool stubAuth) || !stubAuth)
+                authenticationSchemes.Add(OpenIdConnectDefaults.AuthenticationScheme);
 
-            if (!stubAuth)
-            {
-                schemes.Add(OpenIdConnectDefaults.AuthenticationScheme);
-            }
-
-            return SignOut(authenticationProperties, schemes.ToArray());
+            return SignOut(
+                authenticationProperties,
+                authenticationSchemes.ToArray());
         }
 
         [AllowAnonymous]
@@ -75,7 +78,7 @@ namespace SFA.DAS.EmployerFeedback.Web.Controllers
 #if DEBUG
         [AllowAnonymous()]
         [HttpGet]
-        [Route("SignIn-Stub", Name = "SignInStub")]
+        [Route("signin-stub", Name = SignInStubGet)]
         public IActionResult SigninStub(string returnUrl)
         {
             var model = new SignInStubViewModel
@@ -90,7 +93,7 @@ namespace SFA.DAS.EmployerFeedback.Web.Controllers
 
         [AllowAnonymous()]
         [HttpPost]
-        [Route("SignIn-Stub")]
+        [Route("signin-stub", Name = SignInStubPost)]
         public async Task<IActionResult> SigninStubPost(SignInStubViewModel model)
         {
             var claims = await _stubAuthenticationService.GetStubSignInClaims(new StubAuthUserDetails
@@ -102,12 +105,12 @@ namespace SFA.DAS.EmployerFeedback.Web.Controllers
             await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, claims,
                 new AuthenticationProperties());
 
-            return RedirectToRoute("SignedInStub", new { model.ReturnUrl });
+            return RedirectToRoute(SignedInStubGet, new { model.ReturnUrl });
         }
 
         [Authorize()]
         [HttpGet]
-        [Route("signed-in-stub", Name = "SignedInStub")]
+        [Route("signed-in-stub", Name = SignedInStubGet)]
         public IActionResult SignedInStub(string returnUrl)
         {
             return View(new SignedInStubViewModel(_contextAccessor, returnUrl));

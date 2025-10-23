@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using SFA.DAS.Employer.Shared.UI;
+using SFA.DAS.EmployerFeedback.Web.Controllers;
 using SFA.DAS.EmployerFeedback.Web.Models.Shared;
 using System.Diagnostics.CodeAnalysis;
 
@@ -11,7 +12,7 @@ namespace SFA.DAS.EmployerFeedback.Web.StartupExtensions
     {
         public static IServiceCollection AddEmployerSharedUi(this IServiceCollection services, IConfiguration configuration)
         {
-            services.AddMaMenuConfiguration("signout", configuration["ResourceEnvironmentName"]);
+            services.AddMaMenuConfiguration(HomeController.SignoutGet, configuration["ResourceEnvironmentName"]);
             services.AddSingleton<ICookieBannerViewModel>(provider =>
             {
                 var maLinkGenerator = provider.GetService<UrlBuilder>();
