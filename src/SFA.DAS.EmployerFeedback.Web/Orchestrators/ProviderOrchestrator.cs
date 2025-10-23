@@ -58,7 +58,7 @@ namespace SFA.DAS.EmployerFeedback.Web.Orchestrators
                 pagingState.PageSize,
                 pagingState.PageIndex,
                 pagingState.SortColumn,
-                pagingState.SortDirection);
+                pagingState.SortOrder);
 
             viewModel.ChangePageRouteName = ProviderController.ProviderSearchGet;
             viewModel.BackUrl = _accountsLinkService.AccountsHome(model.EncodedAccountId);
@@ -104,7 +104,7 @@ namespace SFA.DAS.EmployerFeedback.Web.Orchestrators
             await _sessionService.UpdatePagingState(GetUserId(), (PagingState pagingState) =>
             {
                 pagingState.SortColumn = model.SortColumn;
-                pagingState.SortDirection = model.SortDirection;
+                pagingState.SortOrder = model.SortOrder;
             });
         }
 

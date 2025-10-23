@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using SFA.DAS.EmployerFeedback.Domain.Entities.Models;
+using SFA.DAS.EmployerFeedback.Domain.Types;
 using SFA.DAS.EmployerFeedback.Infrastructure.Api.OuterApi;
 using SFA.DAS.EmployerFeedback.Infrastructure.Configuration;
 using SFA.DAS.EmployerFeedback.Paging;
@@ -36,8 +37,8 @@ namespace SFA.DAS.EmployerFeedback.Services
             string selectedFeedbackStatus,
             int pageSize,
             int pageIndex,
-            string sortColumn,
-            string sortDirection)
+            SortColumn sortColumn,
+            SortOrder sortOrder)
         {
             ProviderSearchViewModel model = new ProviderSearchViewModel();
             model.AccountId = accountId;
@@ -45,7 +46,7 @@ namespace SFA.DAS.EmployerFeedback.Services
             model.SelectedProviderName = selectedProviderName;
             model.SelectedFeedbackStatus = selectedFeedbackStatus;
             model.SortColumn = sortColumn;
-            model.SortDirection = sortDirection;
+            model.SortOrder = sortOrder;
 
             // select all the providers for this employer
             var providers = await SelectAllProvidersForAccount(model.AccountId, userRef);
@@ -61,13 +62,13 @@ namespace SFA.DAS.EmployerFeedback.Services
             filteredProviders = ApplyFeedbackStatusFilter(filteredProviders, selectedFeedbackStatus);
 
             // sort filtered providers
-            if (PagingState.SortDescending == model.SortDirection)
+            if (SortOrder.Descending == model.SortOrder)
             {
-                if (!string.IsNullOrWhiteSpace(model.SortColumn) && model.SortColumn.Equals("FeedbackStatus", StringComparison.InvariantCultureIgnoreCase))
+                if (model.SortColumn == SortColumn.FeedbackStatus)
                 {
                     filteredProviders = filteredProviders.OrderByDescending(p => p.FeedbackStatus);
                 }
-                else if (!string.IsNullOrWhiteSpace(model.SortColumn) && model.SortColumn.Equals("DateSubmitted", StringComparison.InvariantCultureIgnoreCase))
+                else if (model.SortColumn == SortColumn.DateSubmitted)
                 {
                     filteredProviders = filteredProviders.OrderByDescending(p => p.DateSubmitted);
                 }
@@ -78,11 +79,11 @@ namespace SFA.DAS.EmployerFeedback.Services
             }
             else
             {
-                if (!string.IsNullOrWhiteSpace(model.SortColumn) && model.SortColumn.Equals("FeedbackStatus", StringComparison.InvariantCultureIgnoreCase))
+                if (model.SortColumn == SortColumn.FeedbackStatus)
                 {
                     filteredProviders = filteredProviders.OrderBy(p => p.FeedbackStatus);
                 }
-                else if (!string.IsNullOrWhiteSpace(model.SortColumn) && model.SortColumn.Equals("DateSubmitted", StringComparison.InvariantCultureIgnoreCase))
+                else if (model.SortColumn == SortColumn.DateSubmitted)
                 {
                     filteredProviders = filteredProviders.OrderBy(p => p.DateSubmitted);
                 }

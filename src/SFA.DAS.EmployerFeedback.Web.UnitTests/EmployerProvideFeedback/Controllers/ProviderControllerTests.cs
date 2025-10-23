@@ -80,7 +80,7 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Controllers
                 SelectedFeedbackStatus = "All",
                 SelectedProviderName = "Acme",
                 SortColumn = "Name",
-                SortDirection = "asc"
+                SortOrder = "asc"
             };
 
             _session
@@ -109,7 +109,7 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Controllers
                     pagingStateReturned.PageSize,
                     pagingStateReturned.PageIndex,
                     pagingStateReturned.SortColumn,
-                    pagingStateReturned.SortDirection))
+                    pagingStateReturned.SortOrder))
                 .ReturnsAsync(searchVm);
 
             _accountsLinkService

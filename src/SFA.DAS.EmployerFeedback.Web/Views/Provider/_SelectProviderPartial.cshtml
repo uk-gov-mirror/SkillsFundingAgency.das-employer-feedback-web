@@ -90,35 +90,33 @@ new SelectList(Model.FeedbackStatusFilter.Select(n => n)),
         <tr class="govuk-table__row">
 
             <th scope="col" class="govuk-table__header">
-                <sfa-sortable-column-header class=@(Model.Fragment + "-sort govuk-link" + " das-no-wrap")
-                                            data-sortColumn="ProviderName"
-                                            asp-action="SortProviders"
-                                            asp-controller="Provider"
-                                            sfa-sort-column="ProviderName"
-                                            sfa-table-sort-column="@Model.SortColumn"
-                                            sfa-sort-direction="@Model.SortDirection">Training provider</sfa-sortable-column-header>
+                    <sortable-column class=@(Model.Fragment + "-sort govuk-link" + " das-no-wrap")
+                                     asp-route="@ProviderController.SortProvidersGet"
+                                     asp-route-encodedAccountId="@Model.EncodedAccountId"
+                                     column-name="@SortColumn.Default"
+                                     column-label="Training provider"
+                                     default="true"
+                                     default-order="@SortOrder.Ascending"/>
             </th>
 
             <th scope="col" class="govuk-table__header">
-                <sfa-sortable-column-header class=@(Model.Fragment + "-sort govuk-link" + " das-no-wrap")
-                                            data-sortColumn="FeedbackStatus"
-                                            asp-action="SortProviders"
-                                            asp-controller="Provider"
-                                            sfa-sort-column="FeedbackStatus"
-                                            sfa-table-sort-column="@Model.SortColumn"
-                                            sfa-sort-direction="@Model.SortDirection">Feedback status</sfa-sortable-column-header>
+                    <sortable-column class=@(Model.Fragment + "-sort govuk-link" + " das-no-wrap")
+                                     asp-route="@ProviderController.SortProvidersGet"
+                                     asp-route-encodedAccountId="@Model.EncodedAccountId"
+                                     column-name="@SortColumn.FeedbackStatus"
+                                     column-label="Feedback status"
+                                     default="false"
+                                     default-order="@SortOrder.Ascending" />
             </th>
 
             <th scope="col" class="govuk-table__header govuk-table__header--numeric">
-
-                <sfa-sortable-column-header class=@(Model.Fragment + "-sort govuk-link" + " das-no-wrap")
-                                            data-sortColumn="DateSubmitted"
-                                            asp-action="SortProviders"
-                                            asp-controller="Provider"
-                                            sfa-sort-column="DateSubmitted"
-                                            sfa-table-sort-column="@Model.SortColumn"
-                                            sfa-sort-direction="@Model.SortDirection">Date submitted</sfa-sortable-column-header>
-
+                    <sortable-column class=@(Model.Fragment + "-sort govuk-link" + " das-no-wrap")
+                                     asp-route="@ProviderController.SortProvidersGet"
+                                     asp-route-encodedAccountId="@Model.EncodedAccountId"
+                                     column-name="@SortColumn.DateSubmitted"
+                                     column-label="Date submitted"
+                                     default="false"
+                                     default-order="@SortOrder.Ascending" />
             </th>
 
             <th id="dreapta" scope="col" class="govuk-table__header govuk-table__header--numeric">

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using SFA.DAS.EmployerFeedback.Domain.Types;
 using SFA.DAS.EmployerFeedback.Paging;
 
 namespace SFA.DAS.EmployerFeedback.Web.Models.Shared
@@ -17,8 +18,8 @@ namespace SFA.DAS.EmployerFeedback.Web.Models.Shared
 
         public PaginatedList<EmployerTrainingProvider> Providers { get; set; }
         public string Fragment { get; set; }
-        public string SortColumn { get; set; }
-        public string SortDirection { get; set; }
+        public SortColumn SortColumn { get; set; }
+        public SortOrder SortOrder { get; set; }
         public int UnfilteredTotalRecordCount { get; set; }
         public string ChangePageRouteName { get; set; }
 
