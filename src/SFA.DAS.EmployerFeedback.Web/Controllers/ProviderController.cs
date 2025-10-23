@@ -129,11 +129,16 @@ namespace SFA.DAS.EmployerFeedback.Web.Controllers
         public async Task<IActionResult> ProviderConfirm(ProviderConfirmRequestModel model)
         {
             var providers = await _sessionService.GetProviders(GetUserId());
+            var provider = providers?.FirstOrDefault(p => p.ProviderId == model.ProviderId);
+            
+            if (provider == null)
+                return RedirectToRoute(ProviderSearchGet, new { encodedAccountId = model.EncodedAccountId });
+
             var viewModel = new ProviderConfirmViewModel
             {
                 EncodedAccountId = model.EncodedAccountId,
                 ProviderId = model.ProviderId,
-                ProviderName = providers.Single(p => p.ProviderId == model.ProviderId).ProviderName
+                ProviderName = provider.ProviderName
             };
 
             return View(viewModel);
