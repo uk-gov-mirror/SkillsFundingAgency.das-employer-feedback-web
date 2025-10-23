@@ -2,7 +2,6 @@
 
 namespace SFA.DAS.EmployerFeedback.Web.Configuration.Routing
 {
-    [ExcludeFromCodeCoverage]
     public static class RouteValueKeys
     {
         public const string EncodedAccountId = "EncodedAccountId";

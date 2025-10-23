@@ -1,11 +1,6 @@
-﻿using Microsoft.AspNetCore.Http;
-using Newtonsoft.Json;
-using SFA.DAS.EmployerFeedback.Domain.Types;
-using SFA.DAS.GovUK.Auth.Employer;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Http;
 using EmployerClaims = SFA.DAS.EmployerFeedback.Infrastructure.Configuration.EmployerClaims;
 
 namespace SFA.DAS.EmployerFeedback.Infrastructure.Services.UserService
@@ -22,71 +17,6 @@ namespace SFA.DAS.EmployerFeedback.Infrastructure.Services.UserService
         public Guid? GetUserId()
         {
             return Guid.TryParse(GetUserClaimAsString(EmployerClaims.UserId), out Guid userId) ? userId : null;
-        }
-
-        public string GetUserDisplayName()
-        {
-            return GetUserClaimAsString(EmployerClaims.UserDisplayName);
-        }
-
-        public bool IsUserChangeAuthorized(string accountId)
-        {
-            var result = TryGetUserClaimValue(EmployerClaims.AssociatedAccounts, out var associatedAccountsClaim);
-            if (!result)
-            {
-                return false;
-            }
-
-            try
-            {
-                var employerAccounts = JsonConvert.DeserializeObject<Dictionary<string, EmployerUserAccountItem>>(associatedAccountsClaim);
-                var tryParse = Enum.TryParse<UserRole>(employerAccounts[accountId].Role, true, out var userRole);
-
-                if (!tryParse)
-                {
-                    return false;
-                }
-
-                if (userRole is UserRole.Owner || userRole is UserRole.Transactor)
-                {
-                    return true;
-                }
-            }
-            catch (JsonSerializationException)
-            {
-                return false;
-            }
-
-            return false;
-        }
-
-        public IEnumerable<string> GetUserOwnerTransactorAccountIds()
-        {
-            var result = TryGetUserClaimValue(EmployerClaims.AssociatedAccounts, out var associatedAccountsClaim);
-            if (!result)
-            {
-                return [];
-            }
-
-            try
-            {
-                var employerAccounts = JsonConvert.DeserializeObject<Dictionary<string, EmployerUserAccountItem>>(associatedAccountsClaim);
-
-                return employerAccounts.Values
-                    .Where(c => c.Role.Equals("Owner", StringComparison.CurrentCultureIgnoreCase) ||
-                                c.Role.Equals("Transactor", StringComparison.CurrentCultureIgnoreCase))
-                    .Select(c => c.AccountId);
-
-            }
-            catch (JsonSerializationException)
-            {
-                return [];
-            }
-        }
-
-        public bool IsOwnerOrTransactor(string accountId)
-        {
-            return IsUserChangeAuthorized(accountId);
         }
 
         private bool IsUserAuthenticated()

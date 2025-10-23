@@ -11,21 +11,6 @@
 <main class="govuk-main-wrapper govuk-main-wrapper--auto-spacing" id="main-content">
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
-            @* @if (!ViewData.ModelState.IsValid)
-            {
-                <div class="govuk-error-summary" aria-labelledby="error-summary-title" role="alert" data-module="govuk-error-summary">
-                    <h2 class="govuk-error-summary__title" id="error-summary-title">
-                        There is a problem
-                    </h2>
-                    <div class="govuk-error-summary__body">
-                        <ul class="govuk-list govuk-error-summary__list">
-                            <li>
-                                <a href="#@ProviderRating.Excellent">Please rate @Model.ProviderName</a>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-            } *@
             <partial name="_ValidationSummary" />
             <form asp-route="@QuestionsController.QuestionThreePost">
                 <h1 class="govuk-heading-l">Overall rating</h1>
@@ -39,19 +24,19 @@
                     <div class="govuk-radios" data-module="govuk-radios">
                         <div class="govuk-radios__item">
                             <input class="govuk-radios__input" asp-for="Rating" das-highlight-error-for="Rating" error-class="govuk-input--error" type="radio" value="@ProviderRating.Excellent">
-                            <label class="govuk-label govuk-radios__label" for=@ProviderRating.Excellent>@ProviderRating.Excellent</label>
+                            <label class="govuk-label govuk-radios__label" for="Rating">@ProviderRating.Excellent</label>
                         </div>
                         <div class="govuk-radios__item">
                             <input class="govuk-radios__input" id="Rating-good" asp-for="Rating" type="radio" value="@ProviderRating.Good">
-                            <label class="govuk-label govuk-radios__label" for=@ProviderRating.Good>@ProviderRating.Good</label>
+                            <label class="govuk-label govuk-radios__label" for="Rating-good">@ProviderRating.Good</label>
                         </div>
                         <div class="govuk-radios__item">
                             <input class="govuk-radios__input" id="Rating-poor" asp-for="Rating" type="radio" value="@ProviderRating.Poor">
-                            <label class="govuk-label govuk-radios__label" for=@ProviderRating.Poor>@ProviderRating.Poor</label>
+                            <label class="govuk-label govuk-radios__label" for="Rating-poor">@ProviderRating.Poor</label>
                         </div>
                         <div class="govuk-radios__item">
                             <input class="govuk-radios__input" id="Rating-veryPoor" asp-for="Rating" type="radio" value="@ProviderRating.VeryPoor">
-                            <label class="govuk-label govuk-radios__label" for=@ProviderRating.VeryPoor>@ProviderRating.VeryPoor.GetDisplayName()</label>
+                            <label class="govuk-label govuk-radios__label" for="Rating-veryPoor">@ProviderRating.VeryPoor.GetDisplayName()</label>
                         </div>
                     </div>
                 </fieldset>

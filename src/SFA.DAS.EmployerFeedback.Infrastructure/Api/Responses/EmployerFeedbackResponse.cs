@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Diagnostics.CodeAnalysis;
 
 namespace SFA.DAS.EmployerFeedback.Infrastructure.Api.Responses
 {
-    [ExcludeFromCodeCoverage]
     public class EmployerFeedbackResponse
     {
         public long FeedbackId { get; set; }

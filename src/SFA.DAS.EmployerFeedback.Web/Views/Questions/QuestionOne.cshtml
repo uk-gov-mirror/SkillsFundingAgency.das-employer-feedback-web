@@ -16,7 +16,7 @@
                 <h1 class="govuk-heading-l">@(Model.ProviderName.EndsWith("'s") ? @Model.ProviderName : $"{@Model.ProviderName}'s") strengths</h1>
                 <div id="Attributes" class="govuk-form-group" das-highlight-error-for="Attributes" error-class="govuk-form-group--error">
                     <p das-validation-for="Attributes" class="govuk-error-message"></p>
-                    <fieldset name="doing-well" aria-describedby="doing-well-hint" class="govuk-fieldset checkbox-limit @(!ViewData.ModelState.IsValid ? "form-group-error" : "")">
+                    <fieldset name="doing-well" aria-describedby="doing-well-hint" class="govuk-fieldset checkbox-limit">
                         <legend class="govuk-fieldset_legend govuk-fieldset_legend--1">
                             <h2 class="govuk-heading-m">What is @Model.ProviderName doing very well?</h2>
                         </legend>
@@ -28,8 +28,7 @@
                         @for (var i = 0; i < Model.Attributes.Count; i++)
                         {
                             <div class="govuk-checkboxes__item" style="@(Model.Attributes[i].Bad ? "display: none" : "")">
-                                <checkbox asp-for="@Model.Attributes[i].Good" id="col1-@(i)" type="checkbox" class="govuk-checkboxes__input" />
-                                <label for="col1-@i" class="govuk-label govuk-checkboxes__label">@Model.Attributes[i].Name</label>
+                                <checkbox asp-for="@Model.Attributes[i].Good" id="col1-@(i)" type="checkbox" class="govuk-checkboxes__input" label="@Model.Attributes[i].Name" />
                                 <input asp-for="@Model.Attributes[i].Name" type="hidden" />
                             </div>
                         }

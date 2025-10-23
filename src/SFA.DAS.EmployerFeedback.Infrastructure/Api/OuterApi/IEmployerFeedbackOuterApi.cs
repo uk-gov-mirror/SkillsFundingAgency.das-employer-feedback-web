@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-
 namespace SFA.DAS.EmployerFeedback.Infrastructure.Api.OuterApi
 {
     public interface IEmployerFeedbackOuterApi
@@ -21,9 +20,6 @@ namespace SFA.DAS.EmployerFeedback.Infrastructure.Api.OuterApi
 
         [Get("/ping")]
         Task Ping();
-
-        [Get("/employerfeedback/healthcheck")]
-        Task<string> HealthCheck();
 
         [Get("/accountusers/{userId}/accounts")]
         Task<UserAccountsDetails> GetUserAccounts([Path] string userId, [Query] string email);

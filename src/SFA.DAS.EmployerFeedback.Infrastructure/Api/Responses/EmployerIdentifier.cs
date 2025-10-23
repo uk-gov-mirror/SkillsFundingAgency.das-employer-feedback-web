@@ -1,10 +1,8 @@
 using Newtonsoft.Json;
 using SFA.DAS.GovUK.Auth.Employer;
-using System.Diagnostics.CodeAnalysis;
 
 namespace SFA.DAS.EmployerFeedback.Infrastructure.Api.Responses
 {
-    [ExcludeFromCodeCoverage]
     public class EmployerIdentifier
     {
         [JsonProperty("encodedAccountId")]

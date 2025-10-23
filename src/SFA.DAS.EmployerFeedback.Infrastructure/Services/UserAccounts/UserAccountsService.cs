@@ -43,7 +43,7 @@ namespace SFA.DAS.EmployerFeedback.Infrastructure.Services.UserAccounts
             }
             catch (ApiException ex)
             {
-                _logger.LogError(ex, $"Unable to get user accounts for userId:{userId} and email:{email}");
+                _logger.LogError(ex, "Unable to get user accounts for userId:{UserId} and email:{Email}", userId, email);
                 return new EmployerUserAccounts();
             }
         }
