@@ -1,10 +1,12 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Logging;
 using SFA.DAS.EmployerFeedback.Application.Queries.GetAllQuestionAttributes;
+using SFA.DAS.EmployerFeedback.Domain.Types;
 using SFA.DAS.EmployerFeedback.Infrastructure.Services.UserService;
 using SFA.DAS.EmployerFeedback.Services;
 using SFA.DAS.EmployerFeedback.Web.Controllers;
@@ -72,14 +74,14 @@ namespace SFA.DAS.EmployerFeedback.Web.Orchestrators
             });
         }
 
-        public async Task SetProviders(ProviderSearchViewModel viewModel)
+        public async Task SetProviders(List<ProviderSearchViewModel.EmployerTrainingProvider> providers)
         {
-            await _sessionService.SetProviders(GetUserId(), viewModel.Providers.Items);
+            await _sessionService.SetProviders(GetUserId(), providers);
         }
 
-        public async Task SetFeedbackSource(ProviderSearchRequestModel model)
+        public async Task SetFeedbackSource(FeedbackSource feedbackSource)
         {
-            await _sessionService.SetFeedbackSource(GetUserId(), model.FeedbackSource);
+            await _sessionService.SetFeedbackSource(GetUserId(), feedbackSource);
         }
 
         public async Task UpdateProviderSearchFilters(ProviderSearchViewModel viewModel)
@@ -97,12 +99,12 @@ namespace SFA.DAS.EmployerFeedback.Web.Orchestrators
             await _sessionService.SetPagingState(GetUserId(), new PagingState());
         }
 
-        public async Task SortProviderSearch(ProviderSearchSortRequestModel model)
+        public async Task SortProviderSearch(SortColumn sortColumn, SortOrder sortOrder)
         {
             await _sessionService.UpdatePagingState(GetUserId(), (PagingState pagingState) =>
             {
-                pagingState.SortColumn = model.SortColumn;
-                pagingState.SortOrder = model.SortOrder;
+                pagingState.SortColumn = sortColumn;
+                pagingState.SortOrder = sortOrder;
             });
         }
 
@@ -134,7 +136,7 @@ namespace SFA.DAS.EmployerFeedback.Web.Orchestrators
             var questionAttributes = await _mediator.Send(new GetAllQuestionAttributesQuery());
             if (questionAttributes == null)
             {
-                throw new EmployerFeedbackException("Unable to load Provider Attributes from the database.");
+                throw new EmployerFeedbackException("Unable to load question attributes");
             }
 
             var providerAttributes = questionAttributes.Select(s => new ProviderAttributeModel { AttributeId = s.AttributeId, Name = s.AttributeName }).ToList();

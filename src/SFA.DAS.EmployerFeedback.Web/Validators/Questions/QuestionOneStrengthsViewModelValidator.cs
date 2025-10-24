@@ -28,8 +28,8 @@ namespace SFA.DAS.EmployerFeedback.Web.Validators.Questions
                     context.AddFailure($"Attributes", $"Choose up to 3 options");
 
                     // add individual errors to ensure that array elements are not discarded from AttemptedValues
-                    var strengths = model.Attributes.Select((a, i) => new { a, i }).Where(x => x.a.Bad).ToList();
-                    strengths.ForEach((bad) => { context.AddFailure($"Attributes[{bad.i}].Bad", $"Choose up to 3 options"); });
+                    var strengths = model.Attributes.Select((a, i) => new { a, i }).Where(x => x.a.Good).ToList();
+                    strengths.ForEach((good) => { context.AddFailure($"Attributes[{good.i}].Good", $"Choose up to 3 options"); });
                 }
             });
         }

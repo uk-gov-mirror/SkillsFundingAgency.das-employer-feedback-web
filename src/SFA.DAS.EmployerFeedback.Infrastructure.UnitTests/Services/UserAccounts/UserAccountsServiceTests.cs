@@ -77,8 +77,6 @@ namespace SFA.DAS.EmployerFeedback.Infrastructure.UnitTests.Services.UserAccount
             UserAccountsService userAccountsService)
         {
             // Arrange
-            var userAccountsResponse = new UserAccountsDetailsResponse();
-
             outerApiMock.Setup(p => p.GetUserAccounts(userId, email))
                 .Throws(new ApiException(new HttpRequestMessage(), new HttpResponseMessage(), string.Empty));
 

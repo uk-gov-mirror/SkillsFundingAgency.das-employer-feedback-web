@@ -15,7 +15,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using EmployerClaims = SFA.DAS.EmployerFeedback.Infrastructure.Configuration.EmployerClaims;
 
-namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Services
+namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Services.EmployerRoleAuthorization
 {
     public class EmployerRoleAuthorizationServiceTests
     {

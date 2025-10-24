@@ -40,11 +40,11 @@ namespace SFA.DAS.EmployerFeedback.Web.Controllers
         [Route("providers", Name = ProviderSearchGet)]
         public async Task<IActionResult> ProviderSearch(ProviderSearchRequestModel model)
         {
-            await _providerOrchestrator.SetFeedbackSource(model);
+            await _providerOrchestrator.SetFeedbackSource(model.FeedbackSource);
             await _providerOrchestrator.SetProviderSearchPageIndex(model.PageIndex);
 
             var viewModel = await _providerOrchestrator.GetProviderSearchViewModel(model);
-            await _providerOrchestrator.SetProviders(viewModel);
+            await _providerOrchestrator.SetProviders(viewModel.Providers.Items);
             
             return View(viewModel);
         }
@@ -61,7 +61,7 @@ namespace SFA.DAS.EmployerFeedback.Web.Controllers
         [Route("providers/sort", Name = SortProvidersGet)]
         public async Task<IActionResult> SortProviders(ProviderSearchSortRequestModel model)
         {
-            await _providerOrchestrator.SortProviderSearch(model);
+            await _providerOrchestrator.SortProviderSearch(model.SortColumn, model.SortOrder);
             return RedirectToRoute(ProviderSearchGet, new { model.EncodedAccountId, model.SortColumn, model.SortOrder });
         }
 

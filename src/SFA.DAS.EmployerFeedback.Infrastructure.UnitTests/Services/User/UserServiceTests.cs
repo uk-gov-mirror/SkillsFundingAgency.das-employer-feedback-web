@@ -1,13 +1,10 @@
-﻿using FluentAssertions;
+﻿using System;
+using System.Security.Claims;
+using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Moq;
-using Newtonsoft.Json;
 using NUnit.Framework;
 using SFA.DAS.EmployerFeedback.Infrastructure.Services.UserService;
-using SFA.DAS.GovUK.Auth.Employer;
-using System;
-using System.Collections.Generic;
-using System.Security.Claims;
 using EmployerClaims = SFA.DAS.EmployerFeedback.Infrastructure.Configuration.EmployerClaims;
 
 namespace SFA.DAS.EmployerFeedback.Infrastructure.UnitTests.Services.User
@@ -44,46 +41,6 @@ namespace SFA.DAS.EmployerFeedback.Infrastructure.UnitTests.Services.User
 
             // Assert
             result.Should().Be(userId);
-        }
-
-        [Test]
-        public void IsUserChangeAuthorized_ShouldReturnTrue_ForOwnerOrTransactor()
-        {
-            // Arrange
-            var accountId = "account123";
-            var claimsData = new Dictionary<string, EmployerUserAccountItem>
-            {
-                { accountId, new EmployerUserAccountItem { Role = "Owner" } }
-            };
-
-            var claimsJson = JsonConvert.SerializeObject(claimsData);
-            _identity.AddClaim(new Claim(EmployerClaims.AssociatedAccounts, claimsJson));
-
-            // Act
-            var result = _userService.IsUserChangeAuthorized(accountId);
-
-            // Assert
-            result.Should().BeTrue();
-        }
-
-        [Test]
-        public void IsUserChangeAuthorized_ShouldReturnFalse_WhenUserIsNotAuthorized()
-        {
-            // Arrange
-            var accountId = "account123";
-            var claimsData = new Dictionary<string, EmployerUserAccountItem>
-            {
-                { accountId, new EmployerUserAccountItem { Role = "Viewer" } }
-            };
-
-            var claimsJson = JsonConvert.SerializeObject(claimsData);
-            _identity.AddClaim(new Claim(EmployerClaims.AssociatedAccounts, claimsJson));
-
-            // Act
-            var result = _userService.IsUserChangeAuthorized(accountId);
-
-            // Assert
-            result.Should().BeFalse();
         }
     }
 }

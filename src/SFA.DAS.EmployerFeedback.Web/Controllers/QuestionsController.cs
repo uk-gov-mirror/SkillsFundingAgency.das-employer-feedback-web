@@ -43,13 +43,15 @@ namespace SFA.DAS.EmployerFeedback.Web.Controllers
             return View(await _questionsOrchestrator.GetStartFeedbackViewModel(model));
         }
 
-        [HttpGet("question-one", Name = QuestionOneGet)]
+        [HttpGet]
+        [Route("question-one", Name = QuestionOneGet)]
         public async Task<IActionResult> QuestionOne(QuestionRequestModel model)
         {
             return View(await _questionsOrchestrator.GetQuestionOneStrengthsViewModel(model));
         }
 
-        [HttpPost("question-one", Name = QuestionOnePost)]
+        [HttpPost]
+        [Route("question-one", Name = QuestionOnePost)]
         public async Task<IActionResult> QuestionOne(QuestionOneStrengthsViewModel viewModel)
         {
             if (!await _questionsOrchestrator.ValidateQuestionOneStrengthsViewModel(viewModel, ModelState))
@@ -67,13 +69,15 @@ namespace SFA.DAS.EmployerFeedback.Web.Controllers
             return RedirectToRoute(QuestionTwoGet, new { encodedAccountId = viewModel.EncodedAccountId });
         }
 
-        [HttpGet("question-two", Name = QuestionTwoGet)]
+        [HttpGet]
+        [Route("question-two", Name = QuestionTwoGet)]
         public async Task<IActionResult> QuestionTwo(QuestionRequestModel model)
         {
             return View(await _questionsOrchestrator.GetQuestionTwoWeaknessesViewModel(model));
         }
 
-        [HttpPost("question-two", Name = QuestionTwoPost)]
+        [HttpPost]
+        [Route("question-two", Name = QuestionTwoPost)]
         public async Task<IActionResult> QuestionTwo(QuestionTwoWeaknessesViewModel viewModel)
         {
             if (!await _questionsOrchestrator.ValidateQuestionTwoWeaknessesViewModel(viewModel, ModelState))
@@ -91,13 +95,15 @@ namespace SFA.DAS.EmployerFeedback.Web.Controllers
             return RedirectToRoute(QuestionThreeGet, new { encodedAccountId = viewModel.EncodedAccountId });
         }
 
-        [HttpGet("question-three", Name = QuestionThreeGet)]
+        [HttpGet]
+        [Route("question-three", Name = QuestionThreeGet)]
         public async Task<IActionResult> QuestionThree(QuestionRequestModel model)
         {
             return View(await _questionsOrchestrator.GetQuestionThreeRatingViewModel(model));
         }
 
-        [HttpPost("question-three", Name = QuestionThreePost)]
+        [HttpPost]
+        [Route("question-three", Name = QuestionThreePost)]
         public async Task<IActionResult> QuestionThree(QuestionThreeRatingViewModel viewModel)
         {
             if (!await _questionsOrchestrator.ValidateQuestionThreeRatingViewModel(viewModel, ModelState))

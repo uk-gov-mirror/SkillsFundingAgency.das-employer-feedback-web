@@ -16,7 +16,7 @@ using SFA.DAS.EmployerFeedback.Web.Controllers;
 using SFA.DAS.EmployerFeedback.Web.Models.Shared;
 using SFA.DAS.EmployerFeedback.Web.Services.SessionStorage;
 
-namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Filters
+namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Infrastructure
 {
     [TestFixture]
     public class EnsureSessionExistsAttributeTests
