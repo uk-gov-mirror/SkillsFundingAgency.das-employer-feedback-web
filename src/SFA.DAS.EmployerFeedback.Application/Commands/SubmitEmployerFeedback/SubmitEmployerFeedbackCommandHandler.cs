@@ -32,7 +32,7 @@ namespace SFA.DAS.EmployerFeedback.Application.Commands.SubmitEmployerRequest
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Failed to submit feedback");
+                _logger.LogError(ex, "Error occurred when submitting feedback");
                 return false;
             }
 

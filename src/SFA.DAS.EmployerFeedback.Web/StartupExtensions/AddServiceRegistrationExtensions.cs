@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
 using RestEase.HttpClientFactory;
+using SFA.DAS.EmployerFeedback.Application.Commands.SubmitEmployerRequest;
 using SFA.DAS.EmployerFeedback.Infrastructure.Api.OuterApi;
 using SFA.DAS.EmployerFeedback.Infrastructure.Configuration;
 using SFA.DAS.EmployerFeedback.Infrastructure.Services.CacheStorage;
@@ -25,6 +26,8 @@ namespace SFA.DAS.EmployerFeedback.Web.StartupExtensions
     {
         public static IServiceCollection AddServiceRegistrations(this IServiceCollection services)
         {
+            services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(SubmitEmployerFeedbackCommand).Assembly));
+
             services.AddSingleton<IAuthorizationHandler, OwnerRoleAuthorizationHandler>();
             services.AddSingleton<IAuthorizationHandler, TransactorRoleAuthorizationHandler>();
             services.AddSingleton<IAuthorizationHandler, ViewerRoleAuthorizationHandler>();
