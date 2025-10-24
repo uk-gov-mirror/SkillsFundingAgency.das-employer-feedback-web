@@ -51,7 +51,7 @@ namespace SFA.DAS.EmployerFeedback.Web.Controllers
                 return RedirectToRoute(FeedbackAlreadySubmittedGet, new { encodedAccountId = viewModel.EncodedAccountId });
             }
             
-            if(!await _reviewAnswersOrchestrator.SubmitFeedback(ModelState))
+            if(!await _reviewAnswersOrchestrator.SubmitEmployerFeedback(ModelState))
             {
                 return RedirectToRoute(ReviewAnswersGet, new { encodedAccountId = viewModel.EncodedAccountId });
             }

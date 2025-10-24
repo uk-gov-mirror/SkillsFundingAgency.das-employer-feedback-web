@@ -5,6 +5,7 @@ namespace SFA.DAS.EmployerFeedback.Web.Models.Questions
     [Serializable]
     public class ProviderAttributeModel
     {
+        public long AttributeId { get; set; }
         public string Name { get; set; }
         public bool Good { get; set; }
         public bool Bad { get; set; }

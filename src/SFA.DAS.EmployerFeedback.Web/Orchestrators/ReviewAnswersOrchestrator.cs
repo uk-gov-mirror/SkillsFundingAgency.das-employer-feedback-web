@@ -1,9 +1,14 @@
-﻿using System.Threading.Tasks;
+﻿using System.Linq;
+using System.Threading.Tasks;
+using MediatR;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Logging;
+using SFA.DAS.EmployerFeedback.Application.Commands.SubmitEmployerRequest;
+using SFA.DAS.EmployerFeedback.Domain.Entities.Models;
 using SFA.DAS.EmployerFeedback.Infrastructure.Configuration;
 using SFA.DAS.EmployerFeedback.Infrastructure.Services.UserService;
 using SFA.DAS.EmployerFeedback.Services;
+using SFA.DAS.EmployerFeedback.Web.Extensions;
 using SFA.DAS.EmployerFeedback.Web.Models.ReviewAnswers;
 using SFA.DAS.EmployerFeedback.Web.Models.ReviewAnswers.ReviewAnswers;
 using SFA.DAS.EmployerFeedback.Web.Models.Shared;
@@ -17,6 +22,7 @@ namespace SFA.DAS.EmployerFeedback.Web.Orchestrators
         private readonly ISessionStorageService _sessionService;
         private readonly ITrainingProviderService _trainingProviderService;
         private readonly IAccountsLinkService _accountsLinkService;
+        private readonly IMediator _mediator;
         private readonly EmployerFeedbackWebConfiguration _config;
 
         public ReviewAnswersOrchestrator(IUserService userService,
@@ -24,12 +30,14 @@ namespace SFA.DAS.EmployerFeedback.Web.Orchestrators
             ISessionStorageService sessionService,
             ITrainingProviderService trainingProviderService,
             IAccountsLinkService accountsLinkService,
+            IMediator mediator,
             EmployerFeedbackWebConfiguration config)
             : base(logger, userService)
         {
             _sessionService = sessionService;
             _trainingProviderService = trainingProviderService;
             _accountsLinkService = accountsLinkService;
+            _mediator = mediator;
             _config = config;
         }
 
@@ -52,12 +60,27 @@ namespace SFA.DAS.EmployerFeedback.Web.Orchestrators
             return await _trainingProviderService.CanSubmitFeedback(surveyModel, userId);
         }
 
-        public async Task<bool> SubmitFeedback(ModelStateDictionary modelState)
+        public async Task<bool> SubmitEmployerFeedback(ModelStateDictionary modelState)
         {
             var userId = GetUserId();
             var surveyModel = await _sessionService.GetSurveyModel(userId);
 
-            if (!await _trainingProviderService.SubmitConfirmedEmployerFeedback(surveyModel))
+            var attributes = surveyModel.Attributes
+                    .Where(s => s.Good || s.Bad)
+                    .Select(p => new ProviderAttribute { AttributeId = p.AttributeId, AttributeValue = p.Score })
+                    .ToList();
+
+            var feedbackSubmitted = await _mediator.Send(new SubmitEmployerFeedbackCommand
+            {
+                Ukprn = surveyModel.Ukprn,
+                AccountId = surveyModel.AccountId,
+                Rating = surveyModel.Rating.GetDisplayName(),
+                FeedbackSource = surveyModel.FeedbackSource,
+                Attributes = attributes,
+                UserRef = surveyModel.UserRef
+            });
+
+            if (!feedbackSubmitted)
             {
                 modelState.AddModelError(nameof(ReviewAnswersViewModel.Survey), "We couldn't submit your feedback right now. You can try again in a moment.");
                 return false;

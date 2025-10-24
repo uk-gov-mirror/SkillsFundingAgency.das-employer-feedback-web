@@ -8,7 +8,6 @@ namespace SFA.DAS.EmployerFeedback.Services
     public interface ITrainingProviderService
     {
         Task<ProviderSearchViewModel> GetTrainingProviderSearchViewModel(long accountId, string encodedAccountId, Guid userRef, string selectedProviderName, string selectedFeedbackStatus, int pageSize, int pageIndex, SortColumn sortColumn, SortOrder sortOrder);
-        Task<bool> SubmitConfirmedEmployerFeedback(SurveyModel surveyModel);
         Task<bool> CanSubmitFeedback(SurveyModel surveyModel, Guid userId);
     }
 }

@@ -139,7 +139,7 @@ namespace SFA.DAS.EmployerFeedback.Web.Orchestrators
                 throw new EmployerFeedbackException("Unable to load Provider Attributes from the database.");
             }
 
-            var providerAttributesModel = providerAttributes.Select(s => new ProviderAttributeModel { Name = s.AttributeName }).ToList();
+            var providerAttributesModel = providerAttributes.Select(s => new ProviderAttributeModel { AttributeId = s.AttributeId, Name = s.AttributeName }).ToList();
             var userId = GetUserId();
             var feedbackSource = await _sessionService.GetFeedbackSource(userId);
 

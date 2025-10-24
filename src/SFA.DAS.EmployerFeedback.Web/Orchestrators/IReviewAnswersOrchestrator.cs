@@ -10,7 +10,7 @@ namespace SFA.DAS.EmployerFeedback.Web.Orchestrators
     {
         Task<ReviewAnswersViewModel> GetReviewAnswersViewModel();
         Task<bool> CanSubmitFeedback();
-        Task<bool> SubmitFeedback(ModelStateDictionary modelState);
+        Task<bool> SubmitEmployerFeedback(ModelStateDictionary modelState);
         Task<FeedbackConfirmationViewModel> GetFeedbackConfirmationViewModel(AccountModel model);
         FeedbackAlreadySubmittedViewModel GetFeedbackAlreadySubmittedViewModel(AccountModel model);
     }

@@ -126,29 +126,6 @@ namespace SFA.DAS.EmployerFeedback.Services
             return CanSubmitFeedback(dateTimeCompleted);
         }
 
-        public async Task<bool> SubmitConfirmedEmployerFeedback(SurveyModel surveyModel)
-        {
-            try
-            {
-                await _employerFeedbackOuterApi.SubmitEmployerFeedback(new EmployerFeedbackResult
-                {
-                    Ukprn = surveyModel.Ukprn,
-                    AccountId = surveyModel.AccountId,
-                    ProviderRating = surveyModel.Rating.GetDisplayName(),
-                    FeedbackSource = surveyModel.FeedbackSource,
-                    ProviderAttributes = await ConvertSurveyToProviderAttributes(surveyModel),
-                    UserRef = surveyModel.UserRef
-                });
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Failed to submit feedback");
-                return false;
-            }
-
-            return true;
-        }
-
         private bool CanSubmitFeedback(DateTime? dateTimeCompleted)
         {
             if (!dateTimeCompleted.HasValue)
@@ -164,26 +141,7 @@ namespace SFA.DAS.EmployerFeedback.Services
             return true;
         }
 
-        private async Task<IEnumerable<ProviderAttribute>> ConvertSurveyToProviderAttributes(SurveyModel surveyModel)
-        {
-            var feedbackQuestionAttributes = await _employerFeedbackOuterApi.GetAllAttributes();
-            var providerAttributes = new List<ProviderAttribute>();
-
-            foreach (var attribute in surveyModel.Attributes.Where(s => s.Good || s.Bad))
-            {
-                var providerAttribute = feedbackQuestionAttributes.FirstOrDefault(s => s.AttributeName == attribute.Name);
-                if (providerAttribute != null)
-                {
-                    providerAttributes.Add(new ProviderAttribute
-                    {
-                        AttributeId = providerAttribute.AttributeId,
-                        AttributeValue = attribute.Score,
-                    });
-                }
-            }
-
-            return providerAttributes;
-        }
+        
 
         private static IQueryable<ProviderSearchViewModel.EmployerTrainingProvider> ApplyProviderNameFilter(IQueryable<ProviderSearchViewModel.EmployerTrainingProvider> providers, string providerName)
         {
