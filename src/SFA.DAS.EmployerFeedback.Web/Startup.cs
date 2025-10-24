@@ -1,8 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
-using System.Threading.Tasks;
 using FluentValidation;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -14,7 +12,6 @@ using Microsoft.Extensions.Hosting;
 using SFA.DAS.Employer.Shared.UI;
 using SFA.DAS.EmployerFeedback.Infrastructure.Configuration;
 using SFA.DAS.EmployerFeedback.Web.Attributes;
-using SFA.DAS.EmployerFeedback.Web.Controllers;
 using SFA.DAS.EmployerFeedback.Web.Filters;
 using SFA.DAS.EmployerFeedback.Web.ModelBinders;
 using SFA.DAS.EmployerFeedback.Web.StartupExtensions;

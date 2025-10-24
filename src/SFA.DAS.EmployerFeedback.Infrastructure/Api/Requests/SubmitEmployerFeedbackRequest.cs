@@ -1,10 +1,11 @@
 ﻿using SFA.DAS.EmployerFeedback.Domain.Types;
+using SFA.DAS.EmployerFeedback.Infrastructure.Api.Types;
 using System;
 using System.Collections.Generic;
 
-namespace SFA.DAS.EmployerFeedback.Domain.Entities.Models
+namespace SFA.DAS.EmployerFeedback.Infrastructure.Api.Requests
 {
-    public class EmployerFeedbackResult
+    public class SubmitEmployerFeedbackRequest
     {
         public Guid UserRef { get; set; }
         public long AccountId { get; set; }

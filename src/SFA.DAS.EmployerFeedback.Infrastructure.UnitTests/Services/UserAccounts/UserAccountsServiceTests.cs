@@ -5,6 +5,7 @@ using NUnit.Framework;
 using RestEase;
 using SFA.DAS.EmployerFeedback.Infrastructure.Api.OuterApi;
 using SFA.DAS.EmployerFeedback.Infrastructure.Api.Responses;
+using SFA.DAS.EmployerFeedback.Infrastructure.Api.Types;
 using SFA.DAS.EmployerFeedback.Infrastructure.Services.UserAccounts;
 using SFA.DAS.GovUK.Auth.Employer;
 using SFA.DAS.Testing.AutoFixture;
@@ -26,7 +27,7 @@ namespace SFA.DAS.EmployerFeedback.Infrastructure.UnitTests.Services.UserAccount
             UserAccountsService userAccountsService)
         {
             // Arrange
-            var userAccountsResponse = new UserAccountsDetails
+            var userAccountsResponse = new UserAccountsDetailsResponse
             {
                 EmployerUserId = userId,
                 FirstName = "First",
@@ -76,7 +77,7 @@ namespace SFA.DAS.EmployerFeedback.Infrastructure.UnitTests.Services.UserAccount
             UserAccountsService userAccountsService)
         {
             // Arrange
-            var userAccountsResponse = new UserAccountsDetails();
+            var userAccountsResponse = new UserAccountsDetailsResponse();
 
             outerApiMock.Setup(p => p.GetUserAccounts(userId, email))
                 .Throws(new ApiException(new HttpRequestMessage(), new HttpResponseMessage(), string.Empty));

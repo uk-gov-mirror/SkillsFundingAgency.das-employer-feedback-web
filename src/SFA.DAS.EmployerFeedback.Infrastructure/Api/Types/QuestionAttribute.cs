@@ -1,6 +1,6 @@
-﻿namespace SFA.DAS.EmployerFeedback.Domain.Entities.Models
+﻿namespace SFA.DAS.EmployerFeedback.Infrastructure.Api.Types
 {
-    public class FeedbackQuestionAttribute
+    public class QuestionAttribute
     {
         public long AttributeId { get; set; }
         public string AttributeName { get; set; }

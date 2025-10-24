@@ -1,4 +1,4 @@
-﻿namespace SFA.DAS.EmployerFeedback.Domain.Entities.Models
+﻿namespace SFA.DAS.EmployerFeedback.Infrastructure.Api.Types
 {
     public class ProviderAttribute
     {

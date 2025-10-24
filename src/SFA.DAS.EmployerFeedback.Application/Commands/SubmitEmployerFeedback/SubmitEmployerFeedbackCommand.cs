@@ -1,6 +1,6 @@
 ﻿using MediatR;
-using SFA.DAS.EmployerFeedback.Domain.Entities.Models;
 using SFA.DAS.EmployerFeedback.Domain.Types;
+using SFA.DAS.EmployerFeedback.Infrastructure.Api.Types;
 
 namespace SFA.DAS.EmployerFeedback.Application.Commands.SubmitEmployerRequest
 {

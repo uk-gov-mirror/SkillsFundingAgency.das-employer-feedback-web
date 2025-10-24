@@ -5,7 +5,6 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
 using SFA.DAS.EmployerFeedback.Web.Controllers;
-using System.Threading.Tasks;
 
 namespace SFA.DAS.EmployerFeedback.Web.UnitTests.EmployerProvideFeedback.Controllers
 {

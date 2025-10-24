@@ -4,7 +4,7 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Logging;
 using SFA.DAS.EmployerFeedback.Application.Commands.SubmitEmployerRequest;
-using SFA.DAS.EmployerFeedback.Domain.Entities.Models;
+using SFA.DAS.EmployerFeedback.Infrastructure.Api.Types;
 using SFA.DAS.EmployerFeedback.Infrastructure.Configuration;
 using SFA.DAS.EmployerFeedback.Infrastructure.Services.UserService;
 using SFA.DAS.EmployerFeedback.Services;

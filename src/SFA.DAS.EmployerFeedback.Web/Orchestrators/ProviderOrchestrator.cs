@@ -1,10 +1,9 @@
 ﻿using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
 using FluentValidation;
+using MediatR;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Logging;
-using SFA.DAS.EmployerFeedback.Infrastructure.Api.OuterApi;
 using SFA.DAS.EmployerFeedback.Infrastructure.Services.UserService;
 using SFA.DAS.EmployerFeedback.Services;
 using SFA.DAS.EmployerFeedback.Web.Controllers;
@@ -15,8 +14,6 @@ using SFA.DAS.EmployerFeedback.Web.Models.Shared;
 using SFA.DAS.EmployerFeedback.Web.Paging;
 using SFA.DAS.EmployerFeedback.Web.Services;
 using SFA.DAS.EmployerFeedback.Web.Services.SessionStorage;
-using SFA.DAS.EmployerFeedback.Web.Validators.Questions;
-using static Microsoft.ApplicationInsights.MetricDimensionNames.TelemetryContext;
 
 namespace SFA.DAS.EmployerFeedback.Web.Orchestrators
 {
@@ -24,7 +21,7 @@ namespace SFA.DAS.EmployerFeedback.Web.Orchestrators
     {
         private readonly ISessionStorageService _sessionService;
         private readonly ITrainingProviderService _trainingProviderService;
-        private readonly IEmployerFeedbackOuterApi _employerFeedbackOuterApi;
+        private readonly IMediator _mediator;
         private readonly IAccountsLinkService _accountsLinkService;
         private readonly IValidator<ProviderConfirmViewModel> _providerConfirmViewModelValidator;
 
@@ -32,14 +29,14 @@ namespace SFA.DAS.EmployerFeedback.Web.Orchestrators
             IUserService userService,
             ILogger<ProviderOrchestrator> logger,
             ITrainingProviderService trainingProviderService,
-            IEmployerFeedbackOuterApi employerFeedbackOuterApi,
+            IMediator mediator,
             IAccountsLinkService accountsLinkService,
             IValidator<ProviderConfirmViewModel> providerConfirmViewModelValidator)
             : base(logger, userService)
         {
             _sessionService = sessionService;
             _trainingProviderService = trainingProviderService;
-            _employerFeedbackOuterApi = employerFeedbackOuterApi;
+            _mediator = mediator;
             _accountsLinkService = accountsLinkService;
             _providerConfirmViewModelValidator = providerConfirmViewModelValidator;
         }
@@ -133,13 +130,13 @@ namespace SFA.DAS.EmployerFeedback.Web.Orchestrators
 
         public async Task CreateNewSurvey(ProviderConfirmViewModel viewModel)
         {
-            var providerAttributes = await _employerFeedbackOuterApi.GetAllAttributes();
-            if (providerAttributes == null)
+            var questionAttributes = await _mediator.Send(new GetAllQuestionAttributesQuery());
+            if (questionAttributes == null)
             {
                 throw new EmployerFeedbackException("Unable to load Provider Attributes from the database.");
             }
 
-            var providerAttributesModel = providerAttributes.Select(s => new ProviderAttributeModel { AttributeId = s.AttributeId, Name = s.AttributeName }).ToList();
+            var providerAttributes = questionAttributes.Select(s => new ProviderAttributeModel { AttributeId = s.AttributeId, Name = s.AttributeName }).ToList();
             var userId = GetUserId();
             var feedbackSource = await _sessionService.GetFeedbackSource(userId);
 
@@ -150,7 +147,7 @@ namespace SFA.DAS.EmployerFeedback.Web.Orchestrators
                 Ukprn = viewModel.ProviderId,
                 UserRef = userId,
                 ProviderName = viewModel.ProviderName,
-                Attributes = providerAttributesModel,
+                Attributes = providerAttributes,
                 FeedbackSource = feedbackSource
             };
 

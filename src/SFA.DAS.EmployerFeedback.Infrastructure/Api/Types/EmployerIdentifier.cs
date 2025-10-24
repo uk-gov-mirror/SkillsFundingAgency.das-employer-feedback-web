@@ -1,7 +1,7 @@
 using Newtonsoft.Json;
 using SFA.DAS.GovUK.Auth.Employer;
 
-namespace SFA.DAS.EmployerFeedback.Infrastructure.Api.Responses
+namespace SFA.DAS.EmployerFeedback.Infrastructure.Api.Types
 {
     public class EmployerIdentifier
     {

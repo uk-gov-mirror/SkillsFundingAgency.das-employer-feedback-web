@@ -9,7 +9,6 @@ using SFA.DAS.EmployerFeedback.Web.Authorization;
 using SFA.DAS.EmployerFeedback.Web.Models.Provider;
 using SFA.DAS.EmployerFeedback.Web.Models.Shared;
 using SFA.DAS.EmployerFeedback.Web.Orchestrators;
-using SFA.DAS.EmployerFeedback.Web.Paging;
 
 namespace SFA.DAS.EmployerFeedback.Web.Controllers
 {

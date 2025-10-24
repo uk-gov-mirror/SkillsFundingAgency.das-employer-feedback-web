@@ -4,11 +4,9 @@ using FluentValidation;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Logging;
 using SFA.DAS.EmployerFeedback.Infrastructure.Services.UserService;
-using SFA.DAS.EmployerFeedback.Web.Controllers;
 using SFA.DAS.EmployerFeedback.Web.Models.Questions;
 using SFA.DAS.EmployerFeedback.Web.Models.Shared;
 using SFA.DAS.EmployerFeedback.Web.Services.SessionStorage;
-using SFA.DAS.EmployerFeedback.Web.Validators.Questions;
 
 namespace SFA.DAS.EmployerFeedback.Web.Orchestrators
 {

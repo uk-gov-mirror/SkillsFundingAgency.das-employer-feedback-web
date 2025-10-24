@@ -1,17 +1,4 @@
-﻿using Castle.Core.Logging;
-using FluentAssertions;
-using Moq;
-using NUnit.Framework;
-using SFA.DAS.EmployerFeedback.Domain.Entities.Models;
-using SFA.DAS.EmployerFeedback.Infrastructure.Api.OuterApi;
-using SFA.DAS.EmployerFeedback.Infrastructure.Configuration;
-using SFA.DAS.EmployerFeedback.Services;
-using SFA.DAS.Encoding;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace UnitTests.Services
+﻿namespace UnitTests.Services
 {
     public class TrainingProviderServiceTests
     {

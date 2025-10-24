@@ -1,6 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
-
-namespace SFA.DAS.EmployerFeedback.Web.Configuration.Routing
+﻿namespace SFA.DAS.EmployerFeedback.Web.Configuration.Routing
 {
     public static class RouteValueKeys
     {

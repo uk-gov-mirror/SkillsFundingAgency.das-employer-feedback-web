@@ -15,6 +15,9 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SFA.DAS.EmployerFeedback.Infrastructure", "SFA.DAS.EmployerFeedback.Infrastructure\SFA.DAS.EmployerFeedback.Infrastructure.csproj", "{E1486581-824F-4663-8F37-F9FFF5ECD25A}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{10964E4C-0272-40E1-B51D-7992745D9A45}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SFA.DAS.EmployerFeedback.Web.UnitTests", "SFA.DAS.EmployerFeedback.Web.UnitTests\SFA.DAS.EmployerFeedback.Web.UnitTests.csproj", "{148191FB-3414-4EA1-8D1A-20B7E30FB413}"
 EndProject

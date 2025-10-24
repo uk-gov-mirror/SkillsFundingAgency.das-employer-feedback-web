@@ -2,30 +2,25 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
-using SFA.DAS.EmployerFeedback.Domain.Entities.Models;
+using MediatR;
+using SFA.DAS.EmployerFeedback.Application.Queries.GetTrainingProviderSearch;
 using SFA.DAS.EmployerFeedback.Domain.Types;
-using SFA.DAS.EmployerFeedback.Infrastructure.Api.OuterApi;
 using SFA.DAS.EmployerFeedback.Infrastructure.Configuration;
 using SFA.DAS.EmployerFeedback.Paging;
-using SFA.DAS.EmployerFeedback.Web.Extensions;
 using SFA.DAS.EmployerFeedback.Web.Models.Shared;
-using SFA.DAS.EmployerFeedback.Web.Paging;
 
 namespace SFA.DAS.EmployerFeedback.Services
 {
     public class TrainingProviderService : ITrainingProviderService
     {
-        private readonly IEmployerFeedbackOuterApi _employerFeedbackOuterApi;
-        private readonly ILogger<TrainingProviderService> _logger;
+        private readonly IMediator _mediator;
         private readonly EmployerFeedbackWebConfiguration _config;
 
         private const string NOT_YET_SUBMITTED = "Not yet submitted";
 
-        public TrainingProviderService(IEmployerFeedbackOuterApi employerFeedbackOuterApi, ILogger<TrainingProviderService> logger, EmployerFeedbackWebConfiguration config)
+        public TrainingProviderService(IMediator mediator, EmployerFeedbackWebConfiguration config)
         {
-            _employerFeedbackOuterApi = employerFeedbackOuterApi;
-            _logger = logger;
+            _mediator = mediator;
             _config = config;
         }
 
@@ -99,10 +94,10 @@ namespace SFA.DAS.EmployerFeedback.Services
             return model;
         }
         
-        private async Task<List<ProviderSearchViewModel.EmployerTrainingProvider>> SelectAllProvidersForAccount(long accountId, Guid userref)
+        private async Task<List<ProviderSearchViewModel.EmployerTrainingProvider>> SelectAllProvidersForAccount(long accountId, Guid userId)
         {
-            var apprenticeshipsResponse = await _employerFeedbackOuterApi.GetTrainingProviderSearch(accountId, userref);
-            var providers = apprenticeshipsResponse.Providers.GroupBy(p => p.Ukprn)
+            var response = await _mediator.Send(new GetTrainingProviderSearchQuery { AccountId = accountId, UserRef = userId });
+            var providers = response.Providers.GroupBy(p => p.Ukprn)
                 .Select(a => new ProviderSearchViewModel.EmployerTrainingProvider()
                 {
                     ProviderId = a.First().Ukprn,
@@ -118,8 +113,8 @@ namespace SFA.DAS.EmployerFeedback.Services
 
         public async Task<bool> CanSubmitFeedback(SurveyModel surveyModel, Guid userId)
         {
-            var trainingProviders = await _employerFeedbackOuterApi.GetTrainingProviderSearch(surveyModel.AccountId, userId);
-            var dateTimeCompleted = trainingProviders
+            var response = await _mediator.Send(new GetTrainingProviderSearchQuery { AccountId = surveyModel.AccountId, UserRef = userId });
+            var dateTimeCompleted = response
                 .Providers
                 .FirstOrDefault(x => x.Ukprn == surveyModel.Ukprn)?.Feedback?.DateTimeCompleted;
 
@@ -140,8 +135,6 @@ namespace SFA.DAS.EmployerFeedback.Services
 
             return true;
         }
-
-        
 
         private static IQueryable<ProviderSearchViewModel.EmployerTrainingProvider> ApplyProviderNameFilter(IQueryable<ProviderSearchViewModel.EmployerTrainingProvider> providers, string providerName)
         {

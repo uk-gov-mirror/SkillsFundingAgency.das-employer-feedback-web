@@ -1,8 +1,9 @@
 ﻿using System.Collections.Generic;
+using SFA.DAS.EmployerFeedback.Infrastructure.Api.Types;
 
-namespace SFA.DAS.EmployerFeedback.Domain.Entities.Models
+namespace SFA.DAS.EmployerFeedback.Infrastructure.Api.Responses
 {
-    public class GetProviderFeedback
+    public class TrainingProviderSearchResponse
     {
         public long AccountId { get; set; }
         public string AccountName { get; set; }

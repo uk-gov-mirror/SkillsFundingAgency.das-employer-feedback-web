@@ -1,9 +1,10 @@
 using System.Collections.Generic;
 using Newtonsoft.Json;
+using SFA.DAS.EmployerFeedback.Infrastructure.Api.Types;
 
 namespace SFA.DAS.EmployerFeedback.Infrastructure.Api.Responses
 {
-    public class UserAccountsDetails
+    public class UserAccountsDetailsResponse
     {
         [JsonProperty("isSuspended")]
         public bool IsSuspended { get; set; }

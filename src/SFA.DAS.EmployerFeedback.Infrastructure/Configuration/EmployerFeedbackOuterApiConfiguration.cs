@@ -1,5 +1,4 @@
 ﻿using SFA.DAS.Http.Configuration;
-using System.Diagnostics.CodeAnalysis;
 
 namespace SFA.DAS.EmployerFeedback.Infrastructure.Configuration
 {

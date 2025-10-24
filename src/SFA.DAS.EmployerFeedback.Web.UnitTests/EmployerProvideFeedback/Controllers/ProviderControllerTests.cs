@@ -7,8 +7,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
-using SFA.DAS.Employer.Shared.UI;
-using SFA.DAS.EmployerFeedback.Domain.Entities.Models;
 using SFA.DAS.EmployerFeedback.Domain.Types;
 using SFA.DAS.EmployerFeedback.Infrastructure.Api.OuterApi;
 using SFA.DAS.EmployerFeedback.Infrastructure.Services.UserService;
@@ -356,7 +354,7 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Controllers
                 Confirmed = true
             };
 
-            _outerApi.Setup(o => o.GetAllAttributes()).ReturnsAsync((IEnumerable<FeedbackQuestionAttribute>)null);
+            _outerApi.Setup(o => o.GetAllQuestionAttributes()).ReturnsAsync((IEnumerable<QuestionAttribute>)null);
 
             // Act
             var result = await _sut.ProviderConfirm(vm) as RedirectToRouteResult;
@@ -381,10 +379,10 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Controllers
 
             var attributes = new[]
             {
-                new FeedbackQuestionAttribute { AttributeName = "Comm" },
-                new FeedbackQuestionAttribute { AttributeName = "Quality" }
+                new QuestionAttribute { AttributeName = "Comm" },
+                new QuestionAttribute { AttributeName = "Quality" }
             };
-            _outerApi.Setup(o => o.GetAllAttributes()).ReturnsAsync(attributes);
+            _outerApi.Setup(o => o.GetAllQuestionAttributes()).ReturnsAsync(attributes);
 
             _session.Setup(s => s.GetFeedbackSource(_userId)).ReturnsAsync(FeedbackSource.AdHoc);
 
