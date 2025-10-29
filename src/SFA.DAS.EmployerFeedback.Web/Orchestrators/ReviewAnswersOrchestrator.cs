@@ -74,7 +74,7 @@ namespace SFA.DAS.EmployerFeedback.Web.Orchestrators
             {
                 Ukprn = surveyModel.Ukprn,
                 AccountId = surveyModel.AccountId,
-                Rating = surveyModel.Rating.GetDisplayName(),
+                Rating = surveyModel.Rating.ToString(),
                 FeedbackSource = surveyModel.FeedbackSource,
                 Attributes = attributes,
                 UserRef = surveyModel.UserRef
