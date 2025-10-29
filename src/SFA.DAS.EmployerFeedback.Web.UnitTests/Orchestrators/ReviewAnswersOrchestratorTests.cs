@@ -163,7 +163,7 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Orchestrators
                     c.UserRef == _userId &&
                     c.FeedbackSource == FeedbackSource.AdHoc &&
                     c.Attributes.Count == 2 &&
-                    c.Rating == survey.Rating.GetDisplayName()),
+                    c.Rating == survey.Rating.ToString()),
                 It.IsAny<CancellationToken>()), Times.Once);
             modelState.Should().BeEmpty();
         }
