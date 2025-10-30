@@ -1,12 +1,14 @@
 ﻿@using Microsoft.Extensions.Options;
 @using SFA.DAS.Employer.Shared.UI.Models
+@using SFA.DAS.EmployerFeedback.Web.ViewDataKeys
 @{
-    var _isErrorPage = ViewContext.View.Path.Contains("Error");
-
     var accountId = ViewContext.RouteData.Values[RouteValueKeys.EncodedAccountId] as string;
     ViewBag.HideHeaderBorder = true;
+    var cookieBannerModel = new CookieBannerModel { AccountId = accountId };
     var footerModel = new FooterModel { AccountId = accountId, UsePrivacyV2 = true };
 
+    var hideHeader = (bool)ViewData[ViewDataKeys.HideAccountNavigation];
+    var hideNavigationLinks = !(bool)ViewData[ViewDataKeys.ShowNav];
     var zendeskSectionId = Config.ZendeskSectionId;
 }
 
@@ -41,12 +43,13 @@
 
     <a href="#main-content" class="govuk-skip-link">Skip to main content</a>
 
-    <partial name="_CookieBanner" />
+    <partial name="_CookieBanner" model="@cookieBannerModel"/>
 
     <partial name="_Header" />
-    @if (accountId != null)
+    @if ((accountId != null && !hideHeader) || (!hideHeader && hideNavigationLinks))
     {
-    <partial name="_Menu" model="@accountId" />}
+        <partial name="_Menu" model="@accountId" />
+    }
 
     <div class="govuk-phase-banner govuk-width-container">
         <p class="govuk-phase-banner__content">

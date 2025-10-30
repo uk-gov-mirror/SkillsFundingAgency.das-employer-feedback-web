@@ -1,13 +1,16 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Filters;
-using SFA.DAS.EmployerFeedback.Infrastructure.Configuration;
-using SFA.DAS.EmployerFeedback.Web.Models.Shared;
+﻿using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
+using SFA.DAS.EmployerFeedback.Infrastructure.Configuration;
+using SFA.DAS.EmployerFeedback.Web.Configuration.Routing;
+using SFA.DAS.EmployerFeedback.Web.Models.Shared;
 
 namespace SFA.DAS.EmployerFeedback.Web.Filters
 {
     [ExcludeFromCodeCoverage]
+    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, AllowMultiple = true, Inherited = true)]
     public class GoogleAnalyticsFilterAttribute : ActionFilterAttribute
     {
         public override void OnActionExecuting(ActionExecutingContext context)
@@ -28,7 +31,7 @@ namespace SFA.DAS.EmployerFeedback.Web.Filters
 
             var userId = context.HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals(EmployerClaims.UserId))?.Value;
 
-            if (context.RouteData.Values.TryGetValue("EncodedAccountId", out var routeDataEncodedAccountId))
+            if (context.RouteData.Values.TryGetValue(RouteValueKeys.EncodedAccountId, out var routeDataEncodedAccountId))
             {
                 encodedAccountId = routeDataEncodedAccountId.ToString();
             }
