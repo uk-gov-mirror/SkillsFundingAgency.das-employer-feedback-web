@@ -12,7 +12,6 @@ namespace SFA.DAS.EmployerFeedback.Web.Models.Home
     [ExcludeFromCodeCoverage]
     public class SignedInStubViewModel
     {
-        public const string EncodedAccountIdPlaceholder = "{{EncodedAccountId}}";
         private readonly ClaimsPrincipal _claimsPrinciple;
 
         public SignedInStubViewModel(IHttpContextAccessor httpContextAccessor, string returnUrl)
