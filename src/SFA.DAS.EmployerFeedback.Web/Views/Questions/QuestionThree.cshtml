@@ -2,8 +2,8 @@
 @using SFA.DAS.EmployerFeedback.Web.Models.Questions
 @model QuestionThreeRatingViewModel
 @{ 
-    ViewBag.PageID = "page-overall-quality-question";
-    ViewBag.Title = "Overall rating"; 
+    ViewBag.Title = "Overall rating";
+    ViewBag.GaData.Vpv = "/questions/overall-rating";
     var backRoute = Model.ReturnToReviewAnswers ? ReviewAnswersController.ReviewAnswersGet : QuestionsController.QuestionTwoGet;
 }
 

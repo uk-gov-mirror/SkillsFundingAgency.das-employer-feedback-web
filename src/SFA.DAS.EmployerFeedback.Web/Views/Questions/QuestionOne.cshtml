@@ -2,8 +2,8 @@
 @using SFA.DAS.EmployerFeedback.Web.Models.Questions
 @model QuestionOneStrengthsViewModel
 @{
-    ViewBag.PageID = "page-strengths-question";
     ViewBag.Title = "Providers strengths";
+    ViewBag.GaData.Vpv = "/questions/strengths";
     var backRoute = Model.ReturnToReviewAnswers ? ReviewAnswersController.ReviewAnswersGet : QuestionsController.StartFeedbackGet;
 }
 

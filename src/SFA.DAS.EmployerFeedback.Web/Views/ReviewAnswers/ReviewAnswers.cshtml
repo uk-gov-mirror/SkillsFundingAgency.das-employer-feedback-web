@@ -2,8 +2,8 @@
 @using SFA.DAS.EmployerFeedback.Web.Models.ReviewAnswers
 @model ReviewAnswersViewModel;
 @{ 
-    ViewBag.PageID = "page-review-answers";
     ViewBag.Title = "Check your answers"; 
+    ViewBag.GaData.Vpv = "/reviewanswers/check-answers";
 }
 
 <a asp-route="@QuestionsController.QuestionThreeGet" asp-route-encodedAccountId="@Model.Survey.EncodedAccountId" class="govuk-back-link">Back</a>
