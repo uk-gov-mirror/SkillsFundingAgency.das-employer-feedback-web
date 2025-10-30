@@ -2,7 +2,7 @@
 using SFA.DAS.EmployerFeedback.Domain.Types;
 using SFA.DAS.EmployerFeedback.Infrastructure.Api.Types;
 
-namespace SFA.DAS.EmployerFeedback.Application.Commands.SubmitEmployerRequest
+namespace SFA.DAS.EmployerFeedback.Application.Commands.SubmitEmployerFeedback
 {
     public class SubmitEmployerFeedbackCommand : IRequest<bool>
     {

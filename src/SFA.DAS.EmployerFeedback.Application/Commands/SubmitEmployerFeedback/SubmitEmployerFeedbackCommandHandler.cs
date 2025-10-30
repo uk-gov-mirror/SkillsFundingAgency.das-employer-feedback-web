@@ -3,7 +3,7 @@ using Microsoft.Extensions.Logging;
 using SFA.DAS.EmployerFeedback.Infrastructure.Api.OuterApi;
 using SFA.DAS.EmployerFeedback.Infrastructure.Api.Requests;
 
-namespace SFA.DAS.EmployerFeedback.Application.Commands.SubmitEmployerRequest
+namespace SFA.DAS.EmployerFeedback.Application.Commands.SubmitEmployerFeedback
 {
     public class SubmitEmployerFeedbackCommandHandler : IRequestHandler<SubmitEmployerFeedbackCommand, bool>
     {
