@@ -5,15 +5,15 @@
 
 @model FeedbackConfirmationViewModel
 @{
-    ViewBag.PageID = "page-confirmation";
-    ViewBag.Title = "Provide Feedback";
+    ViewBag.PageID = "page-feedback-complete";
+    ViewBag.Title = "Feedback complete";
 }
 <main class="govuk-main-wrapper govuk-main-wrapper--auto-spacing" id="main-content">
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
             <div class="govuk-panel govuk-panel--confirmation">
                 <h1 class="govuk-panel__title">
-                    Feedback complete
+                    @ViewBag.Title
                 </h1>
             </div>
             <p class="govuk-body">Thanks for your feedback. It'll help @Model.ProviderName to continuously improve their training provision.</p>

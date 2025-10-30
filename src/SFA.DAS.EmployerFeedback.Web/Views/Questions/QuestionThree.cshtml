@@ -3,7 +3,7 @@
 @model QuestionThreeRatingViewModel
 @{ 
     ViewBag.PageID = "page-overall-quality-question";
-    ViewBag.Title = "Provide Feedback"; 
+    ViewBag.Title = "Overall rating"; 
     var backRoute = Model.ReturnToReviewAnswers ? ReviewAnswersController.ReviewAnswersGet : QuestionsController.QuestionTwoGet;
 }
 
@@ -14,7 +14,7 @@
         <div class="govuk-grid-column-two-thirds">
             <partial name="_ValidationSummary" />
             <form asp-route="@QuestionsController.QuestionThreePost">
-                <h1 class="govuk-heading-l">Overall rating</h1>
+                <h1 class="govuk-heading-l">@ViewBag.Title</h1>
                 <div class="govuk-form-group" das-highlight-error-for="Rating" error-class="govuk-form-group--error">
                     <p das-validation-for="Rating" class="govuk-error-message"></p>
                     <fieldset name="overall-rating" class="govuk-fieldset">

@@ -4,9 +4,9 @@
 @using SFA.DAS.EmployerFeedback.Web.Models.Shared
 @model ProviderConfirmViewModel
 
-@{ ViewBag.PageID = "page-service-start";
-    ViewBag.Title = "Provide Feedback";
-    ViewBag.MetaDesc = "Provide feedback on training providers";
+@{ 
+    ViewBag.PageID = "page-provider-confirm";
+    ViewBag.Title = "Confirm training provider";
     ViewBag.HideNav = "true";
 }
 
@@ -17,7 +17,7 @@
 <main class="govuk-main-wrapper " id="main-content" role="main">
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
-            <h1 class="govuk-heading-xl">Confirm training provider</h1>
+            <h1 class="govuk-heading-xl">@ViewBag.Title</h1>
             <h2 class="govuk-heading-l govuk-!-margin-bottom-0">@Model.ProviderName</h2>
             <span class="govuk-caption-m">UKPRN: @Model.ProviderId</span>
             <br><br>
