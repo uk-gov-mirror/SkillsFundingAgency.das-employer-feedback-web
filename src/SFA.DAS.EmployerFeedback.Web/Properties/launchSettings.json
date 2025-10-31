@@ -1,0 +1,26 @@
+﻿{
+  "profiles": {
+    "SFA.DAS.EmployerFeedback.Web": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "applicationUrl": "https://localhost:7701;http://localhost:7700",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "EnvironmentName": "LOCAL",
+        "ResourceEnvironmentName": "LOCAL",
+        "StubAuth": "true"
+      }
+    },
+    "SFA.DAS.EmployerFeedback.Web.GovUk.Auth": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "applicationUrl": "https://localhost:5003",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "EnvironmentName": "LOCAL",
+        "ResourceEnvironmentName": "LOCAL",
+        "StubAuth": "false"
+      }
+    }
+  }
+}

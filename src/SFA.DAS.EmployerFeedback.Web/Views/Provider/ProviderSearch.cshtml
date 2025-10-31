@@ -1,0 +1,23 @@
+﻿@using SFA.DAS.EmployerFeedback.Web.Configuration.Routing
+@using SFA.DAS.EmployerFeedback.Web.Models.Shared
+@model ProviderSearchViewModel
+
+@{ 
+    ViewBag.Title = "Provide feedback";
+    ViewBag.GaData.Vpv = "/provider/feedback";
+}
+
+<a class="govuk-back-link" href="@Model.BackUrl">Back</a>
+
+<main class="govuk-main-wrapper govuk-main-wrapper--auto-spacing" id="main-content" role="main">
+
+    @if (0 == Model.UnfilteredTotalRecordCount)
+    {
+        <partial name="_NoProvidersPartial" />
+    }
+    else
+    {
+        <partial name="_SelectProviderPartial" />
+    }
+
+</main>
