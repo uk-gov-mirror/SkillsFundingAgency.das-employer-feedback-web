@@ -20,7 +20,7 @@ namespace SFA.DAS.EmployerFeedback.Web.StartupExtensions
                 new AuthRedirects
                 {
                     LocalStubLoginPath = "/SignIn-Stub",
-                    SignedOutRedirectUrl = ""
+                    SignedOutRedirectUrl = "/signout"
                 },
                 null,
                 typeof(UserAccountsService)
