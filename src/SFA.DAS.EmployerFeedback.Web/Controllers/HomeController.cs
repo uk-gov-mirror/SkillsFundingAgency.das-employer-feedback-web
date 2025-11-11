@@ -43,11 +43,7 @@ namespace SFA.DAS.EmployerFeedback.Web.Controllers
         {
             var idToken = await _contextAccessor.HttpContext.GetTokenAsync("id_token");
 
-            var authenticationProperties = new AuthenticationProperties
-            {
-                RedirectUri = string.Empty,
-                AllowRefresh = true
-            };
+            var authenticationProperties = new AuthenticationProperties();
 
             authenticationProperties.Parameters.Clear();
             authenticationProperties.Parameters.Add("id_token", idToken);
