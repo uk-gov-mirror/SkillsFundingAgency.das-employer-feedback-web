@@ -13,7 +13,7 @@ using SFA.DAS.GovUK.Auth.Services;
 
 namespace SFA.DAS.EmployerFeedback.Web.Controllers
 {
-    [Route("")]
+    [Route("service")]
     public class HomeController : Controller
     {
         #region Routes;

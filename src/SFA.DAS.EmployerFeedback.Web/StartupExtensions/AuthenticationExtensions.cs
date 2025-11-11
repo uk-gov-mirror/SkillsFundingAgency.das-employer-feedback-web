@@ -19,8 +19,8 @@ namespace SFA.DAS.EmployerFeedback.Web.StartupExtensions
             services.AddAndConfigureGovUkAuthentication(configuration,
                 new AuthRedirects
                 {
-                    LocalStubLoginPath = "/SignIn-Stub",
-                    SignedOutRedirectUrl = "/home/signedout"
+                    LocalStubLoginPath = "service/SignIn-Stub",
+                    SignedOutRedirectUrl = ""
                 },
                 null,
                 typeof(UserAccountsService)
