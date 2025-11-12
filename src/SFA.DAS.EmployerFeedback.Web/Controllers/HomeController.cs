@@ -54,7 +54,7 @@ namespace SFA.DAS.EmployerFeedback.Web.Controllers
         public IActionResult ProvideFeedbackStub()
         {
             _contextAccessor.HttpContext.Response.Cookies.Delete(GovUkConstants.StubAuthCookieName);
-            return RedirectToRoute(ProviderController.ProviderSearchGet, new { encodedAccountId = SignedInStubViewModel.HashedAccountIdPlaceholder});
+            return RedirectToRoute(ProviderController.ProviderSearchGet, new { encodedAccountId = SignedInStubViewModel.HashedAccountIdPlaceholder });
         }
     }
 }
