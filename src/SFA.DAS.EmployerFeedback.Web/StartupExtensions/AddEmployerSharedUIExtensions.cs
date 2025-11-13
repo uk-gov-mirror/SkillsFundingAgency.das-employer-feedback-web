@@ -11,7 +11,7 @@ namespace SFA.DAS.EmployerFeedback.Web.StartupExtensions
     {
         public static IServiceCollection AddEmployerSharedUi(this IServiceCollection services, IConfiguration configuration)
         {
-            services.AddMaMenuConfiguration(HomeController.SignoutGet, configuration["ResourceEnvironmentName"]);
+            services.AddMaMenuConfiguration(ServiceController.SignoutGet, configuration["ResourceEnvironmentName"]);
             return services;
         }
     }

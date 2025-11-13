@@ -1,10 +1,12 @@
 ﻿using Microsoft.AspNetCore.Http;
 using SFA.DAS.GovUK.Auth.Employer;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Security.Claims;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 using EmployerClaims = SFA.DAS.EmployerFeedback.Infrastructure.Configuration.EmployerClaims;
 
 namespace SFA.DAS.EmployerFeedback.Web.Models.Home
@@ -13,7 +15,7 @@ namespace SFA.DAS.EmployerFeedback.Web.Models.Home
     public class SignedInStubViewModel
     {
         private readonly ClaimsPrincipal _claimsPrinciple;
-
+        public const string HashedAccountIdPlaceholder = "{{hashedAccountId}}";
         public SignedInStubViewModel(IHttpContextAccessor httpContextAccessor, string returnUrl)
         {
             _claimsPrinciple = httpContextAccessor.HttpContext.User;
@@ -23,6 +25,10 @@ namespace SFA.DAS.EmployerFeedback.Web.Models.Home
         public string StubEmail => _claimsPrinciple.Claims.FirstOrDefault(c => c.Type.Equals(ClaimTypes.Email))?.Value;
         public string StubId => _claimsPrinciple.Claims.FirstOrDefault(c => c.Type.Equals(ClaimTypes.NameIdentifier))?.Value;
         public string ReturnUrl { get; }
+        public bool HasHashedAccountIdPlaceholder()
+        {
+            return Uri.UnescapeDataString(ReturnUrl).Contains(HashedAccountIdPlaceholder);
+        }
 
         public List<EmployerUserAccountItem> GetAccounts()
         {
@@ -39,6 +45,16 @@ namespace SFA.DAS.EmployerFeedback.Web.Models.Home
             {
                 return new List<EmployerUserAccountItem>();
             }
+        }
+        public string ReplaceHashedAccountIdPlaceholderUrl(string hashedAccountId)
+        {
+            string replacedUrl = Regex.Replace(Uri.UnescapeDataString(ReturnUrl),
+                HashedAccountIdPlaceholder,
+                hashedAccountId,
+                RegexOptions.None,
+                TimeSpan.FromMilliseconds(25));
+
+            return replacedUrl;
         }
     }
 }
