@@ -1,6 +1,6 @@
+using System.Diagnostics.CodeAnalysis;
 using FluentValidation;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -12,13 +12,10 @@ using Microsoft.Extensions.Hosting;
 using SFA.DAS.Employer.Shared.UI;
 using SFA.DAS.EmployerFeedback.Infrastructure.Configuration;
 using SFA.DAS.EmployerFeedback.Web.Attributes;
-using SFA.DAS.EmployerFeedback.Web.Controllers;
 using SFA.DAS.EmployerFeedback.Web.Filters;
 using SFA.DAS.EmployerFeedback.Web.ModelBinders;
 using SFA.DAS.EmployerFeedback.Web.StartupExtensions;
 using SFA.DAS.Validation.Mvc.Extensions;
-using System.Diagnostics.CodeAnalysis;
-using System.Threading.Tasks;
 
 namespace SFA.DAS.EmployerFeedback.Web
 {
@@ -38,9 +35,7 @@ namespace SFA.DAS.EmployerFeedback.Web
         {
             services.AddHttpContextAccessor();
             services.AddConfigurationOptions(_configuration);
-
             services.AddOpenTelemetryRegistration(_configuration["APPLICATIONINSIGHTS_CONNECTION_STRING"]!);
-
             services.AddAntiforgery(options =>
             {
                 options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
@@ -54,7 +49,6 @@ namespace SFA.DAS.EmployerFeedback.Web
                 .AddSingleton(configurationOuterApi);
 
             services.AddControllersWithViews();
-
             services
                 .AddMvc(options =>
                 {
@@ -67,7 +61,7 @@ namespace SFA.DAS.EmployerFeedback.Web
                     options.ModelBinderProviders.Insert(0, new AutoDecodeModelBinderProvider());
                 })
                 .AddControllersAsServices()
-                .SetDefaultNavigationSection(NavigationSection.AccountsFinance);
+                .SetDefaultNavigationSection(NavigationSection.AccountsHome);
 
             services
                 .AddValidatorsFromAssemblyContaining<Startup>();
@@ -93,7 +87,7 @@ namespace SFA.DAS.EmployerFeedback.Web
 #endif
         }
 
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, LinkGenerator linkGenerator)
+        public static void Configure(IApplicationBuilder app, IWebHostEnvironment env, LinkGenerator linkGenerator)
         {
             if (env.IsDevelopment())
             {
@@ -101,23 +95,12 @@ namespace SFA.DAS.EmployerFeedback.Web
             }
             else
             {
-                app.UseExceptionHandler(errorApp =>
-                {
-                    errorApp.Run(async context =>
-                    {
-                        var exceptionFeature = context.Features.Get<IExceptionHandlerFeature>();
-                        var exception = exceptionFeature?.Error;
-                        var errorMessage = exception?.Message ?? "An unexpected error occurred";
+                // re-executes the pipeline for unhandled exceptions at /error
+                app.UseExceptionHandler("/error");
 
-                        var query = new RouteValueDictionary(new { errorMessage = errorMessage });
-                        var url = linkGenerator.GetPathByName(HomeController.ErrorRouteGet, query);
+                // re-executes the pipeline for non-exception status codes (e.g., 404) at /error/{statusCode}
+                app.UseStatusCodePagesWithReExecute("/error/{0}");
 
-                        context.Response.Redirect(url);
-                        await Task.CompletedTask;
-                    });
-                });
-
-                // The default HSTS value is 30 days.
                 app.UseHsts();
             }
 

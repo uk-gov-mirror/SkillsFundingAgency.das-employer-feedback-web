@@ -19,7 +19,6 @@ namespace SFA.DAS.EmployerFeedback.Web.StartupExtensions
                 .AddHealthChecks()
                 .AddCheck<ApiHealthCheck>("Api health check")
                 .AddRedis(configWeb.RedisConnectionString, "Redis health check");
-
             return services;
         }
 

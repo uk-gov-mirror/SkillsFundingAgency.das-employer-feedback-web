@@ -12,14 +12,13 @@ namespace SFA.DAS.EmployerFeedback.Web.StartupExtensions
         {
             services.AddSession(opt =>
             {
-                opt.IdleTimeout = TimeSpan.FromMinutes(20);
+                opt.IdleTimeout = TimeSpan.FromMinutes(60);
                 opt.Cookie = new CookieBuilder()
                 {
-                    Name = ".EmployerFeedback.Session",
+                    Name = "EmployerFeedback.Session",
                     HttpOnly = true
                 };
             });
-
             return services;
         }
     }

@@ -1,4 +1,4 @@
-﻿using SFA.DAS.EmployerFeedback.Infrastructure.Api.Types;
+﻿using SFA.DAS.EmployerFeedback.Domain.Types;
 using System.Security.Claims;
 using System.Threading.Tasks;
 

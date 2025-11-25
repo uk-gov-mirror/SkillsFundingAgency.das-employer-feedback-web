@@ -1,5 +1,5 @@
 ﻿using Microsoft.Extensions.Diagnostics.HealthChecks;
-using SFA.DAS.EmployerFeedback.Domain.Interfaces;
+using SFA.DAS.EmployerFeedback.Infrastructure.Api.OuterApi;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;

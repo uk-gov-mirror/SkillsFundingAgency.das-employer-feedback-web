@@ -26,9 +26,7 @@ namespace SFA.DAS.EmployerFeedback.Web.ModelBinders
             var encodingService = context.Services.GetRequiredService<IEncodingService>();
             var loggerFactory = context.Services.GetRequiredService<ILoggerFactory>();
             var fallBackBinder = new SimpleTypeModelBinder(context.Metadata.ModelType, loggerFactory);
-
             return new AutoDecodeModelBinder(fallBackBinder, encodingService);
-
         }
     }
 }

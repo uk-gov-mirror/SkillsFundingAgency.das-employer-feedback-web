@@ -1,14 +1,10 @@
-﻿using NUnit.Framework;
-using Moq;
+﻿using System;
+using System.Security.Claims;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
-using System.Security.Claims;
-using System;
-using System.Collections.Generic;
-using Newtonsoft.Json;
-using SFA.DAS.EmployerFeedback.Infrastructure.Services.UserAccounts;
+using Moq;
+using NUnit.Framework;
 using SFA.DAS.EmployerFeedback.Infrastructure.Services.UserService;
-using SFA.DAS.GovUK.Auth.Employer;
 using EmployerClaims = SFA.DAS.EmployerFeedback.Infrastructure.Configuration.EmployerClaims;
 
 namespace SFA.DAS.EmployerFeedback.Infrastructure.UnitTests.Services.User
@@ -38,53 +34,13 @@ namespace SFA.DAS.EmployerFeedback.Infrastructure.UnitTests.Services.User
         {
             // Arrange
             var userId = Guid.NewGuid().ToString();
-            _identity.AddClaim(new Claim(EmployerClaims.UserIdClaimTypeIdentifier, userId));
+            _identity.AddClaim(new Claim(EmployerClaims.UserId, userId));
 
             // Act
             var result = _userService.GetUserId();
 
             // Assert
             result.Should().Be(userId);
-        }
-
-        [Test]
-        public void IsUserChangeAuthorized_ShouldReturnTrue_ForOwnerOrTransactor()
-        {
-            // Arrange
-            var accountId = "account123";
-            var claimsData = new Dictionary<string, EmployerUserAccountItem>
-            {
-                { accountId, new EmployerUserAccountItem { Role = "Owner" } }
-            };
-            
-            var claimsJson = JsonConvert.SerializeObject(claimsData);
-            _identity.AddClaim(new Claim(EmployerClaims.UserAssociatedAccountsClaimsTypeIdentifier, claimsJson));
-
-            // Act
-            var result = _userService.IsUserChangeAuthorized(accountId);
-
-            // Assert
-            result.Should().BeTrue();
-        }
-
-        [Test]
-        public void IsUserChangeAuthorized_ShouldReturnFalse_WhenUserIsNotAuthorized()
-        {
-            // Arrange
-            var accountId = "account123";
-            var claimsData = new Dictionary<string, EmployerUserAccountItem>
-            {
-                { accountId, new EmployerUserAccountItem { Role = "Viewer" } }
-            };
-            
-            var claimsJson = JsonConvert.SerializeObject(claimsData);
-            _identity.AddClaim(new Claim(EmployerClaims.UserAssociatedAccountsClaimsTypeIdentifier, claimsJson));
-
-            // Act
-            var result = _userService.IsUserChangeAuthorized(accountId);
-
-            // Assert
-            result.Should().BeFalse();
         }
     }
 }

@@ -18,6 +18,12 @@ namespace SFA.DAS.EmployerFeedback.Web.Helpers
     {
         private const string CssClass = "govuk-link das-table__sort";
 
+        [HtmlAttributeName("asp-route")]
+        public string RouteName { get; set; }
+
+        [HtmlAttributeName("asp-route-encodedAccountId")]
+        public string EncodedAccountId { get; set; }
+
         [HtmlAttributeName("column-name")]
         public SortColumn ColumnName { get; set; }
 
@@ -43,21 +49,18 @@ namespace SFA.DAS.EmployerFeedback.Web.Helpers
 
         public override void Process(TagHelperContext context, TagHelperOutput output)
         {
-            var action = ViewContext.RouteData.Values["action"] as string;
-            var controller = ViewContext.RouteData.Values["controller"] as string;
-
             var sortColumn = GetSortColumnFromQueryString();
             var sortOrder = GetSortOrderFromQueryString();
             var isSortColumn = sortColumn == ColumnName || (sortColumn == SortColumn.Default && IsDefault);
 
             var values = new
             {
-                SearchTerm = GetSearchTermFromQueryString(),
+                EncodedAccountId,
                 SortColumn = ColumnName,
                 SortOrder = isSortColumn ? sortOrder.Reverse().ToString() : DefaultSortOrder.ToString()
             };
 
-            var href = _urlHelper.Action(action, controller, values, null, null, null);
+            var href = _urlHelper.RouteUrl(RouteName, values);
 
             var sortOrderCssSuffix = string.Empty;
             if (isSortColumn)
@@ -79,7 +82,7 @@ namespace SFA.DAS.EmployerFeedback.Web.Helpers
 
         private SortOrder GetSortOrderFromQueryString()
         {
-            if (ViewContext.HttpContext.Request.Query.TryGetValue("SortOrder", out var sortOrderValue) && Enum.TryParse<SortOrder>(sortOrderValue, true, out var parsedSortOrder))
+            if (ViewContext.HttpContext.Request.Query.TryGetValue(nameof(SortOrder), out var sortOrderValue) && Enum.TryParse<SortOrder>(sortOrderValue, true, out var parsedSortOrder))
             {
                 return parsedSortOrder;
             }
@@ -89,22 +92,12 @@ namespace SFA.DAS.EmployerFeedback.Web.Helpers
 
         private SortColumn GetSortColumnFromQueryString()
         {
-            if (ViewContext.HttpContext.Request.Query.TryGetValue("SortColumn", out var sortColumn) && Enum.TryParse<SortColumn>(sortColumn, true, out var parsedSortColumn))
+            if (ViewContext.HttpContext.Request.Query.TryGetValue(nameof(SortColumn), out var sortColumn) && Enum.TryParse<SortColumn>(sortColumn, true, out var parsedSortColumn))
             {
                 return parsedSortColumn;
             }
 
             return SortColumn.Default;
-        }
-
-        private string GetSearchTermFromQueryString()
-        {
-            if (ViewContext.HttpContext.Request.Query.ContainsKey("SearchTerm"))
-            {
-                return ViewContext.HttpContext.Request.Query["SearchTerm"];
-            }
-
-            return string.Empty;
         }
     }
 }

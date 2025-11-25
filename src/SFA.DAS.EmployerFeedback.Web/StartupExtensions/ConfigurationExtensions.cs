@@ -31,7 +31,6 @@ namespace SFA.DAS.EmployerFeedback.Web.StartupExtensions
                     }
                 );
             }
-
             return config.Build();
         }
 

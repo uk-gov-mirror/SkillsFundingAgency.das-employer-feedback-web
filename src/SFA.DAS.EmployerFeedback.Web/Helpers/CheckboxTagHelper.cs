@@ -43,12 +43,10 @@ namespace SFA.DAS.EmployerFeedback.Web.Helpers
             output.Attributes.Clear();
 
             var innerContent = await output.GetChildContentAsync();
-
             var content = new StringBuilder();
             content.Append($"<div class=\"{CssClass}\">");
 
             List<string> attemptedValue = null;
-
             if (ViewContext.ModelState.ContainsKey(Property.Name))
             {
                 var modelStateEntry = ViewContext.ModelState[Property.Name];
@@ -67,11 +65,8 @@ namespace SFA.DAS.EmployerFeedback.Web.Helpers
             var dataAriaControlsValue = string.IsNullOrWhiteSpace(DataAriaControls) ? "" : $" data-aria-controls=\"{DataAriaControls}\" ";
 
             var id = Property.Name;
-
             content.Append($"<div class=\"{ItemClass}\">");
-
             content.Append($"<input id=\"{id}\" type = \"checkbox\"{checkedValue}class=\"{InputClass}\" name=\"{Property.Name}\"{dataAriaControlsValue}value=\"true\">");
-
             content.Append($"<label class=\"{LabelClass}\" for=\"{id}\">{WebUtility.HtmlDecode(Label)}</label>");
 
             if (!string.IsNullOrWhiteSpace(Hint))
@@ -80,11 +75,8 @@ namespace SFA.DAS.EmployerFeedback.Web.Helpers
             }
 
             content.Append("</div>");
-
             content.Append(innerContent.GetContent());
-
             content.Append("</div>");
-
             output.Content.SetHtmlContent(content.ToString());
 
             await base.ProcessAsync(context, output);

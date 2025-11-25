@@ -1,5 +1,13 @@
-﻿@using SFA.DAS.EmployerFeedback.Web
+﻿@using SFA.DAS.EmployerFeedback
+@using SFA.DAS.EmployerFeedback.Infrastructure.Configuration
+@using SFA.DAS.EmployerFeedback.Infrastructure.Configuration.Routing
+@using SFA.DAS.EmployerFeedback.Web.Extensions;
 @using SFA.DAS.EmployerFeedback.Web.Models
+@using SFA.DAS.EmployerFeedback.Web.Models.Shared
+@using SFA.DAS.EmployerFeedback.Web.Configuration.Routing
+@using SFA.DAS.EmployerFeedback.Domain.Types
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 @addTagHelper *, WebEssentials.AspNetCore.CdnTagHelpers
 @addTagHelper *, SFA.DAS.EmployerFeedback.Web
+@inject Microsoft.ApplicationInsights.AspNetCore.JavaScriptSnippet JavaScriptSnippet
+@inject SFA.DAS.EmployerFeedback.Infrastructure.Configuration.EmployerFeedbackWebConfiguration Config

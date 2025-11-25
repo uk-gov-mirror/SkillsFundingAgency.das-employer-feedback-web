@@ -1,13 +1,12 @@
 ﻿using FluentAssertions;
-using Moq;
-using NUnit.Framework;
 using Microsoft.Extensions.Caching.Distributed;
+using Moq;
 using Newtonsoft.Json;
+using NUnit.Framework;
 using SFA.DAS.EmployerFeedback.Infrastructure.Services.CacheStorage;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using SFA.DAS.EmployerFeedback.Infrastructure.Api.Responses;
 
 namespace SFA.DAS.EmployerFeedback.Infrastructure.UnitTests.Services.CacheStorage
 {
@@ -29,11 +28,10 @@ namespace SFA.DAS.EmployerFeedback.Infrastructure.UnitTests.Services.CacheStorag
         {
             // Arrange
             var key = "testKey";
-            var item = new Standard
+            var item = new CacheTestItem
             {
-                StandardReference = "IfateRef123",
-                StandardTitle = "Test Title",
-                StandardLevel = 3
+                Name = "IfateRef123",
+                Value = "Test Title"
             };
 
             var expirationInHours = 1;
@@ -58,11 +56,10 @@ namespace SFA.DAS.EmployerFeedback.Infrastructure.UnitTests.Services.CacheStorag
         {
             // Arrange
             var key = "testKey";
-            var expectedItem = new Standard
+            var expectedItem = new CacheTestItem
             {
-                StandardReference = "IfateRef123",
-                StandardTitle = "Test Title",
-                StandardLevel = 3
+                Name = "IfateRef123",
+                Value = "Test Title"
             };
 
             var json = JsonConvert.SerializeObject(expectedItem);
@@ -71,7 +68,7 @@ namespace SFA.DAS.EmployerFeedback.Infrastructure.UnitTests.Services.CacheStorag
             _distributedCacheMock.Setup(c => c.GetAsync(key, It.IsAny<CancellationToken>())).ReturnsAsync(byteArray);
 
             // Act
-            var result = await _cacheStorageService.RetrieveFromCache<Standard>(key);
+            var result = await _cacheStorageService.RetrieveFromCache<CacheTestItem>(key);
 
             // Assert
             result.Should().BeEquivalentTo(expectedItem);
@@ -86,7 +83,7 @@ namespace SFA.DAS.EmployerFeedback.Infrastructure.UnitTests.Services.CacheStorag
             _distributedCacheMock.Setup(c => c.GetAsync(key, It.IsAny<CancellationToken>())).ReturnsAsync((byte[])null);
 
             // Act
-            var result = await _cacheStorageService.RetrieveFromCache<Standard>(key);
+            var result = await _cacheStorageService.RetrieveFromCache<CacheTestItem>(key);
 
             // Assert
             result.Should().BeNull();

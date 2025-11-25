@@ -69,7 +69,6 @@ namespace SFA.DAS.EmployerFeedback.Web.ModelBinders
             var propertyType = container.GetProperty(context.ModelMetadata.PropertyName);
             var attributes = propertyType.GetCustomAttributes(true).ToList();
             var attribute = (AutoDecodeAttribute)attributes.Find(a => a.GetType().IsEquivalentTo(typeof(AutoDecodeAttribute)));
-
             return attribute;
         }
 

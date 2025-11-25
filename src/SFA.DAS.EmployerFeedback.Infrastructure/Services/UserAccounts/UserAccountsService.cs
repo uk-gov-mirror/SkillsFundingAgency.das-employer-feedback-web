@@ -1,10 +1,10 @@
+﻿using Microsoft.Extensions.Logging;
+using RestEase;
+using SFA.DAS.EmployerFeedback.Infrastructure.Api.OuterApi;
+using SFA.DAS.GovUK.Auth.Employer;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
-using RestEase;
-using SFA.DAS.EmployerFeedback.Domain.Interfaces;
-using SFA.DAS.GovUK.Auth.Employer;
 
 namespace SFA.DAS.EmployerFeedback.Infrastructure.Services.UserAccounts
 {
@@ -43,7 +43,7 @@ namespace SFA.DAS.EmployerFeedback.Infrastructure.Services.UserAccounts
             }
             catch (ApiException ex)
             {
-                _logger.LogError(ex, $"Unable to get user accounts for userId:{userId} and email:{email}");
+                _logger.LogError(ex, "Unable to get user accounts for userId:{UserId} and email:{Email}", userId, email);
                 return new EmployerUserAccounts();
             }
         }

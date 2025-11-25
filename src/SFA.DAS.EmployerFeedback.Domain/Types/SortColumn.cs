@@ -2,6 +2,8 @@
 {
     public enum SortColumn
     {
-        Default
+        Default,
+        FeedbackStatus,
+        DateSubmitted
     }
 }

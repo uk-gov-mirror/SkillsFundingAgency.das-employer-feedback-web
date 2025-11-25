@@ -1,0 +1,46 @@
+﻿@using SFA.DAS.EmployerFeedback.Web.Controllers
+@using SFA.DAS.EmployerFeedback.Web.Models.Questions
+@model QuestionOneStrengthsViewModel
+@{
+    ViewBag.Title = "Provider strengths";
+    ViewBag.GaData.Vpv = "/questions/strengths";
+    var backRoute = Model.ReturnToReviewAnswers ? ReviewAnswersController.ReviewAnswersGet : QuestionsController.StartFeedbackGet;
+}
+
+<a asp-route="@backRoute" asp-route-encodedAccountId="@Model.EncodedAccountId" class="govuk-back-link">Back</a>
+
+<main class="govuk-main-wrapper govuk-main-wrapper--auto-spacing" id="main-content">
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+            <partial name="_ValidationSummary" />
+            <form asp-route="@QuestionsController.QuestionOnePost" method="post">
+                <h1 class="govuk-heading-l">@(Model.ProviderName.EndsWith("'s") ? @Model.ProviderName : $"{@Model.ProviderName}'s") strengths</h1>
+                <div id="Attributes" class="govuk-form-group" das-highlight-error-for="Attributes" error-class="govuk-form-group--error">
+                    <p das-validation-for="Attributes" class="govuk-error-message"></p>
+                    <fieldset name="doing-well" aria-describedby="doing-well-hint" class="govuk-fieldset checkbox-limit">
+                        <legend class="govuk-fieldset_legend govuk-fieldset_legend--1">
+                            <h2 class="govuk-heading-m">What is @Model.ProviderName doing very well?</h2>
+                        </legend>
+                        <div id="doing-well-hint" class="govuk-hint">
+                            It's optional. You can choose up to 3.
+                        </div>
+                        <input type="hidden" asp-for="@Model.ProviderName" />
+                        <div class="govuk-checkboxes" data-module="govuk-checkboxes">
+                        @for (var i = 0; i < Model.Attributes.Count; i++)
+                        {
+                            <div class="govuk-checkboxes__item" style="@(Model.Attributes[i].Bad ? "display: none" : "")">
+                                <checkbox asp-for="@Model.Attributes[i].Good" id="col1-@(i)" type="checkbox" class="govuk-checkboxes__input" label="@Model.Attributes[i].Name" />
+                                <input asp-for="@Model.Attributes[i].Name" type="hidden" />
+                            </div>
+                        }
+                        </div>
+                    </fieldset>
+                </div>
+                <div class="govuk-button-group">
+                <button id="q1-continue" type="submit" class="govuk-button">Continue</button>
+                </div>
+                <input asp-for="@Model.ReturnToReviewAnswers" type="hidden" />
+            </form>
+        </div>
+    </div>
+</main>

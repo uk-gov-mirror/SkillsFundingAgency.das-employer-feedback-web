@@ -1,0 +1,60 @@
+﻿@using SFA.DAS.EmployerFeedback.Web.Configuration.Routing
+@using SFA.DAS.EmployerFeedback.Web.Controllers
+@using SFA.DAS.EmployerFeedback.Web.Models.Provider
+@using SFA.DAS.EmployerFeedback.Web.Models.Shared
+@model ProviderConfirmViewModel
+
+@{ 
+    ViewBag.Title = "Confirm training provider";
+    ViewBag.GaData.Vpv = "/provider/confirm";
+}
+
+<a asp-route="@ProviderController.ProviderSearchGet"
+   asp-route-encodedAccountId="@Model.EncodedAccountId"
+   class="govuk-back-link">Back</a>
+
+<main class="govuk-main-wrapper " id="main-content" role="main">
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+            <h1 class="govuk-heading-xl">@ViewBag.Title</h1>
+            <h2 class="govuk-heading-l govuk-!-margin-bottom-0">@Model.ProviderName</h2>
+            <span class="govuk-caption-m">UKPRN: @Model.ProviderId</span>
+            <br><br>
+            <partial name="_ValidationSummary" />
+            <form asp-controller="Provider" method="post">
+                <input type="hidden" name="ProviderName" value="@Model.ProviderName" />
+
+                <div class="govuk-form-group" das-highlight-error-for="Confirmed" error-class="govuk-form-group--error">
+                    <div class="govuk-form-group error-message-container" sfa-anyvalidationerror-class="govuk-form-group--error">
+                        <fieldset class="govuk-fieldset">
+                            <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
+                                <h3 class="govuk-fieldset__heading">
+                                    Is this the training provider you want to give feedback on?
+                                </h3>
+                            </legend>
+                            <p das-validation-for="Confirmed" class="govuk-error-message"></p>
+                            <div class="govuk-radios" data-module="govuk-radios">
+                                <div class="govuk-radios__item">
+                                    <input class="govuk-radios__input" asp-for="Confirmed" das-highlight-error-for="Confirmed" error-class="govuk-input--error" type="radio" value="True">
+                                    <label class="govuk-label govuk-radios__label" for="Confirmed">
+                                        Yes
+                                    </label>
+                                </div>
+                                <div class="govuk-radios__item">
+                                    <input class="govuk-radios__input" id="Confirmed-no" asp-for="Confirmed" type="radio" value="False">
+                                    <label class="govuk-label govuk-radios__label" for="Confirmed-no">
+                                        No, select a different training provider
+                                    </label>
+                                </div>
+                            </div>
+                        </fieldset>
+                    </div>
+                </div>
+
+                <button class="govuk-button" data-module="govuk-button">
+                    Continue
+                </button>
+            </form>
+        </div>
+    </div>
+</main>

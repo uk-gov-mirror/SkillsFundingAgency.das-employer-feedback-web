@@ -1,20 +1,23 @@
-﻿using FluentValidation;
+﻿using System.Diagnostics.CodeAnalysis;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
 using RestEase.HttpClientFactory;
-using SFA.DAS.EmployerFeedback.Domain.Interfaces;
+using SFA.DAS.EmployerFeedback.Application.Commands.SubmitEmployerFeedback;
+using SFA.DAS.EmployerFeedback.Infrastructure.Api.OuterApi;
 using SFA.DAS.EmployerFeedback.Infrastructure.Configuration;
 using SFA.DAS.EmployerFeedback.Infrastructure.Services.CacheStorage;
-using SFA.DAS.EmployerFeedback.Infrastructure.Services.SessionStorage;
 using SFA.DAS.EmployerFeedback.Infrastructure.Services.UserAccounts;
 using SFA.DAS.EmployerFeedback.Infrastructure.Services.UserService;
-using SFA.DAS.EmployerFeedback.Web.Attributes;
+using SFA.DAS.EmployerFeedback.Services;
 using SFA.DAS.EmployerFeedback.Web.Authorization;
+using SFA.DAS.EmployerFeedback.Web.Orchestrators;
+using SFA.DAS.EmployerFeedback.Web.Services;
 using SFA.DAS.EmployerFeedback.Web.Services.EmployerRoleAuthorization;
+using SFA.DAS.EmployerFeedback.Web.Services.SessionStorage;
+using SFA.DAS.Encoding;
 using SFA.DAS.GovUK.Auth.Authentication;
-using SFA.DAS.Http.Configuration;
-using System.Diagnostics.CodeAnalysis;
 using SFA.DAS.GovUK.Auth.Employer;
+using SFA.DAS.Http.Configuration;
 
 namespace SFA.DAS.EmployerFeedback.Web.StartupExtensions
 {
@@ -23,7 +26,7 @@ namespace SFA.DAS.EmployerFeedback.Web.StartupExtensions
     {
         public static IServiceCollection AddServiceRegistrations(this IServiceCollection services)
         {
-            //services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(GetExistingEmployerRequestQuery).Assembly));
+            services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(SubmitEmployerFeedbackCommand).Assembly));
 
             services.AddSingleton<IAuthorizationHandler, OwnerRoleAuthorizationHandler>();
             services.AddSingleton<IAuthorizationHandler, TransactorRoleAuthorizationHandler>();
@@ -33,13 +36,18 @@ namespace SFA.DAS.EmployerFeedback.Web.StartupExtensions
 
             services.AddTransient<IEmployerRoleAuthorizationService, EmployerRoleAuthorizationService>();
             services.AddTransient<IGovAuthEmployerAccountService, UserAccountsService>();
-
             services.AddTransient<ISessionStorageService, SessionStorageService>();
             services.AddTransient<ICacheStorageService, CacheStorageService>();
-
+            services.AddTransient<EnsureSessionExistsAttribute>();
+            services.AddTransient<ITrainingProviderService, TrainingProviderService>();
+            services.AddTransient<IAccountsLinkService, AccountsLinkService>();
             services.AddTransient<IUserService, UserService>();
 
-            services.AddTransient<ValidateRequiredQueryParametersAttribute>();
+            services.AddTransient<IProviderOrchestrator,  ProviderOrchestrator>();
+            services.AddTransient<IQuestionsOrchestrator, QuestionsOrchestrator>();
+            services.AddTransient<IReviewAnswersOrchestrator, ReviewAnswersOrchestrator>();
+
+            services.AddSingleton<IEncodingService, EncodingService>();
 
             return services;
         }
@@ -58,7 +66,6 @@ namespace SFA.DAS.EmployerFeedback.Web.StartupExtensions
                 .AddHttpMessageHandler<Http.MessageHandlers.LoggingMessageHandler>();
 
             services.AddTransient<IApimClientConfiguration>((_) => configuration);
-
             return services;
         }
     }

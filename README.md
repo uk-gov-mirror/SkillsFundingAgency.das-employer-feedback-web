@@ -4,15 +4,16 @@
 
 <img src="https://avatars.githubusercontent.com/u/9841374?s=200&v=4" align="right" alt="UK Government logo">
 
-[![Build Status](https://dev.azure.com/sfa-gov-uk/Digital%20Apprenticeship%20Service/_apis/build/status/das-employer-feedback-web?branchName=main)](https://dev.azure.com/sfa-gov-uk/Digital%20Apprenticeship%20Service/_build/latest?definitionId=3244&branchName=main)
+[![Build Status](https://dev.azure.com/sfa-gov-uk/Digital%20Apprenticeship%20Service/_apis/build/status/das-employer-feedback-web?branchName=main)](https://dev.azure.com/sfa-gov-uk/Digital%20Apprenticeship%20Service/_build/latest?definitionId=4189&branchName=main)
 [![Quality gate](https://sonarcloud.io/api/project_badges/quality_gate?project=SkillsFundingAgency_das-employer-feedback-web)](https://sonarcloud.io/summary/new_code?id=SkillsFundingAgency_das-employer-feedback-web)
 [![Confluence Page](https://img.shields.io/badge/Confluence-Project-blue)](https://skillsfundingagency.atlassian.net/wiki/spaces/NDL/pages/4932174087/Employer+feedback+-+New+email+engagement+Architecture)
 [![License](https://img.shields.io/badge/license-MIT-lightgrey.svg?longCache=true&style=flat-square)](https://en.wikipedia.org/wiki/MIT_License)
 
-This web solution is part of Employer Feedback project. Here the employer users can search for apprentice training using the extended search facility and optionally create requests for training course.
+This web solution is part of Employer Feedback project. This web application enables employers to provide feedback about training providers they have used for apprenticeship training. Employers can search for training providers and submit structured feedback through a multi-step questionnaire covering strengths, areas for improvement, and overall ratings.
 
 ## How It Works
-Users are expected to register themselves in the Employer portal. Once registered they will have access to extended search facilty. 
+Employers register through the Employer portal and gain access to the feedback system. They can search for training providers, confirm the provider they wish to review, and complete a feedback survey about their experience with that provider's apprenticeship training services.
+
 When running this locally, with stub sign-in enabled, the launch url should be `https://localhost:7701/`
 
 ## 🚀 Installation

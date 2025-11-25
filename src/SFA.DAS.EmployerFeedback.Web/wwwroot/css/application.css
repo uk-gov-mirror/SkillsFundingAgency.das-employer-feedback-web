@@ -1,0 +1,134 @@
+/** Application-specific styles */
+
+/** Check Answers page renders nested list as a table */
+
+.check-your-answers {
+    line-height: 1.25;
+    margin-top: 0;
+    margin-bottom: 40px;
+    border-top: 1px solid #bfc1c3;
+    padding-left: 0px;
+}
+
+@media(min-width: 641px) {
+    .check-your-answers {
+        display: table;
+        width: 100%;
+    }
+}
+
+.check-your-answers > li {
+    position: relative;
+    border-bottom: 1px solid #bfc1c3;
+}
+
+@media(min-width: 641px) {
+    .check-your-answers > li {
+        display: table-row;
+    }
+}
+
+.check-your-answers .question {
+    padding: .5em 4em .25em 0;
+    display: block;
+    font-weight: bold;
+}
+
+@media(min-width: 641px) {
+    .check-your-answers .question {
+        width: 35%;
+        padding-right: 1em;
+        display: table-cell;
+        border-bottom: 1px solid #bfc1c3;
+    }
+}
+
+.check-your-answers .answer {
+    padding-bottom: 0.5em;
+    display: block;
+    position: relative;
+}
+
+.check-your-answers .answer .list li:not(:last-child) {
+    margin-bottom: 20px;
+}
+
+.check-your-answers .answer p {
+    margin: 0;
+}
+
+@media(min-width: 641px) {
+    .check-your-answers .answer {
+        display: table-cell;
+        border-bottom: 1px solid #bfc1c3;
+        padding-right: 1em;
+    }
+}
+
+.check-your-answers .change {
+    display: block;
+    text-align: right;
+    position: absolute;
+    top: .5em;
+    right: 0;
+}
+
+.check-your-answers .change a {
+    color: #005ea5;
+}
+
+@media(min-width: 641px) {
+    .check-your-answers .change {
+        display: table-cell;
+        border-bottom: 1px solid #bfc1c3;
+        position: static;
+    }
+}
+
+.sr-only:not(:focus):not(:active) {
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    height: 1px;
+    overflow: hidden;
+    position: absolute;
+    white-space: nowrap;
+    width: 1px;
+}
+
+.answer > ul {
+    list-style: none;
+    padding-left: 0px;
+}
+
+.field-validation-valid {
+    display: none;
+}
+
+
+.sorted-descending::after {
+    content: "";
+    margin-left: 3px;
+    display: inline-block;
+    width: 0;
+    height: 0;
+    -webkit-clip-path: polygon(0 0, 50% 100%, 100% 0);
+    clip-path: polygon(0 0, 50% 100%, 100% 0);
+    border-color: rgba(0, 0, 0, 0);
+    border-style: solid;
+    border-width: 10px 5px 0;
+    border-top-color: inherit;
+}
+
+.sorted-ascending::after {
+    content: "";
+    margin-left: 3px;
+    display: inline-block;
+    width: 0;
+    height: 0;
+    -webkit-clip-path: polygon(50% 0, 0 100%, 100% 100%);
+    clip-path: polygon(50% 1%, 1% 100%, 100% 100%);
+    border-color: rgba(0, 0, 0, 0);
+    border-style: solid;
+    border-width: 0 5px 10px;
+    border-bottom-color: inherit;
+}

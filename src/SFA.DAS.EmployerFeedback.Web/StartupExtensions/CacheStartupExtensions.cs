@@ -18,7 +18,6 @@ namespace SFA.DAS.EmployerFeedback.Web.StartupExtensions
             {
                 services.AddStackExchangeRedisCache(options => { options.Configuration = config.RedisConnectionString; });
             }
-
             return services;
         }
     }

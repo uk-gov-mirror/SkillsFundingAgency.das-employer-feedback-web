@@ -1,0 +1,43 @@
+﻿@using Microsoft.Extensions.Options;
+@using SFA.DAS.EmployerFeedback.Web.Controllers
+@using SFA.DAS.EmployerFeedback.Web.Models.ReviewAnswers
+@using SFA.DAS.EmployerFeedback.Web.Models.Shared
+
+@model FeedbackConfirmationViewModel
+@{
+    ViewBag.Title = "Feedback complete";
+    ViewBag.GaData.Vpv = "/reviewanswers/feedback-complete";
+}
+<main class="govuk-main-wrapper govuk-main-wrapper--auto-spacing" id="main-content">
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+            <div class="govuk-panel govuk-panel--confirmation">
+                <h1 class="govuk-panel__title">
+                    @ViewBag.Title
+                </h1>
+            </div>
+            <p class="govuk-body">Thanks for your feedback. It'll help @Model.ProviderName to continuously improve their training provision.</p>
+            <p class="govuk-body">You rated @Model.ProviderName as <span class="bold-small">@Model.FeedbackRating.GetDisplayName()</span>. Your feedback will be published anonymously on <a class="govuk-link" href="@Model.FatUrl" target="_blank" rel="noopener">Find apprenticeship training (opens in a new tab)</a>.</p>
+
+            @if (Model.FeedbackRating == ProviderRating.VeryPoor)
+            {
+            <details class="govuk-details" data-module="govuk-details">
+                <summary class="govuk-details__summary">
+                    <span class="govuk-details__summary-text">
+                        Need help?
+                    </span>
+                </summary>
+                <div class="govuk-details__text">
+                    <p class="govuk-body">If you have concerns about @Model.ProviderName, tell your line manager or Human Resources team - your organisation might be able to solve your problem informally.</p>
+                    <p class="govuk-body">If you cannot resolve it informally, you can make a formal complaint to your training provider.</p>
+                    <p class="govuk-body">If you've done this and you're not satisfied with the result, you can ask ESFA to investigate how the provider handled your case. ESFA can't review the result of your complaint - it can only investigate whether it was reached in a fair way.</p>
+                </div>
+            </details>
+            }
+            <h2 class="govuk-heading-m">What do you want to do next?</h2>
+            <p class="govuk-body"><a asp-route="@ProviderController.ProviderSearchGet" asp-route-encodedAccountId="@Model.EncodedAccountId" class="govuk-link govuk-link--no-visited-state">Give feedback on another training provider</a></p>
+            <p class="govuk-body">or</p>
+            <p class="govuk-body"><a href="@Model.EmployerAccountsHomeUrl" class="govuk-link govuk-link--no-visited-state">Return home</a></p>
+        </div>
+    </div>
+</main>
