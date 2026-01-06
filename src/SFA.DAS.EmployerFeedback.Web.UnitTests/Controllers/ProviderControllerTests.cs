@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Logging;
@@ -51,6 +52,10 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Controllers
                 Providers = new PaginatedList<ProviderSearchViewModel.EmployerTrainingProvider>(new List<ProviderSearchViewModel.EmployerTrainingProvider>(), 0, 1, 10, 10)
             };
             _mockOrchestrator.Setup(o => o.GetProviderSearchViewModel(request)).ReturnsAsync(viewModel);
+
+            var httpContext = new DefaultHttpContext();
+            httpContext.Request.QueryString = new QueryString("?source=Email");
+            _sut.ControllerContext = new ControllerContext { HttpContext = httpContext };
 
             // Act
             var result = await _sut.ProviderSearch(request);

@@ -143,6 +143,12 @@ namespace SFA.DAS.EmployerFeedback.Web.Orchestrators
             var userId = GetUserId();
             var feedbackSource = await _sessionService.GetFeedbackSource(userId);
 
+            if (!System.Enum.IsDefined(typeof(FeedbackSource), feedbackSource))
+            {
+                feedbackSource = FeedbackSource.AdHoc;
+                await _sessionService.SetFeedbackSource(userId, feedbackSource);
+            }
+
             var survey = new SurveyModel
             {
                 AccountId = viewModel.AccountId,
