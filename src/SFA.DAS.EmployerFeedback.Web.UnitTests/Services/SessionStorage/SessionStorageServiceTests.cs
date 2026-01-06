@@ -246,5 +246,18 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Services
             // Assert
             result.Should().ContainSingle(p => p.ProviderName == "Provider X");
         }
+
+        [Test]
+        public async Task ClearUserSession_Should_Remove_All_User_Keys()
+        {
+            // Act
+            await _sut.ClearUserSession(_userId);
+
+            // Assert
+            _mockCache.Verify(c => c.RemoveAsync("LOCAL_" + _userId.ToString(), It.IsAny<CancellationToken>()), Times.Once);
+            _mockCache.Verify(c => c.RemoveAsync("LOCAL_" + _userId + "_PagingState", It.IsAny<CancellationToken>()), Times.Once);
+            _mockCache.Verify(c => c.RemoveAsync("LOCAL_" + _userId + "_FeedbackSource", It.IsAny<CancellationToken>()), Times.Once);
+            _mockCache.Verify(c => c.RemoveAsync("LOCAL_" + _userId + "_Providers", It.IsAny<CancellationToken>()), Times.Once);
+        }
     }
 }

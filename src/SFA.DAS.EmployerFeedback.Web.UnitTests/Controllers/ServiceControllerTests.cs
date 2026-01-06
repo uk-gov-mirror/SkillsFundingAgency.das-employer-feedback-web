@@ -16,6 +16,8 @@ using SFA.DAS.EmployerFeedback.Web.Controllers;
 using SFA.DAS.EmployerFeedback.Web.Models.Home;
 using SFA.DAS.GovUK.Auth.Models;
 using SFA.DAS.GovUK.Auth.Services;
+using SFA.DAS.EmployerFeedback.Web.Services.SessionStorage;
+using SFA.DAS.EmployerFeedback.Infrastructure.Services.UserService;
 
 namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Controllers
 {
@@ -29,6 +31,8 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Controllers
         private Mock<IResponseCookies> _mockCookies;
         private Mock<HttpResponse> _mockResponse;
         private ServiceController _sut;
+        private Mock<ISessionStorageService> _mockSessionStorageService;
+        private Mock<IUserService> _mockUserService;
 
         [SetUp]
         public void Setup()
@@ -39,12 +43,16 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Controllers
             _mockHttpContext = new Mock<HttpContext>();
             _mockResponse = new Mock<HttpResponse>();
             _mockCookies = new Mock<IResponseCookies>();
+            _mockSessionStorageService = new Mock<ISessionStorageService>();
+            _mockUserService = new Mock<IUserService>();
 
             _mockResponse.Setup(r => r.Cookies).Returns(_mockCookies.Object);
             _mockHttpContext.Setup(h => h.Response).Returns(_mockResponse.Object);
             _mockContextAccessor.Setup(c => c.HttpContext).Returns(_mockHttpContext.Object);
 
-            _sut = new ServiceController(_mockConfig.Object, _mockStubAuthService.Object, _mockContextAccessor.Object);
+            _mockUserService.Setup(u => u.GetUserId()).Returns((Guid?)null);
+
+            _sut = new ServiceController(_mockConfig.Object, _mockStubAuthService.Object, _mockContextAccessor.Object, _mockSessionStorageService.Object, _mockUserService.Object);
         }
 
         [TearDown]
@@ -113,6 +121,36 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Controllers
             signOutResult.Properties.Parameters["id_token"].Should().Be(expectedToken);
         }
 
+        [Test]
+        public async Task SignOut_Should_Clear_UserSession_When_UserId_Present()
+        {
+            // Arrange
+            var userId = Guid.NewGuid();
+            _mockUserService.Setup(u => u.GetUserId()).Returns(userId);
+
+            var expectedToken = "id123";
+            var authServiceMock = new Mock<IAuthenticationService>();
+            authServiceMock
+                .Setup(a => a.AuthenticateAsync(_mockHttpContext.Object, It.IsAny<string>()))
+                .ReturnsAsync(AuthenticateResult.Success(
+                    ticket: new AuthenticationTicket(new ClaimsPrincipal(), new AuthenticationProperties
+                    {
+                        Items = { { ".Token.id_token", expectedToken } }
+                    },
+                    CookieAuthenticationDefaults.AuthenticationScheme)));
+
+            var serviceProviderMock = new Mock<IServiceProvider>();
+            serviceProviderMock.Setup(sp => sp.GetService(typeof(IAuthenticationService))).Returns(authServiceMock.Object);
+            _mockHttpContext.Setup(h => h.RequestServices).Returns(serviceProviderMock.Object);
+
+            _mockConfig.Setup(c => c["StubAuth"]).Returns("false");
+
+            // Act
+            await _sut.SignOut();
+
+            // Assert
+            _mockSessionStorageService.Verify(s => s.ClearUserSession(userId), Times.Once);
+        }
 
         [Test]
         public void SignOutCleanup_Should_Delete_Auth_Cookie()

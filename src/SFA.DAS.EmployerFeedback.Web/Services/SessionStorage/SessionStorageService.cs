@@ -100,5 +100,21 @@ namespace SFA.DAS.EmployerFeedback.Web.Services.SessionStorage
                 SlidingExpiration = TimeSpan.FromMinutes(_slidingExpirationMinutes)
             });
         }
+
+        public async Task ClearUserSession(Guid userId)
+        {
+            var keys = new[]
+            {
+                userId.ToString(),
+                $"{userId}_PagingState",
+                $"{userId}_FeedbackSource",
+                $"{userId}_Providers"
+            };
+
+            foreach (var key in keys)
+            {
+                await _sessionCache.RemoveAsync(_environment + "_" + key);
+            }
+        }
     }
 }

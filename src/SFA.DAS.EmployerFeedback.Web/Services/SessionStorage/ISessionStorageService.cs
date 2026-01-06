@@ -19,5 +19,6 @@ namespace SFA.DAS.EmployerFeedback.Web.Services.SessionStorage
         Task SetFeedbackSource(Guid userId, FeedbackSource feedbackSource);
         Task<List<ProviderSearchViewModel.EmployerTrainingProvider>> GetProviders(Guid userId);
         Task SetProviders(Guid userId, List<ProviderSearchViewModel.EmployerTrainingProvider> providers);
+        Task ClearUserSession(Guid userId);
     }
 }

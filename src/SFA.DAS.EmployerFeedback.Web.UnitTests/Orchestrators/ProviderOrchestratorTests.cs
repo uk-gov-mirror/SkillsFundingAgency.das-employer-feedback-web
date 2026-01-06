@@ -360,6 +360,44 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Orchestrators
         }
 
         [Test]
+        public async Task CreateNewSurvey_Should_Default_FeedbackSource_To_AdHoc_When_Not_Set_In_Session()
+        {
+            // Arrange
+            var viewModel = new ProviderConfirmViewModel
+            {
+                AccountId = 200,
+                EncodedAccountId = "ENC999",
+                ProviderId = 87654321,
+                ProviderName = "Another Provider"
+            };
+
+            var attributes = new List<QuestionAttribute>
+            {
+                new QuestionAttribute { AttributeId = 2, AttributeName = "Friendly" }
+            };
+
+            _mockMediator.Setup(m => m.Send(It.IsAny<GetAllQuestionAttributesQuery>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(attributes);
+
+            _mockSessionService.Setup(s => s.GetFeedbackSource(_userId)).ReturnsAsync(default(FeedbackSource));
+
+            // Act
+            await _sut.CreateNewSurvey(viewModel);
+
+            // Assert
+            _mockSessionService.Verify(s => s.SetFeedbackSource(_userId, FeedbackSource.AdHoc), Times.Once);
+
+            _mockSessionService.Verify(s => s.SetSurveyModel(_userId,
+                It.Is<SurveyModel>(m =>
+                    m.AccountId == 200 &&
+                    m.EncodedAccountId == "ENC999" &&
+                    m.Ukprn == 87654321 &&
+                    m.ProviderName == "Another Provider" &&
+                    m.Attributes.Any(a => a.AttributeId == 2 && a.Name == "Friendly") &&
+                    m.FeedbackSource == FeedbackSource.AdHoc)), Times.Once);
+        }
+
+        [Test]
         public void CreateNewSurvey_Should_Throw_When_Attributes_Null()
         {
             // Arrange
