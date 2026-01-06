@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
 using SFA.DAS.EmployerFeedback.Web.Controllers;
@@ -33,6 +34,7 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Controllers
         private ServiceController _sut;
         private Mock<ISessionStorageService> _mockSessionStorageService;
         private Mock<IUserService> _mockUserService;
+        private Mock<ILogger<ServiceController>> _mockLogger;
 
         [SetUp]
         public void Setup()
@@ -45,6 +47,7 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Controllers
             _mockCookies = new Mock<IResponseCookies>();
             _mockSessionStorageService = new Mock<ISessionStorageService>();
             _mockUserService = new Mock<IUserService>();
+            _mockLogger = new Mock<ILogger<ServiceController>>();
 
             _mockResponse.Setup(r => r.Cookies).Returns(_mockCookies.Object);
             _mockHttpContext.Setup(h => h.Response).Returns(_mockResponse.Object);
@@ -52,7 +55,7 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Controllers
 
             _mockUserService.Setup(u => u.GetUserId()).Returns((Guid?)null);
 
-            _sut = new ServiceController(_mockConfig.Object, _mockStubAuthService.Object, _mockContextAccessor.Object, _mockSessionStorageService.Object, _mockUserService.Object);
+            _sut = new ServiceController(_mockConfig.Object, _mockStubAuthService.Object, _mockContextAccessor.Object, _mockSessionStorageService.Object, _mockUserService.Object, _mockLogger.Object);
         }
 
         [TearDown]

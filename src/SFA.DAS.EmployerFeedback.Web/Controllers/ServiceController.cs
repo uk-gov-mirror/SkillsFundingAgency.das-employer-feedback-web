@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
@@ -7,6 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using SFA.DAS.EmployerFeedback.Web.Models.Home;
 using SFA.DAS.GovUK.Auth.Models;
 using SFA.DAS.GovUK.Auth.Services;
@@ -30,19 +32,22 @@ namespace SFA.DAS.EmployerFeedback.Web.Controllers
         private readonly IHttpContextAccessor _contextAccessor;
         private readonly ISessionStorageService _sessionStorageService;
         private readonly IUserService _userService;
+        private readonly ILogger<ServiceController> _logger;
 
         public ServiceController(
             IConfiguration config,
             IStubAuthenticationService stubAuthenticationService,
             IHttpContextAccessor contextAccessor,
             ISessionStorageService sessionStorageService,
-            IUserService userService)
+            IUserService userService,
+            ILogger<ServiceController> logger)
         {
             _config = config;
             _contextAccessor = contextAccessor;
             _stubAuthenticationService = stubAuthenticationService;
             _sessionStorageService = sessionStorageService;
             _userService = userService;
+            _logger = logger;
         }
 
         [HttpGet]
@@ -57,9 +62,9 @@ namespace SFA.DAS.EmployerFeedback.Web.Controllers
                 {
                     await _sessionStorageService.ClearUserSession(maybeUserId.Value);
                 }
-                catch
+                catch (Exception ex)
                 {
-
+                    _logger?.LogWarning(ex, "Failed to clear distributed session cache for user {UserId}", maybeUserId.Value);
                 }
             }
 
