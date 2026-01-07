@@ -141,13 +141,9 @@ namespace SFA.DAS.EmployerFeedback.Web.Orchestrators
 
             var providerAttributes = questionAttributes.Select(s => new ProviderAttributeModel { AttributeId = s.AttributeId, Name = s.AttributeName }).ToList();
             var userId = GetUserId();
-            var feedbackSource = await _sessionService.GetFeedbackSource(userId);
+            var source = await _sessionService.GetFeedbackSource(userId);
 
-            if (!System.Enum.IsDefined(typeof(FeedbackSource), feedbackSource))
-            {
-                feedbackSource = FeedbackSource.AdHoc;
-                await _sessionService.SetFeedbackSource(userId, feedbackSource);
-            }
+            var feedbackSource = source.HasValue ? source.Value : FeedbackSource.AdHoc;
 
             var survey = new SurveyModel
             {
@@ -159,6 +155,11 @@ namespace SFA.DAS.EmployerFeedback.Web.Orchestrators
                 Attributes = providerAttributes,
                 FeedbackSource = feedbackSource
             };
+
+            if (!source.HasValue)
+            {
+                await _sessionService.SetFeedbackSource(userId, feedbackSource);
+            }
 
             await _sessionService.SetSurveyModel(userId, survey);
         }

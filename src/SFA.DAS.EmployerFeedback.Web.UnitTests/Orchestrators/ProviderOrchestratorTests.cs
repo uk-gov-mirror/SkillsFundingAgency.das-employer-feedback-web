@@ -379,7 +379,7 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Orchestrators
             _mockMediator.Setup(m => m.Send(It.IsAny<GetAllQuestionAttributesQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(attributes);
 
-            _mockSessionService.Setup(s => s.GetFeedbackSource(_userId)).ReturnsAsync(default(FeedbackSource));
+            _mockSessionService.Setup(s => s.GetFeedbackSource(_userId)).ReturnsAsync((FeedbackSource?)null);
 
             // Act
             await _sut.CreateNewSurvey(viewModel);

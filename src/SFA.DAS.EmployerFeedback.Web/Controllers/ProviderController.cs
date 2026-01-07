@@ -40,9 +40,9 @@ namespace SFA.DAS.EmployerFeedback.Web.Controllers
         [Route("providers", Name = ProviderSearchGet)]
         public async Task<IActionResult> ProviderSearch(ProviderSearchRequestModel model)
         {
-            if (Request.Query.ContainsKey("source"))
+            if (model.FeedbackSource.HasValue)
             {
-                await _providerOrchestrator.SetFeedbackSource(model.FeedbackSource);
+                await _providerOrchestrator.SetFeedbackSource(model.FeedbackSource.Value);
             }
 
             await _providerOrchestrator.SetProviderSearchPageIndex(model.PageIndex);
