@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
@@ -7,9 +8,12 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using SFA.DAS.EmployerFeedback.Web.Models.Home;
 using SFA.DAS.GovUK.Auth.Models;
 using SFA.DAS.GovUK.Auth.Services;
+using SFA.DAS.EmployerFeedback.Web.Services.SessionStorage;
+using SFA.DAS.EmployerFeedback.Infrastructure.Services.UserService;
 
 namespace SFA.DAS.EmployerFeedback.Web.Controllers
 {
@@ -26,21 +30,44 @@ namespace SFA.DAS.EmployerFeedback.Web.Controllers
         private readonly IConfiguration _config;
         private readonly IStubAuthenticationService _stubAuthenticationService;
         private readonly IHttpContextAccessor _contextAccessor;
+        private readonly ISessionStorageService _sessionStorageService;
+        private readonly IUserService _userService;
+        private readonly ILogger<ServiceController> _logger;
 
         public ServiceController(
             IConfiguration config,
             IStubAuthenticationService stubAuthenticationService,
-            IHttpContextAccessor contextAccessor)
+            IHttpContextAccessor contextAccessor,
+            ISessionStorageService sessionStorageService,
+            IUserService userService,
+            ILogger<ServiceController> logger)
         {
             _config = config;
             _contextAccessor = contextAccessor;
             _stubAuthenticationService = stubAuthenticationService;
+            _sessionStorageService = sessionStorageService;
+            _userService = userService;
+            _logger = logger;
         }
 
         [HttpGet]
         [Route("signout", Name = SignoutGet)]
         public new async Task<IActionResult> SignOut()
         {
+            // clear distributed cache entries associated with the user if we can determine the user id
+            var maybeUserId = _userService.GetUserId();
+            if (maybeUserId.HasValue)
+            {
+                try
+                {
+                    await _sessionStorageService.ClearUserSession(maybeUserId.Value);
+                }
+                catch (Exception ex)
+                {
+                    _logger?.LogWarning(ex, "Failed to clear distributed session cache for user {UserId}", maybeUserId.Value);
+                }
+            }
+
             var idToken = await _contextAccessor.HttpContext.GetTokenAsync("id_token");
 
             var authenticationProperties = new AuthenticationProperties

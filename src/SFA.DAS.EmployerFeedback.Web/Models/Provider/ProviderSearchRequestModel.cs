@@ -7,7 +7,7 @@ namespace SFA.DAS.EmployerFeedback.Web.Models.Provider
     public class ProviderSearchRequestModel : ProviderSearchSortRequestModel
     {
         [FromQuery(Name = "source")]
-        public FeedbackSource FeedbackSource { get; set; } = FeedbackSource.AdHoc;
+        public FeedbackSource? FeedbackSource { get; set; }
         public int PageIndex { get; set; } = PagingState.DefaultPageIndex;
     }
 }

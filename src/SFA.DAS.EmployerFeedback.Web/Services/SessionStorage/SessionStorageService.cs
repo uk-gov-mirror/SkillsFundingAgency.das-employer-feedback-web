@@ -36,7 +36,7 @@ namespace SFA.DAS.EmployerFeedback.Web.Services.SessionStorage
         {
             await Set(userId.ToString(), surveyModel);
         }
-        
+
         public async Task<SurveyModel> UpdateSurveyModel(Guid userId, Action<SurveyModel> action)
         {
             var surveyModel = await GetSurveyModel(userId) ?? new SurveyModel();
@@ -62,9 +62,20 @@ namespace SFA.DAS.EmployerFeedback.Web.Services.SessionStorage
             return pagingState;
         }
 
-        public async Task<FeedbackSource> GetFeedbackSource(Guid userId)
+        public async Task<FeedbackSource?> GetFeedbackSource(Guid userId)
         {
-            return await Get<FeedbackSource>($"{userId}_FeedbackSource");
+            var value = await GetString($"{userId}_FeedbackSource");
+
+            if (string.IsNullOrWhiteSpace(value))
+                return null;
+
+            if (Enum.TryParse<FeedbackSource>(value, true, out var result)
+                && Enum.IsDefined(typeof(FeedbackSource), result))
+            {
+                return result;
+            }
+
+            return null;
         }
 
         public async Task SetFeedbackSource(Guid userId, FeedbackSource feedbackSource)
@@ -99,6 +110,22 @@ namespace SFA.DAS.EmployerFeedback.Web.Services.SessionStorage
             {
                 SlidingExpiration = TimeSpan.FromMinutes(_slidingExpirationMinutes)
             });
+        }
+
+        public async Task ClearUserSession(Guid userId)
+        {
+            var keys = new[]
+            {
+                userId.ToString(),
+                $"{userId}_PagingState",
+                $"{userId}_FeedbackSource",
+                $"{userId}_Providers"
+            };
+
+            foreach (var key in keys)
+            {
+                await _sessionCache.RemoveAsync(_environment + "_" + key);
+            }
         }
     }
 }

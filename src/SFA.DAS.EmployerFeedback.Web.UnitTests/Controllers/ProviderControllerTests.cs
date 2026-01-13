@@ -45,7 +45,7 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Controllers
         public async Task ProviderSearch_Get_Should_Call_Orchestrator_And_Return_View()
         {
             // Arrange
-            var request = new ProviderSearchRequestModel { EncodedAccountId = "ABC123", PageIndex = 2, FeedbackSource = FeedbackSource.AdHoc };
+            var request = new ProviderSearchRequestModel { EncodedAccountId = "ABC123", PageIndex = 2, FeedbackSource = FeedbackSource.Email };
             var viewModel = new ProviderSearchViewModel
             {
                 Providers = new PaginatedList<ProviderSearchViewModel.EmployerTrainingProvider>(new List<ProviderSearchViewModel.EmployerTrainingProvider>(), 0, 1, 10, 10)
@@ -56,7 +56,7 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Controllers
             var result = await _sut.ProviderSearch(request);
 
             // Assert
-            _mockOrchestrator.Verify(o => o.SetFeedbackSource(request.FeedbackSource), Times.Once);
+            _mockOrchestrator.Verify(o => o.SetFeedbackSource(FeedbackSource.Email), Times.Once);
             _mockOrchestrator.Verify(o => o.SetProviderSearchPageIndex(2), Times.Once);
             _mockOrchestrator.Verify(o => o.GetProviderSearchViewModel(request), Times.Once);
             _mockOrchestrator.Verify(o => o.SetProviders(It.IsAny<List<ProviderSearchViewModel.EmployerTrainingProvider>>()), Times.Once);
