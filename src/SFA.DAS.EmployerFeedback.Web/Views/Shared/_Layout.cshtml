@@ -76,8 +76,8 @@
     <script src="js/app.min.js"></script>
     <script src="/js/application.js" no-cdn></script>
     <script>
-        window.GOVUKFrontend.initAll();
-        window.DASFrontend.initAll();
+        window.GOVUKFrontend && window.GOVUKFrontend.initAll && window.GOVUKFrontend.initAll();
+        window.DASFrontend && window.DASFrontend.initAll && window.DASFrontend.initAll();
     </script>
 
     <script type="text/javascript">
