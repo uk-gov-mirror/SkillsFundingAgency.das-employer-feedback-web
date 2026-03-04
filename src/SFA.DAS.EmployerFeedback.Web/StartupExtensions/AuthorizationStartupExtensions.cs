@@ -2,6 +2,7 @@
 using SFA.DAS.EmployerFeedback.Web.Authorization;
 using SFA.DAS.GovUK.Auth.Authentication;
 using System.Diagnostics.CodeAnalysis;
+using PolicyNames = SFA.DAS.EmployerFeedback.Web.Authorization.PolicyNames;
 
 namespace SFA.DAS.EmployerFeedback.Web.StartupExtensions
 {
