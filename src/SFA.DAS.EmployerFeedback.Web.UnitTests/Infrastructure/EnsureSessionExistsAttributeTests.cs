@@ -21,7 +21,7 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Infrastructure
     [TestFixture]
     public class EnsureSessionExistsAttributeTests
     {
-        private Mock<ISessionStorageService> _session;
+        private Mock<ISessionService> _session;
         private Mock<ILogger<EnsureSessionExistsAttribute>> _sessionLogger;
         private Mock<IUserService> _userService;
 
@@ -30,7 +30,7 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Infrastructure
         [SetUp]
         public void SetUp()
         {
-            _session = new Mock<ISessionStorageService>(MockBehavior.Strict);
+            _session = new Mock<ISessionService>(MockBehavior.Strict);
             _sessionLogger = new Mock<ILogger<EnsureSessionExistsAttribute>>();
             _userService = new Mock<IUserService>(MockBehavior.Strict);
 

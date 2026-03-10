@@ -8,7 +8,6 @@ using SFA.DAS.EmployerFeedback.Infrastructure.Api.Types;
 using SFA.DAS.EmployerFeedback.Infrastructure.Configuration;
 using SFA.DAS.EmployerFeedback.Infrastructure.Services.UserService;
 using SFA.DAS.EmployerFeedback.Services;
-using SFA.DAS.EmployerFeedback.Web.Extensions;
 using SFA.DAS.EmployerFeedback.Web.Models.ReviewAnswers;
 using SFA.DAS.EmployerFeedback.Web.Models.ReviewAnswers.ReviewAnswers;
 using SFA.DAS.EmployerFeedback.Web.Models.Shared;
@@ -19,7 +18,7 @@ namespace SFA.DAS.EmployerFeedback.Web.Orchestrators
 {
     public class ReviewAnswersOrchestrator : BaseOrchestrator, IReviewAnswersOrchestrator
     {
-        private readonly ISessionStorageService _sessionService;
+        private readonly ISessionService _sessionService;
         private readonly ITrainingProviderService _trainingProviderService;
         private readonly IAccountsLinkService _accountsLinkService;
         private readonly IMediator _mediator;
@@ -27,7 +26,7 @@ namespace SFA.DAS.EmployerFeedback.Web.Orchestrators
 
         public ReviewAnswersOrchestrator(IUserService userService,
             ILogger<ReviewAnswersOrchestrator> logger,
-            ISessionStorageService sessionService,
+            ISessionService sessionService,
             ITrainingProviderService trainingProviderService,
             IAccountsLinkService accountsLinkService,
             IMediator mediator,

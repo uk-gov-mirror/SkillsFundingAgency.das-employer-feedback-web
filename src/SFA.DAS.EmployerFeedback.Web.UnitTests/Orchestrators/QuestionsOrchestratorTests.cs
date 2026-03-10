@@ -21,7 +21,7 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Orchestrators
     [TestFixture]
     public class QuestionsOrchestratorTests
     {
-        private Mock<ISessionStorageService> _mockSessionService;
+        private Mock<ISessionService> _mockSessionService;
         private Mock<IValidator<QuestionOneStrengthsViewModel>> _mockQ1Validator;
         private Mock<IValidator<QuestionTwoWeaknessesViewModel>> _mockQ2Validator;
         private Mock<IValidator<QuestionThreeRatingViewModel>> _mockQ3Validator;
@@ -34,7 +34,7 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Orchestrators
         [SetUp]
         public void Setup()
         {
-            _mockSessionService = new Mock<ISessionStorageService>();
+            _mockSessionService = new Mock<ISessionService>();
             _mockQ1Validator = new Mock<IValidator<QuestionOneStrengthsViewModel>>();
             _mockQ2Validator = new Mock<IValidator<QuestionTwoWeaknessesViewModel>>();
             _mockQ3Validator = new Mock<IValidator<QuestionThreeRatingViewModel>>();

@@ -18,7 +18,7 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Controllers
     [TestFixture]
     public class QuestionsControllerTests
     {
-        private Mock<ISessionStorageService> _mockSessionService;
+        private Mock<ISessionService> _mockSessionService;
         private Mock<IUserService> _mockUserService;
         private Mock<ILogger<QuestionsController>> _mockLogger;
         private Mock<IQuestionsOrchestrator> _mockOrchestrator;
@@ -27,7 +27,7 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Controllers
         [SetUp]
         public void Setup()
         {
-            _mockSessionService = new Mock<ISessionStorageService>();
+            _mockSessionService = new Mock<ISessionService>();
             _mockUserService = new Mock<IUserService>();
             _mockLogger = new Mock<ILogger<QuestionsController>>();
             _mockOrchestrator = new Mock<IQuestionsOrchestrator>();

@@ -11,11 +11,11 @@ namespace SFA.DAS.EmployerFeedback.Web.Services.SessionStorage
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
     public class EnsureSessionExistsAttribute : ActionFilterAttribute
     {
-        private readonly ISessionStorageService _sessionService;
+        private readonly ISessionService _sessionService;
         private readonly IUserService _userService;
         private readonly ILogger<EnsureSessionExistsAttribute> _logger;
 
-        public EnsureSessionExistsAttribute(ISessionStorageService sessionService, ILogger<EnsureSessionExistsAttribute> logger, IUserService userService)
+        public EnsureSessionExistsAttribute(ISessionService sessionService, ILogger<EnsureSessionExistsAttribute> logger, IUserService userService)
         {
             _sessionService = sessionService;
             _logger = logger;

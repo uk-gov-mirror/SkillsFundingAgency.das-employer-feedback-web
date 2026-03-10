@@ -22,13 +22,13 @@ namespace SFA.DAS.EmployerFeedback.Web.Orchestrators
 {
     public class ProviderOrchestrator : BaseOrchestrator, IProviderOrchestrator
     {
-        private readonly ISessionStorageService _sessionService;
+        private readonly ISessionService _sessionService;
         private readonly ITrainingProviderService _trainingProviderService;
         private readonly IMediator _mediator;
         private readonly IAccountsLinkService _accountsLinkService;
         private readonly IValidator<ProviderConfirmViewModel> _providerConfirmViewModelValidator;
 
-        public ProviderOrchestrator(ISessionStorageService sessionService,
+        public ProviderOrchestrator(ISessionService sessionService,
             IUserService userService,
             ILogger<ProviderOrchestrator> logger,
             ITrainingProviderService trainingProviderService,

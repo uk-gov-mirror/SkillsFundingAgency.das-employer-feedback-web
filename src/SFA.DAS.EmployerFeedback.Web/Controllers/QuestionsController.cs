@@ -29,7 +29,7 @@ namespace SFA.DAS.EmployerFeedback.Web.Controllers
 
         private readonly IQuestionsOrchestrator _questionsOrchestrator;
 
-        public QuestionsController(ISessionStorageService sessionService, IUserService userService, 
+        public QuestionsController(ISessionService sessionService, IUserService userService, 
             ILogger<QuestionsController> logger, IQuestionsOrchestrator questionsOrchestrator)
             : base(userService, logger)
         {

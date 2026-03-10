@@ -12,12 +12,12 @@ namespace SFA.DAS.EmployerFeedback.Web.Orchestrators
 {
     public class QuestionsOrchestrator : BaseOrchestrator, IQuestionsOrchestrator
     {
-        private readonly ISessionStorageService _sessionService;
+        private readonly ISessionService _sessionService;
         private readonly IValidator<QuestionOneStrengthsViewModel> _questionOneStrengthsViewModelValidator;
         private readonly IValidator<QuestionTwoWeaknessesViewModel> _questionTwoWeaknessesViewModelValidator;
         private readonly IValidator<QuestionThreeRatingViewModel> _questionThreeRatingViewModelValidator;
 
-        public QuestionsOrchestrator(ISessionStorageService sessionService, ILogger<QuestionsOrchestrator> logger,
+        public QuestionsOrchestrator(ISessionService sessionService, ILogger<QuestionsOrchestrator> logger,
             IUserService userService,
             IValidator<QuestionOneStrengthsViewModel> questionOneStrengthsViewModelValidator,
             IValidator<QuestionTwoWeaknessesViewModel> questionTwoWeaknessesViewModelValidator,

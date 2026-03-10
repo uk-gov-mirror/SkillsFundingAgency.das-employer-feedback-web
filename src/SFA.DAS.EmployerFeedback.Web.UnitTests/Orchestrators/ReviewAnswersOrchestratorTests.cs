@@ -26,7 +26,7 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Orchestrators
     [TestFixture]
     public class ReviewAnswersOrchestratorTests
     {
-        private Mock<ISessionStorageService> _mockSessionService;
+        private Mock<ISessionService> _mockSessionService;
         private Mock<ITrainingProviderService> _mockTrainingProviderService;
         private Mock<IAccountsLinkService> _mockAccountsLinkService;
         private Mock<IMediator> _mockMediator;
@@ -40,7 +40,7 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Orchestrators
         [SetUp]
         public void Setup()
         {
-            _mockSessionService = new Mock<ISessionStorageService>();
+            _mockSessionService = new Mock<ISessionService>();
             _mockTrainingProviderService = new Mock<ITrainingProviderService>();
             _mockAccountsLinkService = new Mock<IAccountsLinkService>();
             _mockMediator = new Mock<IMediator>();

@@ -32,7 +32,7 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Controllers
         private Mock<IResponseCookies> _mockCookies;
         private Mock<HttpResponse> _mockResponse;
         private ServiceController _sut;
-        private Mock<ISessionStorageService> _mockSessionStorageService;
+        private Mock<ISessionService> _mockSessionStorageService;
         private Mock<IUserService> _mockUserService;
         private Mock<ILogger<ServiceController>> _mockLogger;
 
@@ -45,7 +45,7 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Controllers
             _mockHttpContext = new Mock<HttpContext>();
             _mockResponse = new Mock<HttpResponse>();
             _mockCookies = new Mock<IResponseCookies>();
-            _mockSessionStorageService = new Mock<ISessionStorageService>();
+            _mockSessionStorageService = new Mock<ISessionService>();
             _mockUserService = new Mock<IUserService>();
             _mockLogger = new Mock<ILogger<ServiceController>>();
 

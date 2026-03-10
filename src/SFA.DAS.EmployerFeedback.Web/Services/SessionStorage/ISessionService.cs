@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace SFA.DAS.EmployerFeedback.Web.Services.SessionStorage
 {
-    public interface ISessionStorageService
+    public interface ISessionService
     {
         Task<SurveyModel> GetSurveyModel(Guid userId);
         Task SetSurveyModel(Guid userId, SurveyModel surveyModel);
@@ -20,5 +20,6 @@ namespace SFA.DAS.EmployerFeedback.Web.Services.SessionStorage
         Task<List<ProviderSearchViewModel.EmployerTrainingProvider>> GetProviders(Guid userId);
         Task SetProviders(Guid userId, List<ProviderSearchViewModel.EmployerTrainingProvider> providers);
         Task ClearUserSession(Guid userId);
+
     }
 }
