@@ -47,7 +47,7 @@ namespace SFA.DAS.EmployerFeedback.Web.Orchestrators
         public async Task<ProviderSearchViewModel> GetProviderSearchViewModel(ProviderSearchRequestModel model)
         {
             var userId = GetUserId();
-            var pagingState = await _sessionService.GetPagingState(userId);
+            var pagingState = await _sessionService.GetPagingState();
 
             var viewModel = await _trainingProviderService.GetTrainingProviderSearchViewModel(
                 model.AccountId,
@@ -68,7 +68,7 @@ namespace SFA.DAS.EmployerFeedback.Web.Orchestrators
 
         public async Task SetProviderSearchPageIndex(int pageIndex)
         {
-            await _sessionService.UpdatePagingState(GetUserId(), (pagingState) =>
+            await _sessionService.UpdatePagingState((pagingState) =>
             {
                 pagingState.PageIndex = pageIndex;
             });
@@ -86,7 +86,7 @@ namespace SFA.DAS.EmployerFeedback.Web.Orchestrators
 
         public async Task UpdateProviderSearchFilters(ProviderSearchViewModel viewModel)
         {
-            await _sessionService.UpdatePagingState(GetUserId(), (PagingState pagingState) =>
+            await _sessionService.UpdatePagingState((PagingState pagingState) =>
             {
                 pagingState.PageIndex = PagingState.DefaultPageIndex;
                 pagingState.SelectedProviderName = viewModel.SelectedProviderName;
@@ -96,12 +96,12 @@ namespace SFA.DAS.EmployerFeedback.Web.Orchestrators
 
         public async Task ClearProviderSearchFilters()
         {
-            await _sessionService.SetPagingState(GetUserId(), new PagingState());
+            await _sessionService.SetPagingState(new PagingState());
         }
 
         public async Task SortProviderSearch(SortColumn sortColumn, SortOrder sortOrder)
         {
-            await _sessionService.UpdatePagingState(GetUserId(), (PagingState pagingState) =>
+            await _sessionService.UpdatePagingState((PagingState pagingState) =>
             {
                 pagingState.SortColumn = sortColumn;
                 pagingState.SortOrder = sortOrder;

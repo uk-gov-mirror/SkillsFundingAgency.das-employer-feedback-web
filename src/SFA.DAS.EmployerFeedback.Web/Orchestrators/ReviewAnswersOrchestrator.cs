@@ -92,7 +92,7 @@ namespace SFA.DAS.EmployerFeedback.Web.Orchestrators
         {
             var userId = GetUserId();
             var surveyModel = await _sessionService.GetSurveyModel(userId);
-            await _sessionService.SetPagingState(userId, null);
+            await _sessionService.SetPagingState(null);
 
             var viewModel = new FeedbackConfirmationViewModel
             {

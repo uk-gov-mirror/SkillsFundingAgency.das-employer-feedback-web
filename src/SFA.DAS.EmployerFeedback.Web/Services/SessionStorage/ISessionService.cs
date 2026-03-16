@@ -12,9 +12,9 @@ namespace SFA.DAS.EmployerFeedback.Web.Services.SessionStorage
         Task<SurveyModel> GetSurveyModel(Guid userId);
         Task SetSurveyModel(Guid userId, SurveyModel surveyModel);
         Task<SurveyModel> UpdateSurveyModel(Guid userId, Action<SurveyModel> action);
-        Task<PagingState> GetPagingState(Guid userId);
-        Task SetPagingState(Guid userId, PagingState pagingState);
-        Task<PagingState> UpdatePagingState(Guid userId, Action<PagingState> action);
+        Task<PagingState> GetPagingState();
+        Task SetPagingState(PagingState pagingState);
+        Task<PagingState> UpdatePagingState(Action<PagingState> action);
         Task<FeedbackSource?> GetFeedbackSource(Guid userId);
         Task SetFeedbackSource(Guid userId, FeedbackSource feedbackSource);
         Task<List<ProviderSearchViewModel.EmployerTrainingProvider>> GetProviders(Guid userId);

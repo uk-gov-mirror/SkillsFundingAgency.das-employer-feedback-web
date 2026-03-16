@@ -81,7 +81,7 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Orchestrators
                 SortOrder = SortOrder.Ascending
             };
             var viewModel = new ProviderSearchViewModel();
-            _mockSessionService.Setup(s => s.GetPagingState(_userId)).ReturnsAsync(pagingState);
+            _mockSessionService.Setup(s => s.GetPagingState()).ReturnsAsync(pagingState);
             _mockTrainingProviderService.Setup(t => t.GetTrainingProviderSearchViewModel(
                 model.AccountId, model.EncodedAccountId, _userId, "Test", "Submitted", 10, 2, SortColumn.Default, SortOrder.Ascending))
                 .ReturnsAsync(viewModel);
@@ -109,8 +109,8 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Orchestrators
 
             Action<PagingState> capturedAction = null;
             _mockSessionService
-                .Setup(s => s.UpdatePagingState(_userId, It.IsAny<Action<PagingState>>()))
-                .Callback<Guid, Action<PagingState>>((_, action) => capturedAction = action)
+                .Setup(s => s.UpdatePagingState(It.IsAny<Action<PagingState>>()))
+                .Callback<Action<PagingState>>((action) => capturedAction = action)
                 .ReturnsAsync(new PagingState()); // no need to check what is returned
 
             // Act
@@ -176,8 +176,8 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Orchestrators
 
             Action<PagingState> capturedAction = null;
             _mockSessionService
-                .Setup(s => s.UpdatePagingState(_userId, It.IsAny<Action<PagingState>>()))
-                .Callback<Guid, Action<PagingState>>((_, action) => capturedAction = action)
+                .Setup(s => s.UpdatePagingState(It.IsAny<Action<PagingState>>()))
+                .Callback<Action<PagingState>>((action) => capturedAction = action)
                 .ReturnsAsync(new PagingState()); // no need to check what is returned
 
             // Act
@@ -201,8 +201,7 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Orchestrators
             await _sut.ClearProviderSearchFilters();
 
             // Assert
-            _mockSessionService.Verify(s => s.SetPagingState(
-                _userId,
+            _mockSessionService.Verify(s => s.SetPagingState(                
                 It.Is<PagingState>(p =>
                     p.PageIndex == PagingState.DefaultPageIndex &&
                     p.PageSize == PagingState.DefaultPageSize &&
@@ -213,7 +212,7 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Orchestrators
                 )),
                 Times.Once);
 
-            _mockSessionService.Verify(s => s.UpdatePagingState(_userId, It.IsAny<Action<PagingState>>()), Times.Never);
+            _mockSessionService.Verify(s => s.UpdatePagingState(It.IsAny<Action<PagingState>>()), Times.Never);
         }
 
         [Test]
@@ -234,8 +233,8 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Orchestrators
 
             Action<PagingState> capturedAction = null;
             _mockSessionService
-                .Setup(s => s.UpdatePagingState(_userId, It.IsAny<Action<PagingState>>()))
-                .Callback<Guid, Action<PagingState>>((_, action) => capturedAction = action)
+                .Setup(s => s.UpdatePagingState(It.IsAny<Action<PagingState>>()))
+                .Callback<Action<PagingState>>((action) => capturedAction = action)
                 .ReturnsAsync(new PagingState());
 
             // Act

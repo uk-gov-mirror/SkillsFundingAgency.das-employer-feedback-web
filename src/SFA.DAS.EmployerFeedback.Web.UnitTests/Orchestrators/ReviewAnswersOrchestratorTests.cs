@@ -217,7 +217,7 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Orchestrators
             result.ComplaintToProviderSiteUrl.Should().Be("https://complaints.provider.url");
             result.EmployerAccountsHomeUrl.Should().Be("https://home.url");
 
-            _mockSessionService.Verify(s => s.SetPagingState(_userId, null), Times.Once);
+            _mockSessionService.Verify(s => s.SetPagingState(null), Times.Once);
         }
 
         [Test]

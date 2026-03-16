@@ -144,7 +144,7 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Services
                 .Returns(ToJson(expectedItem));
 
             // Act
-            var result = await _sessionService.GetPagingState(_userId);
+            var result = await _sessionService.GetPagingState();
 
             // Assert
             result.PageIndex.Should().Be(2);
@@ -159,7 +159,7 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Services
                 .Returns((string?)null);
 
             // Act
-            var result = await _sessionService.GetPagingState(_userId);
+            var result = await _sessionService.GetPagingState();
 
             // Assert
             result.Should().BeEquivalentTo(new PagingState());
@@ -184,7 +184,7 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Services
                 });
             
             // Act
-            await _sessionService.SetPagingState(_userId, pagingState);
+            await _sessionService.SetPagingState(pagingState);
 
             // Assert
             storedKey.Should().Be("PagingState");
@@ -208,7 +208,7 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Services
                 });               
 
             // Act
-            var result = await _sessionService.UpdatePagingState(_userId, x => x.PageIndex = 9);
+            var result = await _sessionService.UpdatePagingState(x => x.PageIndex = 9);
 
             // Assert
             result.PageIndex.Should().Be(9);

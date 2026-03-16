@@ -50,7 +50,7 @@ namespace SFA.DAS.EmployerFeedback.Web.Services.SessionStorage
             return surveyModel;
         }
 
-        public Task<PagingState> GetPagingState(Guid userId)
+        public Task<PagingState> GetPagingState()
         {
             var json = _sessionStorageService.Get(PagingStateKey);            
 
@@ -64,17 +64,17 @@ namespace SFA.DAS.EmployerFeedback.Web.Services.SessionStorage
             return Task.FromResult(result);
         }
 
-        public Task SetPagingState(Guid userId, PagingState pagingState)
+        public Task SetPagingState(PagingState pagingState)
         {
              _sessionStorageService.Set(PagingStateKey, JsonSerializer.Serialize(pagingState)); 
             return Task.CompletedTask;
         }
 
-        public async Task<PagingState> UpdatePagingState(Guid userId, Action<PagingState> action)
+        public async Task<PagingState> UpdatePagingState(Action<PagingState> action)
         {
-            var pagingState = await GetPagingState(userId) ?? new PagingState();
+            var pagingState = await GetPagingState() ?? new PagingState();
             action(pagingState);
-            await SetPagingState(userId, pagingState);
+            await SetPagingState(pagingState);
             return pagingState;
         }
 
