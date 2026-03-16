@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Http;
-using System.Threading.Tasks;
 
 namespace SFA.DAS.EmployerFeedback.Infrastructure.Services.SessionStorage
 {
@@ -12,29 +11,23 @@ namespace SFA.DAS.EmployerFeedback.Infrastructure.Services.SessionStorage
             _httpContextAccessor = httpContextAccessor;            
         }
 
-        public Task SetAsync(string key, string value)
+        public void Set(string key, string value)
         {
-            SetString(key, value);
-            return Task.CompletedTask;
+            Session?.SetString(key, value);
+           
         }
 
-        public Task<string?> GetAsync(string key)
+        public string? Get(string key)
         {
-            return Task.FromResult(GetString(key));
+            return Session?.GetString(key);
         }
 
-        public Task ClearAsync(string key)
+        public void Clear(string key)
         {
-            Remove(key);
-            return Task.CompletedTask;
+            Session?.Remove(key);
+           
         }
 
         private ISession? Session => _httpContextAccessor.HttpContext?.Session;
-
-        private string? GetString(string key) => Session?.GetString(key);
-
-        private void SetString(string key, string value) => Session?.SetString(key, value);
-
-        private void Remove(string key) => Session?.Remove(key);
     }
 }

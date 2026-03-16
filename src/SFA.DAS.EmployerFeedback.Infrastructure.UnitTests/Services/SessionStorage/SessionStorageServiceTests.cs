@@ -29,14 +29,14 @@ namespace SFA.DAS.EmployerFeedback.Infrastructure.UnitTests.Services.SessionStor
         }
 
         [Test]
-        public async Task SetAsync_ShouldStoreItemInSession()
+        public void  Set_ShouldStoreItemInSession()
         {
             // Arrange
             var key = "testKey";
             var value = "testValue";
 
             // Act
-            await _sessionStorageService.SetAsync(key, value);
+             _sessionStorageService.Set(key, value);
 
             // Assert
             _sessionMock.Verify(x => x.Set(
@@ -46,7 +46,7 @@ namespace SFA.DAS.EmployerFeedback.Infrastructure.UnitTests.Services.SessionStor
         }
 
         [Test]
-        public async Task GetAsync_ShouldReturnItemFromSession()
+        public void Get_ShouldReturnItemFromSession()
         {
             // Arrange
             var key = "testKey";
@@ -62,14 +62,14 @@ namespace SFA.DAS.EmployerFeedback.Infrastructure.UnitTests.Services.SessionStor
                 .Returns(true);
 
             // Act
-            var result = await _sessionStorageService.GetAsync(key);
+            var result =  _sessionStorageService.Get(key);
 
             // Assert
             result.Should().Be(expectedValue);
         }
 
         [Test]
-        public async Task GetAsync_ShouldReturnNullWhenItemNotInSession()
+        public void Get_ShouldReturnNullWhenItemNotInSession()
         {
             // Arrange
             var key = "testKey";
@@ -80,20 +80,20 @@ namespace SFA.DAS.EmployerFeedback.Infrastructure.UnitTests.Services.SessionStor
                 .Returns(false);
 
             // Act
-            var result = await _sessionStorageService.GetAsync(key);
+            var result = _sessionStorageService.Get(key);
 
             // Assert
             result.Should().BeNull();
         }
 
         [Test]
-        public async Task ClearAsync_ShouldRemoveItemFromSession()
+        public async Task Clear_ShouldRemoveItemFromSession()
         {
             // Arrange
             var key = "testKey";
 
             // Act
-            await _sessionStorageService.ClearAsync(key);
+            _sessionStorageService.Clear(key);
 
             // Assert
             _sessionMock.Verify(x => x.Remove(key), Times.Once);

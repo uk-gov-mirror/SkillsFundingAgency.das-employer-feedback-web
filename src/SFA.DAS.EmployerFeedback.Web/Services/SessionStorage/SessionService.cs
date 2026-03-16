@@ -1,5 +1,4 @@
-﻿using MediatR;
-using SFA.DAS.EmployerFeedback.Domain.Types;
+﻿using SFA.DAS.EmployerFeedback.Domain.Types;
 using SFA.DAS.EmployerFeedback.Infrastructure.Services.SessionStorage;
 using SFA.DAS.EmployerFeedback.Web.Models.Shared;
 using SFA.DAS.EmployerFeedback.Web.Paging;
@@ -13,15 +12,19 @@ namespace SFA.DAS.EmployerFeedback.Web.Services.SessionStorage
     public class SessionService : ISessionService
     {
         private readonly ISessionStorageService _sessionStorageService;
-        private readonly IMediator _mediator;
-        public SessionService(ISessionStorageService sessionStorageService, IMediator mediator)
+        private const string SurveyModelKey = "SurveyModel";
+        private const string PagingStateKey = "PagingState"; 
+        private const string FeedbackSourceKey = "FeedbackSource";
+        private const string ProvidersKey = "Providers";       
+        
+        public SessionService(ISessionStorageService sessionStorageService)
         {
-            _sessionStorageService = sessionStorageService;
-            _mediator = mediator;
+            _sessionStorageService = sessionStorageService;          
         }
-        public async Task<SurveyModel> GetSurveyModel(Guid userId)
+
+        public  Task<SurveyModel> GetSurveyModel(Guid userId)
         {
-            var json = await _sessionStorageService.GetAsync(userId.ToString());
+            var json = _sessionStorageService.Get(SurveyModelKey);
             var result = new SurveyModel();
 
             if (!string.IsNullOrWhiteSpace(json))
@@ -29,13 +32,14 @@ namespace SFA.DAS.EmployerFeedback.Web.Services.SessionStorage
                 result = JsonSerializer.Deserialize<SurveyModel>(json);
             }
 
-            return result;            
+            return Task.FromResult(result);            
         }
 
-        public async Task SetSurveyModel(Guid userId, SurveyModel surveyModel)
+        public Task SetSurveyModel(Guid userId, SurveyModel surveyModel)
         {
-            await _sessionStorageService.SetAsync(userId.ToString(), JsonSerializer.Serialize(surveyModel));
-            
+            _sessionStorageService.Set(SurveyModelKey, JsonSerializer.Serialize(surveyModel));
+
+            return Task.CompletedTask;            
         }
 
         public async Task<SurveyModel> UpdateSurveyModel(Guid userId, Action<SurveyModel> action)
@@ -46,9 +50,9 @@ namespace SFA.DAS.EmployerFeedback.Web.Services.SessionStorage
             return surveyModel;
         }
 
-        public async Task<PagingState> GetPagingState(Guid userId)
+        public Task<PagingState> GetPagingState(Guid userId)
         {
-            var json = await _sessionStorageService.GetAsync($"{userId}_PagingState");            
+            var json = _sessionStorageService.Get(PagingStateKey);            
 
             var result = new PagingState();
 
@@ -57,12 +61,13 @@ namespace SFA.DAS.EmployerFeedback.Web.Services.SessionStorage
                 result = JsonSerializer.Deserialize<PagingState>(json);
             }
 
-            return result;
+            return Task.FromResult(result);
         }
 
-        public async Task SetPagingState(Guid userId, PagingState pagingState)
+        public Task SetPagingState(Guid userId, PagingState pagingState)
         {
-            await _sessionStorageService.SetAsync($"{userId}_PagingState", JsonSerializer.Serialize(pagingState));            
+             _sessionStorageService.Set(PagingStateKey, JsonSerializer.Serialize(pagingState)); 
+            return Task.CompletedTask;
         }
 
         public async Task<PagingState> UpdatePagingState(Guid userId, Action<PagingState> action)
@@ -75,25 +80,26 @@ namespace SFA.DAS.EmployerFeedback.Web.Services.SessionStorage
 
         public async Task<FeedbackSource?> GetFeedbackSource(Guid userId)
         {
-            var json = await _sessionStorageService.GetAsync($"{userId}_FeedbackSource");
-            var result = new FeedbackSource();
+            var json = _sessionStorageService.Get(FeedbackSourceKey);           
 
-            if (!string.IsNullOrWhiteSpace(json))
+            if (string.IsNullOrWhiteSpace(json))
             {
-                result = JsonSerializer.Deserialize<FeedbackSource>(json);
+                return null;
             }
 
-            return result;
+            var result = JsonSerializer.Deserialize<FeedbackSource>(json);
+            return Enum.IsDefined(typeof(FeedbackSource), result) ? result : null;
         }
 
-        public async Task SetFeedbackSource(Guid userId, FeedbackSource feedbackSource)
+        public Task SetFeedbackSource(Guid userId, FeedbackSource feedbackSource)
         {
-            await _sessionStorageService.SetAsync($"{userId}_FeedbackSource", JsonSerializer.Serialize(feedbackSource));           
+            _sessionStorageService.Set(FeedbackSourceKey, JsonSerializer.Serialize(feedbackSource));  
+            return Task.CompletedTask;
         }
 
-        public async Task<List<ProviderSearchViewModel.EmployerTrainingProvider>> GetProviders(Guid userId)
+        public  Task<List<ProviderSearchViewModel.EmployerTrainingProvider>> GetProviders(Guid userId)
         {
-            var json = await _sessionStorageService.GetAsync($"{userId}_Providers");
+            var json = _sessionStorageService.Get(ProvidersKey);
             var result = new List<ProviderSearchViewModel.EmployerTrainingProvider>();
 
             if (!string.IsNullOrWhiteSpace(json))
@@ -101,18 +107,23 @@ namespace SFA.DAS.EmployerFeedback.Web.Services.SessionStorage
                 result = JsonSerializer.Deserialize<List<ProviderSearchViewModel.EmployerTrainingProvider>>(json);
             }
 
-            return result;            
+            return Task.FromResult(result);            
         }
 
-        public async Task SetProviders(Guid userId, List<ProviderSearchViewModel.EmployerTrainingProvider> providers)
+        public  Task SetProviders(Guid userId, List<ProviderSearchViewModel.EmployerTrainingProvider> providers)
         {
-            await _sessionStorageService.SetAsync($"{userId}_Providers", JsonSerializer.Serialize(providers));
+            _sessionStorageService.Set(ProvidersKey, JsonSerializer.Serialize(providers));
+            return Task.CompletedTask;
 
         }
 
-        public async Task ClearUserSession(Guid userId)
+        public Task ClearUserSession(Guid userId)
         {
-            await _sessionStorageService.ClearAsync(userId.ToString());
+            _sessionStorageService.Clear(SurveyModelKey);
+            _sessionStorageService.Clear(PagingStateKey);
+            _sessionStorageService.Clear(FeedbackSourceKey);
+            _sessionStorageService.Clear(ProvidersKey);
+            return Task.CompletedTask;
         }
     }
 }

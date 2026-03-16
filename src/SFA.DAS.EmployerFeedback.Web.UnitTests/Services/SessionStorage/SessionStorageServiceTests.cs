@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Text.Json;
 using System.Threading.Tasks;
 using FluentAssertions;
-using MediatR;
 using Moq;
 using NUnit.Framework;
 using SFA.DAS.EmployerFeedback.Domain.Types;
@@ -15,19 +14,17 @@ using SFA.DAS.EmployerFeedback.Web.Services.SessionStorage;
 namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Services
 {
     [TestFixture]
-    public class SessionServiceServiceTests
+    public class SessionStorageServiceTests
     {
-        private Mock<ISessionStorageService> _sessionStorageServiceMock;
-        private Mock<IMediator> _mediatorMock;
+        private Mock<ISessionStorageService> _sessionStorageServiceMock;       
         private SessionService _sessionService;
         private Guid _userId;
 
         [SetUp]
         public void Setup()
         {
-            _sessionStorageServiceMock = new Mock<ISessionStorageService>();
-            _mediatorMock = new Mock<IMediator>();
-            _sessionService = new SessionService(_sessionStorageServiceMock.Object, _mediatorMock.Object);
+            _sessionStorageServiceMock = new Mock<ISessionStorageService>();          
+            _sessionService = new SessionService(_sessionStorageServiceMock.Object);
             _userId = Guid.NewGuid();
         }
 
@@ -49,19 +46,18 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Services
             string storedValue = null!;
 
             _sessionStorageServiceMock
-                .Setup(x => x.SetAsync(It.IsAny<string>(), It.IsAny<string>()))
+                .Setup(x => x.Set(It.IsAny<string>(), It.IsAny<string>()))
                 .Callback<string, string>((key, value) =>
                 {
                     storedKey = key;
                     storedValue = value;
-                })
-                .Returns(Task.CompletedTask);
+                });               
 
             // Act
             await _sessionService.SetSurveyModel(_userId, survey);
 
             // Assert
-            storedKey.Should().Be(_userId.ToString());
+            storedKey.Should().Be("SurveyModel");
 
             var savedItem = FromJson<SurveyModel>(storedValue);
             savedItem.AccountId.Should().Be(1);
@@ -78,8 +74,8 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Services
             };
 
             _sessionStorageServiceMock
-                .Setup(x => x.GetAsync(_userId.ToString()))
-                .ReturnsAsync(ToJson(expectedItem));
+                .Setup(x => x.Get("SurveyModel"))
+                .Returns(ToJson(expectedItem));
 
             // Act
             var result = await _sessionService.GetSurveyModel(_userId);
@@ -93,8 +89,8 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Services
         {
             // Arrange
             _sessionStorageServiceMock
-                .Setup(x => x.GetAsync(_userId.ToString()))
-                .ReturnsAsync((string?)null);
+                .Setup(x => x.Get("SurveyModel"))
+                .Returns((string?)null);
 
             // Act
             var result = await _sessionService.GetSurveyModel(_userId);
@@ -114,18 +110,17 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Services
             };
 
             _sessionStorageServiceMock
-                .Setup(x => x.GetAsync(_userId.ToString()))
-                .ReturnsAsync(ToJson(existingItem));
+                .Setup(x => x.Get("SurveyModel"))
+                .Returns(ToJson(existingItem));
 
             SurveyModel savedItem = null!;
 
             _sessionStorageServiceMock
-                .Setup(x => x.SetAsync(It.IsAny<string>(), It.IsAny<string>()))
+                .Setup(x => x.Set(It.IsAny<string>(), It.IsAny<string>()))
                 .Callback<string, string>((_, value) =>
                 {
                     savedItem = FromJson<SurveyModel>(value);
-                })
-                .Returns(Task.CompletedTask);
+                });
 
             // Act
             var result = await _sessionService.UpdateSurveyModel(_userId, x => x.ProviderName = "Updated");
@@ -145,8 +140,8 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Services
             };
 
             _sessionStorageServiceMock
-                .Setup(x => x.GetAsync($"{_userId}_PagingState"))
-                .ReturnsAsync(ToJson(expectedItem));
+                .Setup(x => x.Get("PagingState"))
+                .Returns(ToJson(expectedItem));
 
             // Act
             var result = await _sessionService.GetPagingState(_userId);
@@ -160,8 +155,8 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Services
         {
             // Arrange
             _sessionStorageServiceMock
-                .Setup(x => x.GetAsync($"{_userId}_PagingState"))
-                .ReturnsAsync((string?)null);
+                .Setup(x => x.Get("PagingState"))
+                .Returns((string?)null);
 
             // Act
             var result = await _sessionService.GetPagingState(_userId);
@@ -182,18 +177,17 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Services
             string storedKey = null!;
 
             _sessionStorageServiceMock
-                .Setup(x => x.SetAsync(It.IsAny<string>(), It.IsAny<string>()))
+                .Setup(x => x.Set(It.IsAny<string>(), It.IsAny<string>()))
                 .Callback<string, string>((key, _) =>
                 {
                     storedKey = key;
-                })
-                .Returns(Task.CompletedTask);
-
+                });
+            
             // Act
             await _sessionService.SetPagingState(_userId, pagingState);
 
             // Assert
-            storedKey.Should().Be($"{_userId}_PagingState");
+            storedKey.Should().Be("PagingState");
         }
 
         [Test]
@@ -201,18 +195,17 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Services
         {
             // Arrange
             _sessionStorageServiceMock
-                .Setup(x => x.GetAsync($"{_userId}_PagingState"))
-                .ReturnsAsync((string?)null);
+                .Setup(x => x.Get("PagingState"))
+                .Returns((string?)null);
 
             PagingState savedItem = null!;
 
             _sessionStorageServiceMock
-                .Setup(x => x.SetAsync(It.IsAny<string>(), It.IsAny<string>()))
+                .Setup(x => x.Set(It.IsAny<string>(), It.IsAny<string>()))
                 .Callback<string, string>((_, value) =>
                 {
                     savedItem = FromJson<PagingState>(value);
-                })
-                .Returns(Task.CompletedTask);
+                });               
 
             // Act
             var result = await _sessionService.UpdatePagingState(_userId, x => x.PageIndex = 9);
@@ -231,19 +224,18 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Services
             FeedbackSource savedValue = default;
 
             _sessionStorageServiceMock
-                .Setup(x => x.SetAsync(It.IsAny<string>(), It.IsAny<string>()))
+                .Setup(x => x.Set(It.IsAny<string>(), It.IsAny<string>()))
                 .Callback<string, string>((key, value) =>
                 {
                     storedKey = key;
                     savedValue = FromJson<FeedbackSource>(value);
-                })
-                .Returns(Task.CompletedTask);
+                });               
 
             // Act
             await _sessionService.SetFeedbackSource(_userId, feedbackSource);
 
             // Assert
-            storedKey.Should().Be($"{_userId}_FeedbackSource");
+            storedKey.Should().Be("FeedbackSource");
             savedValue.Should().Be(FeedbackSource.Email);
         }
 
@@ -254,8 +246,8 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Services
             var expectedItem = FeedbackSource.AdHoc;
 
             _sessionStorageServiceMock
-                .Setup(x => x.GetAsync($"{_userId}_FeedbackSource"))
-                .ReturnsAsync(ToJson(expectedItem));
+                .Setup(x => x.Get("FeedbackSource"))
+                .Returns(ToJson(expectedItem));
 
             // Act
             var result = await _sessionService.GetFeedbackSource(_userId);
@@ -265,18 +257,18 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Services
         }
 
         [Test]
-        public async Task GetFeedbackSource_Should_Return_Default_When_No_Value_Found()
+        public async Task GetFeedbackSource_Should_Return_Null_When_No_Value_Found()
         {
             // Arrange
             _sessionStorageServiceMock
-                .Setup(x => x.GetAsync($"{_userId}_FeedbackSource"))
-                .ReturnsAsync((string?)null);
+                .Setup(x => x.Get("FeedbackSource"))
+                .Returns((string?)null);
 
             // Act
             var result = await _sessionService.GetFeedbackSource(_userId);
 
             // Assert
-            result.Should().Be(default(FeedbackSource));
+            result.Should().BeNull();
         }
 
         [Test]
@@ -294,12 +286,11 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Services
             List<ProviderSearchViewModel.EmployerTrainingProvider> savedItem = null!;
 
             _sessionStorageServiceMock
-                .Setup(x => x.SetAsync(It.IsAny<string>(), It.IsAny<string>()))
+                .Setup(x => x.Set(It.IsAny<string>(), It.IsAny<string>()))
                 .Callback<string, string>((_, value) =>
                 {
                     savedItem = FromJson<List<ProviderSearchViewModel.EmployerTrainingProvider>>(value);
-                })
-                .Returns(Task.CompletedTask);
+                });             
 
             // Act
             await _sessionService.SetProviders(_userId, providers);
@@ -321,8 +312,8 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Services
             };
 
             _sessionStorageServiceMock
-                .Setup(x => x.GetAsync($"{_userId}_Providers"))
-                .ReturnsAsync(ToJson(expectedItem));
+                .Setup(x => x.Get("Providers"))
+                .Returns(ToJson(expectedItem));
 
             // Act
             var result = await _sessionService.GetProviders(_userId);
@@ -336,8 +327,8 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Services
         {
             // Arrange
             _sessionStorageServiceMock
-                .Setup(x => x.GetAsync($"{_userId}_Providers"))
-                .ReturnsAsync((string?)null);
+                .Setup(x => x.Get("Providers"))
+                .Returns((string?)null);
 
             // Act
             var result = await _sessionService.GetProviders(_userId);
@@ -347,17 +338,19 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Services
             result.Should().BeEmpty();
         }
 
+
         [Test]
-        public async Task ClearUserSession_Should_Remove_Only_SurveyModel_Key()
+        public async Task ClearUserSession_Should_Clear_All_User_Session_Keys()
         {
             // Act
             await _sessionService.ClearUserSession(_userId);
 
             // Assert
-            _sessionStorageServiceMock.Verify(x => x.ClearAsync(_userId.ToString()), Times.Once);
-            _sessionStorageServiceMock.Verify(x => x.ClearAsync($"{_userId}_PagingState"), Times.Never);
-            _sessionStorageServiceMock.Verify(x => x.ClearAsync($"{_userId}_FeedbackSource"), Times.Never);
-            _sessionStorageServiceMock.Verify(x => x.ClearAsync($"{_userId}_Providers"), Times.Never);
+            _sessionStorageServiceMock.Verify(x => x.Clear("SurveyModel"), Times.Once);
+            _sessionStorageServiceMock.Verify(x => x.Clear("PagingState"), Times.Once);
+            _sessionStorageServiceMock.Verify(x => x.Clear("FeedbackSource"), Times.Once);
+            _sessionStorageServiceMock.Verify(x => x.Clear("Providers"), Times.Once);
+            _sessionStorageServiceMock.VerifyNoOtherCalls();
         }
     }
 }
