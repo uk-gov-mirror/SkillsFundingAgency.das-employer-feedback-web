@@ -1,5 +1,4 @@
-﻿using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using SFA.DAS.EmployerFeedback.Infrastructure.Configuration.Routing;
@@ -38,28 +37,28 @@ namespace SFA.DAS.EmployerFeedback.Web.Controllers
 
         [HttpGet]
         [Route("landing", Name = StartFeedbackGet)]
-        public async Task<IActionResult> StartFeedback(AccountModel model)
+        public IActionResult StartFeedback(AccountModel model)
         {
-            return View(await _questionsOrchestrator.GetStartFeedbackViewModel(model));
+            return View(_questionsOrchestrator.GetStartFeedbackViewModel(model));
         }
 
         [HttpGet]
         [Route("question-one", Name = QuestionOneGet)]
-        public async Task<IActionResult> QuestionOne(QuestionRequestModel model)
+        public IActionResult QuestionOne(QuestionRequestModel model)
         {
-            return View(await _questionsOrchestrator.GetQuestionOneStrengthsViewModel(model));
+            return View(_questionsOrchestrator.GetQuestionOneStrengthsViewModel(model));
         }
 
         [HttpPost]
         [Route("question-one", Name = QuestionOnePost)]
-        public async Task<IActionResult> QuestionOne(QuestionOneStrengthsViewModel viewModel)
+        public IActionResult QuestionOne(QuestionOneStrengthsViewModel viewModel)
         {
-            if (!await _questionsOrchestrator.ValidateQuestionOneStrengthsViewModel(viewModel, ModelState))
+            if (!_questionsOrchestrator.ValidateQuestionOneStrengthsViewModel(viewModel, ModelState))
             {
                 return RedirectToRoute(QuestionOneGet, new { encodedAccountId = viewModel.EncodedAccountId, returnToReviewAnswers = viewModel.ReturnToReviewAnswers });
             }
 
-            await _questionsOrchestrator.UpdateQuestionOneAnswers(viewModel);
+            _questionsOrchestrator.UpdateQuestionOneAnswers(viewModel);
 
             if (viewModel.ReturnToReviewAnswers)
             {
@@ -71,21 +70,21 @@ namespace SFA.DAS.EmployerFeedback.Web.Controllers
 
         [HttpGet]
         [Route("question-two", Name = QuestionTwoGet)]
-        public async Task<IActionResult> QuestionTwo(QuestionRequestModel model)
+        public IActionResult QuestionTwo(QuestionRequestModel model)
         {
-            return View(await _questionsOrchestrator.GetQuestionTwoWeaknessesViewModel(model));
+            return View(_questionsOrchestrator.GetQuestionTwoWeaknessesViewModel(model));
         }
 
         [HttpPost]
         [Route("question-two", Name = QuestionTwoPost)]
-        public async Task<IActionResult> QuestionTwo(QuestionTwoWeaknessesViewModel viewModel)
+        public IActionResult QuestionTwo(QuestionTwoWeaknessesViewModel viewModel)
         {
-            if (!await _questionsOrchestrator.ValidateQuestionTwoWeaknessesViewModel(viewModel, ModelState))
+            if (!_questionsOrchestrator.ValidateQuestionTwoWeaknessesViewModel(viewModel, ModelState))
             {
                 return RedirectToRoute(QuestionTwoGet, new { encodedAccountId = viewModel.EncodedAccountId, returnToReviewAnswers = viewModel.ReturnToReviewAnswers });
             }
 
-            await _questionsOrchestrator.UpdateQuestionTwoAnswers(viewModel);
+            _questionsOrchestrator.UpdateQuestionTwoAnswers(viewModel);
 
             if (viewModel.ReturnToReviewAnswers)
             {
@@ -97,21 +96,21 @@ namespace SFA.DAS.EmployerFeedback.Web.Controllers
 
         [HttpGet]
         [Route("question-three", Name = QuestionThreeGet)]
-        public async Task<IActionResult> QuestionThree(QuestionRequestModel model)
+        public IActionResult QuestionThree(QuestionRequestModel model)
         {
-            return View(await _questionsOrchestrator.GetQuestionThreeRatingViewModel(model));
+            return View(_questionsOrchestrator.GetQuestionThreeRatingViewModel(model));
         }
 
         [HttpPost]
         [Route("question-three", Name = QuestionThreePost)]
-        public async Task<IActionResult> QuestionThree(QuestionThreeRatingViewModel viewModel)
+        public IActionResult QuestionThree(QuestionThreeRatingViewModel viewModel)
         {
-            if (!await _questionsOrchestrator.ValidateQuestionThreeRatingViewModel(viewModel, ModelState))
+            if (!_questionsOrchestrator.ValidateQuestionThreeRatingViewModel(viewModel, ModelState))
             {
                 return RedirectToRoute(QuestionThreeGet, new { encodedAccountId = viewModel.EncodedAccountId, returnToReviewAnswers = viewModel.ReturnToReviewAnswers });
             }
 
-            await _questionsOrchestrator.UpdateQuestionThreeAnswers(viewModel);
+            _questionsOrchestrator.UpdateQuestionThreeAnswers(viewModel);
 
             return RedirectToRoute(ReviewAnswersController.ReviewAnswersGet, new { encodedAccountId = viewModel.EncodedAccountId });
         }

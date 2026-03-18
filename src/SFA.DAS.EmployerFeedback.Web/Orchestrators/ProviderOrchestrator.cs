@@ -47,7 +47,7 @@ namespace SFA.DAS.EmployerFeedback.Web.Orchestrators
         public async Task<ProviderSearchViewModel> GetProviderSearchViewModel(ProviderSearchRequestModel model)
         {
             var userId = GetUserId();
-            var pagingState = await _sessionService.GetPagingState();
+            var pagingState =  _sessionService.GetPagingState();
 
             var viewModel = await _trainingProviderService.GetTrainingProviderSearchViewModel(
                 model.AccountId,
@@ -64,29 +64,29 @@ namespace SFA.DAS.EmployerFeedback.Web.Orchestrators
             viewModel.BackUrl = _accountsLinkService.AccountsHome(model.EncodedAccountId);
 
             return viewModel;
-        }
+        }        
 
-        public async Task SetProviderSearchPageIndex(int pageIndex)
+        public void SetProviderSearchPageIndex(int pageIndex)
         {
-            await _sessionService.UpdatePagingState((pagingState) =>
+            _sessionService.UpdatePagingState((pagingState) =>
             {
                 pagingState.PageIndex = pageIndex;
             });
         }
 
-        public async Task SetProviders(List<ProviderSearchViewModel.EmployerTrainingProvider> providers)
+        public void SetProviders(List<ProviderSearchViewModel.EmployerTrainingProvider> providers)
         {
-            await _sessionService.SetProviders(GetUserId(), providers);
+            _sessionService.SetProviders(providers);
         }
 
-        public async Task SetFeedbackSource(FeedbackSource feedbackSource)
+        public void SetFeedbackSource(FeedbackSource feedbackSource)
         {
-            await _sessionService.SetFeedbackSource(GetUserId(), feedbackSource);
+            _sessionService.SetFeedbackSource(feedbackSource);
         }
 
-        public async Task UpdateProviderSearchFilters(ProviderSearchViewModel viewModel)
+        public void UpdateProviderSearchFilters(ProviderSearchViewModel viewModel)
         {
-            await _sessionService.UpdatePagingState((PagingState pagingState) =>
+            _sessionService.UpdatePagingState((PagingState pagingState) =>
             {
                 pagingState.PageIndex = PagingState.DefaultPageIndex;
                 pagingState.SelectedProviderName = viewModel.SelectedProviderName;
@@ -94,23 +94,23 @@ namespace SFA.DAS.EmployerFeedback.Web.Orchestrators
             });
         }
 
-        public async Task ClearProviderSearchFilters()
+        public void ClearProviderSearchFilters()
         {
-            await _sessionService.SetPagingState(new PagingState());
+            _sessionService.SetPagingState(new PagingState());
         }
 
-        public async Task SortProviderSearch(SortColumn sortColumn, SortOrder sortOrder)
+        public void SortProviderSearch(SortColumn sortColumn, SortOrder sortOrder)
         {
-            await _sessionService.UpdatePagingState((PagingState pagingState) =>
+            _sessionService.UpdatePagingState((PagingState pagingState) =>
             {
                 pagingState.SortColumn = sortColumn;
                 pagingState.SortOrder = sortOrder;
             });
         }
 
-        public async Task<ProviderConfirmViewModel> GetProviderConfirmViewModel(ProviderConfirmRequestModel model)
+        public ProviderConfirmViewModel GetProviderConfirmViewModel(ProviderConfirmRequestModel model)
         {
-            var providers = await _sessionService.GetProviders(GetUserId());
+            var providers = _sessionService.GetProviders();
             var providerName = providers?.FirstOrDefault(p => p.ProviderId == model.ProviderId)?.ProviderName;
 
             if (!string.IsNullOrEmpty(providerName))
@@ -126,14 +126,15 @@ namespace SFA.DAS.EmployerFeedback.Web.Orchestrators
             return null;
         }
 
-        public async Task<bool> ValidateProviderConfirmViewModel(ProviderConfirmViewModel viewModel, ModelStateDictionary modelState)
+        public bool ValidateProviderConfirmViewModel(ProviderConfirmViewModel viewModel, ModelStateDictionary modelState)
         {
-            return await ValidateViewModel(_providerConfirmViewModelValidator, viewModel, modelState);
+            return ValidateViewModel(_providerConfirmViewModelValidator, viewModel, modelState);
         }
 
         public async Task CreateNewSurvey(ProviderConfirmViewModel viewModel)
         {
             var questionAttributes = await _mediator.Send(new GetAllQuestionAttributesQuery());
+
             if (questionAttributes == null)
             {
                 throw new EmployerFeedbackException("Unable to load question attributes");
@@ -141,7 +142,7 @@ namespace SFA.DAS.EmployerFeedback.Web.Orchestrators
 
             var providerAttributes = questionAttributes.Select(s => new ProviderAttributeModel { AttributeId = s.AttributeId, Name = s.AttributeName }).ToList();
             var userId = GetUserId();
-            var source = await _sessionService.GetFeedbackSource(userId);
+            var source =_sessionService.GetFeedbackSource();
 
             var feedbackSource = source.HasValue ? source.Value : FeedbackSource.AdHoc;
 
@@ -158,10 +159,10 @@ namespace SFA.DAS.EmployerFeedback.Web.Orchestrators
 
             if (!source.HasValue)
             {
-                await _sessionService.SetFeedbackSource(userId, feedbackSource);
+                _sessionService.SetFeedbackSource(feedbackSource);
             }
 
-            await _sessionService.SetSurveyModel(userId, survey);
-        }
+            _sessionService.SetSurveyModel(survey);
+        }              
     }
 }

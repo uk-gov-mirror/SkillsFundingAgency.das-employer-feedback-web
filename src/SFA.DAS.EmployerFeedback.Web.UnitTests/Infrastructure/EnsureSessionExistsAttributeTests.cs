@@ -102,20 +102,20 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Infrastructure
         }
 
         [Test]
-        public async Task When_Survey_Is_Missing_Should_Log_Warn_And_Redirect_To_ProviderSearchGet_And_Not_Call_Next()
+        public void When_Survey_Is_Missing_Should_Log_Warn_And_Redirect_To_ProviderSearchGet_And_Not_Call_Next()
         {
             // Arrange
             var userId = Guid.NewGuid();
             _userService.Setup(u => u.GetUserId()).Returns(userId);
             _session
-                .Setup(s => s.GetSurveyModel(userId))
-                .ReturnsAsync((SurveyModel)null);
+                .Setup(s => s.GetSurveyModel())
+                .Returns((SurveyModel)null);
 
             var context = BuildContext();
             var (next, signal) = NextDelegate();
 
             // Act
-            await _sut.OnActionExecutionAsync(context, next);
+            _sut.OnActionExecutionAsync(context, next);
 
             // Assert
             signal.IsCompleted.Should().BeFalse(); // next() not called
@@ -132,7 +132,7 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Infrastructure
                 (Func<It.IsAnyType, Exception, string>)It.IsAny<object>()),
                 Times.Once);
 
-            _session.Verify(s => s.GetSurveyModel(userId), Times.Once);
+            _session.Verify(s => s.GetSurveyModel(), Times.Once);
         }
 
         [Test]
@@ -141,7 +141,7 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Infrastructure
             // Arrange
             var userId = Guid.NewGuid();
             _userService.Setup(u => u.GetUserId()).Returns(userId);
-            _session.Setup(s => s.GetSurveyModel(userId)).ReturnsAsync(new SurveyModel());
+            _session.Setup(s => s.GetSurveyModel()).Returns(new SurveyModel());
 
             var context = BuildContext();
             var (next, signal) = NextDelegate();
@@ -153,7 +153,7 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Infrastructure
             signal.IsCompleted.Should().BeTrue(); // next() was called
             context.Result.Should().BeNull();
 
-            _session.Verify(s => s.GetSurveyModel(userId), Times.Once);
+            _session.Verify(s => s.GetSurveyModel(), Times.Once);
 
             _sessionLogger.Verify(l => l.Log(
                 LogLevel.Warning,

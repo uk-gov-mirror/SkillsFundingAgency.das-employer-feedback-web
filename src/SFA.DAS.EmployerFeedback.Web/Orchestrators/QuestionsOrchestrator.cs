@@ -1,5 +1,4 @@
 ﻿using System.Linq;
-using System.Threading.Tasks;
 using FluentValidation;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Logging;
@@ -30,9 +29,9 @@ namespace SFA.DAS.EmployerFeedback.Web.Orchestrators
             _questionThreeRatingViewModelValidator = questionThreeRatingViewModelValidator;
         }
 
-        public async Task<StartFeedbackViewModel> GetStartFeedbackViewModel(AccountModel model)
+        public StartFeedbackViewModel GetStartFeedbackViewModel(AccountModel model)
         {
-            var survey = await _sessionService.GetSurveyModel(GetUserId());
+            var survey = _sessionService.GetSurveyModel();
             var viewModel = new StartFeedbackViewModel
             {
                 EncodedAccountId = model.EncodedAccountId,
@@ -42,9 +41,9 @@ namespace SFA.DAS.EmployerFeedback.Web.Orchestrators
             return viewModel;
         }
 
-        public async Task<QuestionOneStrengthsViewModel> GetQuestionOneStrengthsViewModel(QuestionRequestModel model)
+        public QuestionOneStrengthsViewModel GetQuestionOneStrengthsViewModel(QuestionRequestModel model)
         {
-            var survey = await _sessionService.GetSurveyModel(GetUserId());
+            var survey = _sessionService.GetSurveyModel();
 
             var viewModel = new QuestionOneStrengthsViewModel
             {
@@ -62,14 +61,14 @@ namespace SFA.DAS.EmployerFeedback.Web.Orchestrators
             return viewModel;
         }
 
-        public async Task<bool> ValidateQuestionOneStrengthsViewModel(QuestionOneStrengthsViewModel viewModel, ModelStateDictionary modelState)
+        public bool ValidateQuestionOneStrengthsViewModel(QuestionOneStrengthsViewModel viewModel, ModelStateDictionary modelState)
         {
-            return await ValidateViewModel(_questionOneStrengthsViewModelValidator, viewModel, modelState);
+            return ValidateViewModel(_questionOneStrengthsViewModelValidator, viewModel, modelState);
         }
 
-        public async Task UpdateQuestionOneAnswers(QuestionOneStrengthsViewModel viewModel)
+        public void  UpdateQuestionOneAnswers(QuestionOneStrengthsViewModel viewModel)
         {
-            await _sessionService.UpdateSurveyModel(GetUserId(), (SurveyModel survey) =>
+            _sessionService.UpdateSurveyModel((SurveyModel survey) =>
             {
                 foreach (var a in survey.Attributes)
                 {
@@ -79,9 +78,9 @@ namespace SFA.DAS.EmployerFeedback.Web.Orchestrators
             });
         }
 
-        public async Task<QuestionTwoWeaknessesViewModel> GetQuestionTwoWeaknessesViewModel(QuestionRequestModel model)
+        public QuestionTwoWeaknessesViewModel GetQuestionTwoWeaknessesViewModel(QuestionRequestModel model)
         {
-            var survey = await _sessionService.GetSurveyModel(GetUserId());
+            var survey = _sessionService.GetSurveyModel();
 
             var viewModel = new QuestionTwoWeaknessesViewModel
             {
@@ -99,14 +98,14 @@ namespace SFA.DAS.EmployerFeedback.Web.Orchestrators
             return viewModel;
         }
 
-        public async Task<bool> ValidateQuestionTwoWeaknessesViewModel(QuestionTwoWeaknessesViewModel viewModel, ModelStateDictionary modelState)
+        public bool ValidateQuestionTwoWeaknessesViewModel(QuestionTwoWeaknessesViewModel viewModel, ModelStateDictionary modelState)
         {
-            return await ValidateViewModel(_questionTwoWeaknessesViewModelValidator, viewModel, modelState);
+            return ValidateViewModel(_questionTwoWeaknessesViewModelValidator, viewModel, modelState);
         }
 
-        public async Task UpdateQuestionTwoAnswers(QuestionTwoWeaknessesViewModel viewModel)
+        public void UpdateQuestionTwoAnswers(QuestionTwoWeaknessesViewModel viewModel)
         {
-            await _sessionService.UpdateSurveyModel(GetUserId(), (SurveyModel survey) =>
+            _sessionService.UpdateSurveyModel((SurveyModel survey) =>
             {
                 foreach (var a in survey.Attributes)
                 {
@@ -116,9 +115,9 @@ namespace SFA.DAS.EmployerFeedback.Web.Orchestrators
             });
         }
 
-        public async Task<QuestionThreeRatingViewModel> GetQuestionThreeRatingViewModel(QuestionRequestModel model)
+        public QuestionThreeRatingViewModel GetQuestionThreeRatingViewModel(QuestionRequestModel model)
         {
-            var survey = await _sessionService.GetSurveyModel(GetUserId());
+            var survey = _sessionService.GetSurveyModel();
 
             var viewModel = new QuestionThreeRatingViewModel
             {
@@ -131,14 +130,14 @@ namespace SFA.DAS.EmployerFeedback.Web.Orchestrators
             return viewModel;
         }
 
-        public async Task<bool> ValidateQuestionThreeRatingViewModel(QuestionThreeRatingViewModel viewModel, ModelStateDictionary modelState)
+        public bool ValidateQuestionThreeRatingViewModel(QuestionThreeRatingViewModel viewModel, ModelStateDictionary modelState)
         {
-            return await ValidateViewModel(_questionThreeRatingViewModelValidator, viewModel, modelState);
+            return ValidateViewModel(_questionThreeRatingViewModelValidator, viewModel, modelState);
         }
 
-        public async Task UpdateQuestionThreeAnswers(QuestionThreeRatingViewModel viewModel)
+        public void UpdateQuestionThreeAnswers(QuestionThreeRatingViewModel viewModel)
         {
-            await _sessionService.UpdateSurveyModel(GetUserId(), (SurveyModel survey) =>
+            _sessionService.UpdateSurveyModel((SurveyModel survey) =>
             {
                 survey.Rating = viewModel.Rating;
             });

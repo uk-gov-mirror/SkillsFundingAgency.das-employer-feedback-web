@@ -33,7 +33,7 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Services
         private static T FromJson<T>(string json) => JsonSerializer.Deserialize<T>(json)!;
 
         [Test]
-        public async Task SetSurveyModel_Should_Store_Serialized_SurveyModel()
+        public  void SetSurveyModel_Should_Store_Serialized_SurveyModel()
         {
             // Arrange
             var survey = new SurveyModel
@@ -54,7 +54,7 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Services
                 });               
 
             // Act
-            await _sessionService.SetSurveyModel(_userId, survey);
+             _sessionService.SetSurveyModel(survey);
 
             // Assert
             storedKey.Should().Be("SurveyModel");
@@ -65,7 +65,7 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Services
         }
 
         [Test]
-        public async Task GetSurveyModel_Should_Return_Deserialized_SurveyModel()
+        public void GetSurveyModel_Should_Return_Deserialized_SurveyModel()
         {
             // Arrange
             var expectedItem = new SurveyModel
@@ -78,7 +78,7 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Services
                 .Returns(ToJson(expectedItem));
 
             // Act
-            var result = await _sessionService.GetSurveyModel(_userId);
+            var result = _sessionService.GetSurveyModel();
 
             // Assert
             result.ProviderName.Should().Be("Stored");
@@ -93,7 +93,7 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Services
                 .Returns((string?)null);
 
             // Act
-            var result = await _sessionService.GetSurveyModel(_userId);
+            var result = _sessionService.GetSurveyModel();
 
             // Assert
             result.Should().NotBeNull();
@@ -101,7 +101,7 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Services
         }
 
         [Test]
-        public async Task UpdateSurveyModel_Should_Apply_Action_And_Save()
+        public void UpdateSurveyModel_Should_Apply_Action_And_Save()
         {
             // Arrange
             var existingItem = new SurveyModel
@@ -123,7 +123,7 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Services
                 });
 
             // Act
-            var result = await _sessionService.UpdateSurveyModel(_userId, x => x.ProviderName = "Updated");
+            var result = _sessionService.UpdateSurveyModel(x => x.ProviderName = "Updated");
 
             // Assert
             result.ProviderName.Should().Be("Updated");
@@ -144,7 +144,7 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Services
                 .Returns(ToJson(expectedItem));
 
             // Act
-            var result = await _sessionService.GetPagingState();
+            var result = _sessionService.GetPagingState();
 
             // Assert
             result.PageIndex.Should().Be(2);
@@ -159,14 +159,14 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Services
                 .Returns((string?)null);
 
             // Act
-            var result = await _sessionService.GetPagingState();
+            var result = _sessionService.GetPagingState();
 
             // Assert
             result.Should().BeEquivalentTo(new PagingState());
         }
 
         [Test]
-        public async Task SetPagingState_Should_Store_Serialized_PagingState()
+        public void SetPagingState_Should_Store_Serialized_PagingState()
         {
             // Arrange
             var pagingState = new PagingState
@@ -184,14 +184,14 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Services
                 });
             
             // Act
-            await _sessionService.SetPagingState(pagingState);
+             _sessionService.SetPagingState(pagingState);
 
             // Assert
             storedKey.Should().Be("PagingState");
         }
 
         [Test]
-        public async Task UpdatePagingState_Should_Create_If_Not_Exist_And_Apply_Action()
+        public void UpdatePagingState_Should_Create_If_Not_Exist_And_Apply_Action()
         {
             // Arrange
             _sessionStorageServiceMock
@@ -208,7 +208,7 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Services
                 });               
 
             // Act
-            var result = await _sessionService.UpdatePagingState(x => x.PageIndex = 9);
+            var result = _sessionService.UpdatePagingState(x => x.PageIndex = 9);
 
             // Assert
             result.PageIndex.Should().Be(9);
@@ -216,7 +216,7 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Services
         }
 
         [Test]
-        public async Task SetFeedbackSource_Should_Store_Serialized_FeedbackSource()
+        public void SetFeedbackSource_Should_Store_Serialized_FeedbackSource()
         {
             // Arrange
             var feedbackSource = FeedbackSource.Email;
@@ -232,7 +232,7 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Services
                 });               
 
             // Act
-            await _sessionService.SetFeedbackSource(_userId, feedbackSource);
+            _sessionService.SetFeedbackSource(feedbackSource);
 
             // Assert
             storedKey.Should().Be("FeedbackSource");
@@ -240,7 +240,7 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Services
         }
 
         [Test]
-        public async Task GetFeedbackSource_Should_Return_Deserialized_FeedbackSource()
+        public void GetFeedbackSource_Should_Return_Deserialized_FeedbackSource()
         {
             // Arrange
             var expectedItem = FeedbackSource.AdHoc;
@@ -250,7 +250,7 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Services
                 .Returns(ToJson(expectedItem));
 
             // Act
-            var result = await _sessionService.GetFeedbackSource(_userId);
+            var result = _sessionService.GetFeedbackSource();
 
             // Assert
             result.Should().Be(FeedbackSource.AdHoc);
@@ -265,7 +265,7 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Services
                 .Returns((string?)null);
 
             // Act
-            var result = await _sessionService.GetFeedbackSource(_userId);
+            var result = _sessionService.GetFeedbackSource();
 
             // Assert
             result.Should().BeNull();
@@ -293,14 +293,14 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Services
                 });             
 
             // Act
-            await _sessionService.SetProviders(_userId, providers);
+             _sessionService.SetProviders(providers);
 
             // Assert
             savedItem.Should().ContainSingle(x => x.ProviderName == "Provider A");
         }
 
         [Test]
-        public async Task GetProviders_Should_Return_Deserialized_Providers()
+        public void GetProviders_Should_Return_Deserialized_Providers()
         {
             // Arrange
             var expectedItem = new List<ProviderSearchViewModel.EmployerTrainingProvider>
@@ -316,14 +316,14 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Services
                 .Returns(ToJson(expectedItem));
 
             // Act
-            var result = await _sessionService.GetProviders(_userId);
+            var result = _sessionService.GetProviders();
 
             // Assert
             result.Should().ContainSingle(x => x.ProviderName == "Provider X");
         }
 
         [Test]
-        public async Task GetProviders_Should_Return_Empty_List_When_No_Value_Found()
+        public void GetProviders_Should_Return_Empty_List_When_No_Value_Found()
         {
             // Arrange
             _sessionStorageServiceMock
@@ -331,7 +331,7 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Services
                 .Returns((string?)null);
 
             // Act
-            var result = await _sessionService.GetProviders(_userId);
+            var result = _sessionService.GetProviders();
 
             // Assert
             result.Should().NotBeNull();
@@ -340,10 +340,10 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Services
 
 
         [Test]
-        public async Task ClearUserSession_Should_Clear_All_User_Session_Keys()
+        public void  ClearUserSession_Should_Clear_All_User_Session_Keys()
         {
             // Act
-            await _sessionService.ClearUserSession(_userId);
+            _sessionService.ClearUserSession();
 
             // Assert
             _sessionStorageServiceMock.Verify(x => x.Clear("SurveyModel"), Times.Once);

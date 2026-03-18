@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using FluentValidation;
@@ -54,15 +53,15 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Orchestrators
         }
 
         [Test]
-        public async Task GetStartFeedbackViewModel_Should_Return_ViewModel_With_EncodedAccountId_And_ProviderName()
+        public void GetStartFeedbackViewModel_Should_Return_ViewModel_With_EncodedAccountId_And_ProviderName()
         {
             // Arrange
             var accountModel = new AccountModel { EncodedAccountId = "ABC123" };
             var survey = new SurveyModel { ProviderName = "Test provider" };
-            _mockSessionService.Setup(s => s.GetSurveyModel(_userId)).ReturnsAsync(survey);
+            _mockSessionService.Setup(s => s.GetSurveyModel()).Returns(survey);
 
             // Act
-            var result = await _sut.GetStartFeedbackViewModel(accountModel);
+            var result = _sut.GetStartFeedbackViewModel(accountModel);
 
             // Assert
             result.EncodedAccountId.Should().Be("ABC123");
@@ -70,7 +69,7 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Orchestrators
         }
 
         [Test]
-        public async Task GetQuestionOneStrengthsViewModel_Should_Map_Survey_To_ViewModel()
+        public void GetQuestionOneStrengthsViewModel_Should_Map_Survey_To_ViewModel()
         {
             // Arrange
             var model = new QuestionRequestModel { ReturnToReviewAnswers = true };
@@ -83,10 +82,10 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Orchestrators
                     new ProviderAttributeModel { Name = "Helpful", Good = true, Bad = false }
                 }
             };
-            _mockSessionService.Setup(s => s.GetSurveyModel(_userId)).ReturnsAsync(survey);
+            _mockSessionService.Setup(s => s.GetSurveyModel()).Returns(survey);
 
             // Act
-            var result = await _sut.GetQuestionOneStrengthsViewModel(model);
+            var result = _sut.GetQuestionOneStrengthsViewModel(model);
 
             // Assert
             result.EncodedAccountId.Should().Be("ENC123");
@@ -96,23 +95,23 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Orchestrators
         }
 
         [Test]
-        public async Task ValidateQuestionOneStrengthsViewModel_Should_Return_True_When_Valid()
+        public void ValidateQuestionOneStrengthsViewModel_Should_Return_True_When_Valid()
         {
             // Arrange
             var viewModel = new QuestionOneStrengthsViewModel();
             var modelState = new ModelStateDictionary();
-            _mockQ1Validator.Setup(v => v.ValidateAsync(viewModel, It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new ValidationResult());
+            _mockQ1Validator.Setup(v => v.Validate(viewModel))
+                .Returns(new ValidationResult());
 
             // Act
-            var result = await _sut.ValidateQuestionOneStrengthsViewModel(viewModel, modelState);
+            var result = _sut.ValidateQuestionOneStrengthsViewModel(viewModel, modelState);
 
             // Assert
             result.Should().BeTrue();
         }
 
         [Test]
-        public async Task UpdateQuestionOneAnswers_Should_Update_Good_Values_In_Survey()
+        public void UpdateQuestionOneAnswers_Should_Update_Good_Values_In_Survey()
         {
             // Arrange
             var survey = new SurveyModel
@@ -137,12 +136,12 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Orchestrators
             };
 
             Action<SurveyModel> capturedAction = null;
-            _mockSessionService.Setup(s => s.UpdateSurveyModel(_userId, It.IsAny<Action<SurveyModel>>()))
-                .Callback<Guid, Action<SurveyModel>>((_, action) => capturedAction = action)
-                .ReturnsAsync(new SurveyModel());
+            _mockSessionService.Setup(s => s.UpdateSurveyModel(It.IsAny<Action<SurveyModel>>()))
+                .Callback<Action<SurveyModel>>((action) => capturedAction = action)
+                .Returns(new SurveyModel());
 
             // Act
-            await _sut.UpdateQuestionOneAnswers(updatedViewModel);
+            _sut.UpdateQuestionOneAnswers(updatedViewModel);
 
             // Assert
             capturedAction.Should().NotBeNull();
@@ -168,10 +167,10 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Orchestrators
                     new ProviderAttributeModel { Name = "Helpful", Good = false, Bad = true }
                 }
             };
-            _mockSessionService.Setup(s => s.GetSurveyModel(_userId)).ReturnsAsync(survey);
+            _mockSessionService.Setup(s => s.GetSurveyModel()).Returns(survey);
 
             // Act
-            var result = await _sut.GetQuestionTwoWeaknessesViewModel(model);
+            var result = _sut.GetQuestionTwoWeaknessesViewModel(model);
 
             // Assert
             result.EncodedAccountId.Should().Be("ENC2");
@@ -181,17 +180,17 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Orchestrators
         }
 
         [Test]
-        public async Task ValidateQuestionTwoWeaknessesViewModel_Should_Return_False_When_Invalid()
+        public void ValidateQuestionTwoWeaknessesViewModel_Should_Return_False_When_Invalid()
         {
             // Arrange
             var viewModel = new QuestionTwoWeaknessesViewModel();
             var modelState = new ModelStateDictionary();
             var failures = new List<ValidationFailure> { new ValidationFailure("Attr", "Error") };
-            _mockQ2Validator.Setup(v => v.ValidateAsync(viewModel, It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new ValidationResult(failures));
+            _mockQ2Validator.Setup(v => v.Validate(viewModel))
+                .Returns(new ValidationResult(failures));
 
             // Act
-            var result = await _sut.ValidateQuestionTwoWeaknessesViewModel(viewModel, modelState);
+            var result = _sut.ValidateQuestionTwoWeaknessesViewModel(viewModel, modelState);
 
             // Assert
             result.Should().BeFalse();
@@ -199,7 +198,7 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Orchestrators
         }
 
         [Test]
-        public async Task UpdateQuestionTwoAnswers_Should_Update_Bad_Values_In_Survey()
+        public void UpdateQuestionTwoAnswers_Should_Update_Bad_Values_In_Survey()
         {
             // Arrange
             var survey = new SurveyModel
@@ -224,12 +223,12 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Orchestrators
             };
 
             Action<SurveyModel> capturedAction = null;
-            _mockSessionService.Setup(s => s.UpdateSurveyModel(_userId, It.IsAny<Action<SurveyModel>>()))
-                .Callback<Guid, Action<SurveyModel>>((_, action) => capturedAction = action)
-                .ReturnsAsync(new SurveyModel());
+            _mockSessionService.Setup(s => s.UpdateSurveyModel(It.IsAny<Action<SurveyModel>>()))
+                .Callback<Action<SurveyModel>>((action) => capturedAction = action)
+                .Returns(new SurveyModel());
 
             // Act
-            await _sut.UpdateQuestionTwoAnswers(updatedViewModel);
+            _sut.UpdateQuestionTwoAnswers(updatedViewModel);
 
             // Assert
             capturedAction.Should().NotBeNull();
@@ -242,7 +241,7 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Orchestrators
         }
 
         [Test]
-        public async Task GetQuestionThreeRatingViewModel_Should_Map_Survey_To_ViewModel()
+        public void GetQuestionThreeRatingViewModel_Should_Map_Survey_To_ViewModel()
         {
             // Arrange
             var model = new QuestionRequestModel { ReturnToReviewAnswers = true };
@@ -252,10 +251,10 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Orchestrators
                 ProviderName = "Provider new",
                 Rating = ProviderRating.Excellent
             };
-            _mockSessionService.Setup(s => s.GetSurveyModel(_userId)).ReturnsAsync(survey);
+            _mockSessionService.Setup(s => s.GetSurveyModel()).Returns(survey);
 
             // Act
-            var result = await _sut.GetQuestionThreeRatingViewModel(model);
+            var result = _sut.GetQuestionThreeRatingViewModel(model);
 
             // Assert
             result.EncodedAccountId.Should().Be("ENC321");
@@ -265,35 +264,35 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Orchestrators
         }
 
         [Test]
-        public async Task ValidateQuestionThreeRatingViewModel_Should_Return_True_When_Valid()
+        public void ValidateQuestionThreeRatingViewModel_Should_Return_True_When_Valid()
         {
             // Arrange
             var viewModel = new QuestionThreeRatingViewModel();
             var modelState = new ModelStateDictionary();
-            _mockQ3Validator.Setup(v => v.ValidateAsync(viewModel, It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new ValidationResult());
+            _mockQ3Validator.Setup(v => v.Validate(viewModel))
+                .Returns(new ValidationResult());
 
             // Act
-            var result = await _sut.ValidateQuestionThreeRatingViewModel(viewModel, modelState);
+            var result = _sut.ValidateQuestionThreeRatingViewModel(viewModel, modelState);
 
             // Assert
             result.Should().BeTrue();
         }
 
         [Test]
-        public async Task UpdateQuestionThreeAnswers_Should_Update_Rating_In_Survey()
+        public void UpdateQuestionThreeAnswers_Should_Update_Rating_In_Survey()
         {
             // Arrange
             var survey = new SurveyModel { Rating = ProviderRating.Poor };
             var updatedViewModel = new QuestionThreeRatingViewModel { Rating = ProviderRating.Good };
 
             Action<SurveyModel> capturedAction = null;
-            _mockSessionService.Setup(s => s.UpdateSurveyModel(_userId, It.IsAny<Action<SurveyModel>>()))
-                .Callback<Guid, Action<SurveyModel>>((_, action) => capturedAction = action)
-                .ReturnsAsync(new SurveyModel());
+            _mockSessionService.Setup(s => s.UpdateSurveyModel(It.IsAny<Action<SurveyModel>>()))
+                .Callback<Action<SurveyModel>>((action) => capturedAction = action)
+                .Returns(new SurveyModel());
 
             // Act
-            await _sut.UpdateQuestionThreeAnswers(updatedViewModel);
+            _sut.UpdateQuestionThreeAnswers(updatedViewModel);
 
             // Assert
             capturedAction.Should().NotBeNull();

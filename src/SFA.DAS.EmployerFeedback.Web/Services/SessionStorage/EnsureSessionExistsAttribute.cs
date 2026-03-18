@@ -25,7 +25,7 @@ namespace SFA.DAS.EmployerFeedback.Web.Services.SessionStorage
         public override async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
         {
             var userId = _userService.GetUserId();
-            if (!userId.HasValue || await _sessionService.GetSurveyModel(userId.Value) == null)
+            if (!userId.HasValue || _sessionService.GetSurveyModel() == null)
             {
                 _logger.LogWarning("No survey was started for user id {UserId} or session has timed out", userId.GetValueOrDefault());
                 

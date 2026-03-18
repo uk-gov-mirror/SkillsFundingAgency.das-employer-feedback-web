@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Threading.Tasks;
 using FluentValidation;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Logging;
@@ -31,9 +30,9 @@ namespace SFA.DAS.EmployerFeedback.Web.Orchestrators
             return userId.Value;
         }
 
-        protected static async Task<bool> ValidateViewModel<T>(IValidator<T> validator, T viewModel, ModelStateDictionary modelState)
+        protected static bool ValidateViewModel<T>(IValidator<T> validator, T viewModel, ModelStateDictionary modelState)
         {
-            await validator.ValidateAndAddModelErrorsAsync(viewModel, modelState);
+            validator.ValidateAndAddModelErrors(viewModel, modelState);
             return modelState.IsValid;
         }
     }

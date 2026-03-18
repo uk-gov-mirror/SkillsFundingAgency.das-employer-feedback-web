@@ -66,13 +66,13 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Controllers
         }
 
         [Test]
-        public async Task ProviderSearch_Post_Should_Update_Filters_And_Redirect()
+        public void ProviderSearch_Post_Should_Update_Filters_And_Redirect()
         {
             // Arrange
             var viewModel = new ProviderSearchViewModel { EncodedAccountId = "XYZ" };
 
             // Act
-            var result = await _sut.ProviderSearch(viewModel);
+            var result = _sut.ProviderSearch(viewModel);
 
             // Assert
             _mockOrchestrator.Verify(o => o.UpdateProviderSearchFilters(viewModel), Times.Once);
@@ -94,7 +94,7 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Controllers
             };
 
             // Act
-            var result = await _sut.SortProviders(model);
+            var result = _sut.SortProviders(model);
 
             // Assert
             _mockOrchestrator.Verify(o => o.SortProviderSearch(model.SortColumn, model.SortOrder), Times.Once);
@@ -105,13 +105,13 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Controllers
         }
 
         [Test]
-        public async Task ClearFilters_Should_Reset_State_And_Redirect()
+        public void ClearFilters_Should_Reset_State_And_Redirect()
         {
             // Arrange
             var model = new AccountModel { EncodedAccountId = "ID123" };
 
             // Act
-            var result = await _sut.ClearFilters(model);
+            var result = _sut.ClearFilters(model);
 
             // Assert
             _mockOrchestrator.Verify(o => o.ClearProviderSearchFilters(), Times.Once);
@@ -122,15 +122,15 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Controllers
         }
 
         [Test]
-        public async Task ProviderConfirm_Get_Should_Return_View_When_ViewModel_Found()
+        public void ProviderConfirm_Get_Should_Return_View_When_ViewModel_Found()
         {
             // Arrange
             var request = new ProviderConfirmRequestModel { ProviderId = 10, EncodedAccountId = "ABC123" };
             var confirmViewModel = new ProviderConfirmViewModel();
-            _mockOrchestrator.Setup(o => o.GetProviderConfirmViewModel(request)).ReturnsAsync(confirmViewModel);
+            _mockOrchestrator.Setup(o => o.GetProviderConfirmViewModel(request)).Returns(confirmViewModel);
 
             // Act
-            var result = await _sut.ProviderConfirm(request);
+            var result = _sut.ProviderConfirm(request);
 
             // Assert
             var viewResult = result.Should().BeOfType<ViewResult>().Subject;
@@ -138,14 +138,14 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Controllers
         }
 
         [Test]
-        public async Task ProviderConfirm_Get_Should_Redirect_When_ViewModel_Null()
+        public void ProviderConfirm_Get_Should_Redirect_When_ViewModel_Null()
         {
             // Arrange
             var request = new ProviderConfirmRequestModel { ProviderId = 10, EncodedAccountId = "ACC123" };
-            _mockOrchestrator.Setup(o => o.GetProviderConfirmViewModel(request)).ReturnsAsync((ProviderConfirmViewModel)null);
+            _mockOrchestrator.Setup(o => o.GetProviderConfirmViewModel(request)).Returns((ProviderConfirmViewModel)null);
 
             // Act
-            var result = await _sut.ProviderConfirm(request);
+            var result = _sut.ProviderConfirm(request);
 
             // Assert
             var redirect = result.Should().BeOfType<RedirectToRouteResult>().Subject;
@@ -154,15 +154,15 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Controllers
         }
 
         [Test]
-        public async Task ProviderConfirm_Post_Should_Redirect_To_ConfirmGet_When_Invalid()
+        public void ProviderConfirm_Post_Should_Redirect_To_ConfirmGet_When_Invalid()
         {
             // Arrange
             var viewModel = new ProviderConfirmViewModel { ProviderId = 1, EncodedAccountId = "EFG123" };
             _mockOrchestrator.Setup(o => o.ValidateProviderConfirmViewModel(viewModel, It.IsAny<ModelStateDictionary>()))
-                .ReturnsAsync(false);
+                .Returns(false);
 
             // Act
-            var result = await _sut.ProviderConfirm(viewModel);
+            var result = _sut.ProviderConfirm(viewModel);
 
             // Assert
             _mockOrchestrator.Verify(o => o.ValidateProviderConfirmViewModel(viewModel, It.IsAny<ModelStateDictionary>()), Times.Once);
@@ -173,15 +173,15 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Controllers
         }
 
         [Test]
-        public async Task ProviderConfirm_Post_Should_Redirect_To_Search_When_Not_Confirmed()
+        public void ProviderConfirm_Post_Should_Redirect_To_Search_When_Not_Confirmed()
         {
             // Arrange
             var viewModel = new ProviderConfirmViewModel { ProviderId = 1, EncodedAccountId = "EFG456", Confirmed = false };
             _mockOrchestrator.Setup(o => o.ValidateProviderConfirmViewModel(viewModel, It.IsAny<ModelStateDictionary>()))
-                .ReturnsAsync(true);
+                .Returns(true);
 
             // Act
-            var result = await _sut.ProviderConfirm(viewModel);
+            var result = _sut.ProviderConfirm(viewModel);
 
             // Assert
             var redirect = result.Should().BeOfType<RedirectToRouteResult>().Subject;
@@ -189,15 +189,15 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Controllers
         }
 
         [Test]
-        public async Task ProviderConfirm_Post_Should_Create_Survey_And_Redirect_To_StartFeedback_When_Confirmed()
+        public void ProviderConfirm_Post_Should_Create_Survey_And_Redirect_To_StartFeedback_When_Confirmed()
         {
             // Arrange
             var viewModel = new ProviderConfirmViewModel { EncodedAccountId = "MNO789", Confirmed = true };
             _mockOrchestrator.Setup(o => o.ValidateProviderConfirmViewModel(viewModel, It.IsAny<ModelStateDictionary>()))
-                .ReturnsAsync(true);
+                .Returns(true);
 
             // Act
-            var result = await _sut.ProviderConfirm(viewModel);
+            var result = _sut.ProviderConfirm(viewModel);
 
             // Assert
             _mockOrchestrator.Verify(o => o.CreateNewSurvey(viewModel), Times.Once);

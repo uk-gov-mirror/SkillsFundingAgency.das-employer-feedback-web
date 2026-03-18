@@ -86,10 +86,10 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Orchestrators
                 },
                 Rating = ProviderRating.Good 
             };
-            _mockSessionService.Setup(s => s.GetSurveyModel(_userId)).ReturnsAsync(survey);
+            _mockSessionService.Setup(s => s.GetSurveyModel()).Returns(survey); ;
 
             // Act
-            var result = await _sut.GetReviewAnswersViewModel();
+            var result = _sut.GetReviewAnswersViewModel();
 
             // Assert
             result.Should().NotBeNull();
@@ -102,7 +102,7 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Orchestrators
         {
             // Arrange
             var survey = new SurveyModel { ProviderName = "Another provider" };
-            _mockSessionService.Setup(s => s.GetSurveyModel(_userId)).ReturnsAsync(survey);
+            _mockSessionService.Setup(s => s.GetSurveyModel()).Returns(survey);
             _mockTrainingProviderService.Setup(s => s.CanSubmitFeedback(survey, _userId)).ReturnsAsync(true);
 
             // Act
@@ -117,7 +117,7 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Orchestrators
         {
             // Arrange
             var survey = new SurveyModel();
-            _mockSessionService.Setup(s => s.GetSurveyModel(_userId)).ReturnsAsync(survey);
+            _mockSessionService.Setup(s => s.GetSurveyModel());
             _mockTrainingProviderService.Setup(s => s.CanSubmitFeedback(survey, _userId)).ReturnsAsync(false);
 
             // Act
@@ -146,7 +146,7 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Orchestrators
                 }
             };
 
-            _mockSessionService.Setup(s => s.GetSurveyModel(_userId)).ReturnsAsync(survey);
+            _mockSessionService.Setup(s => s.GetSurveyModel()).Returns(survey); ;
             _mockMediator.Setup(m => m.Send(It.IsAny<SubmitEmployerFeedbackCommand>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(true);
 
@@ -181,7 +181,7 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Orchestrators
                 Attributes = new List<ProviderAttributeModel>()
             };
 
-            _mockSessionService.Setup(s => s.GetSurveyModel(_userId)).ReturnsAsync(survey);
+            _mockSessionService.Setup(s => s.GetSurveyModel()).Returns(survey);
             _mockMediator.Setup(m => m.Send(It.IsAny<SubmitEmployerFeedbackCommand>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(false);
 
@@ -194,7 +194,7 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Orchestrators
         }
 
         [Test]
-        public async Task GetFeedbackConfirmationViewModel_Should_Return_ViewModel_And_Reset_PagingState()
+        public void GetFeedbackConfirmationViewModel_Should_Return_ViewModel_And_Reset_PagingState()
         {
             // Arrange
             var account = new AccountModel { EncodedAccountId = "ENC123" };
@@ -203,11 +203,11 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Orchestrators
                 ProviderName = "Another provider",
                 Rating = ProviderRating.Excellent
             };
-            _mockSessionService.Setup(s => s.GetSurveyModel(_userId)).ReturnsAsync(survey);
+            _mockSessionService.Setup(s => s.GetSurveyModel()).Returns(survey);
             _mockAccountsLinkService.Setup(s => s.AccountsHome("ENC123")).Returns("https://home.url");
 
             // Act
-            var result = await _sut.GetFeedbackConfirmationViewModel(account);
+            var result = _sut.GetFeedbackConfirmationViewModel(account);
 
             // Assert
             result.ProviderName.Should().Be("Another provider");

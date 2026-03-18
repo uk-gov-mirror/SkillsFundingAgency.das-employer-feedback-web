@@ -1,5 +1,4 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-using System.Threading.Tasks;
 using FluentValidation;
 using FluentValidation.Results;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
@@ -9,9 +8,9 @@ namespace SFA.DAS.EmployerFeedback.Web.Extensions
     [ExcludeFromCodeCoverage]
     public static class IValidatorExtensions
     {
-        public static async Task<ValidationResult> ValidateAndAddModelErrorsAsync<T>(this IValidator<T> validator, T model, ModelStateDictionary modelState)
+        public static ValidationResult ValidateAndAddModelErrors<T>(this IValidator<T> validator, T model, ModelStateDictionary modelState)
         {
-            var result = await validator.ValidateAsync(model);
+            var result = validator.Validate(model);
             if (!result.IsValid)
             {
                 foreach (var error in result.Errors)

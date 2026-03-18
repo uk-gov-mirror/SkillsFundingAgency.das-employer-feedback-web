@@ -5,7 +5,6 @@ using SFA.DAS.EmployerFeedback.Web.Paging;
 using System;
 using System.Collections.Generic;
 using System.Text.Json;
-using System.Threading.Tasks;
 
 namespace SFA.DAS.EmployerFeedback.Web.Services.SessionStorage
 {
@@ -22,7 +21,7 @@ namespace SFA.DAS.EmployerFeedback.Web.Services.SessionStorage
             _sessionStorageService = sessionStorageService;          
         }
 
-        public  Task<SurveyModel> GetSurveyModel(Guid userId)
+        public  SurveyModel GetSurveyModel()
         {
             var json = _sessionStorageService.Get(SurveyModelKey);
             var result = new SurveyModel();
@@ -32,25 +31,23 @@ namespace SFA.DAS.EmployerFeedback.Web.Services.SessionStorage
                 result = JsonSerializer.Deserialize<SurveyModel>(json);
             }
 
-            return Task.FromResult(result);            
+            return result;            
         }
 
-        public Task SetSurveyModel(Guid userId, SurveyModel surveyModel)
+        public void SetSurveyModel(SurveyModel surveyModel)
         {
-            _sessionStorageService.Set(SurveyModelKey, JsonSerializer.Serialize(surveyModel));
-
-            return Task.CompletedTask;            
+            _sessionStorageService.Set(SurveyModelKey, JsonSerializer.Serialize(surveyModel));                        
         }
 
-        public async Task<SurveyModel> UpdateSurveyModel(Guid userId, Action<SurveyModel> action)
+        public SurveyModel UpdateSurveyModel(Action<SurveyModel> action)
         {
-            var surveyModel = await GetSurveyModel(userId) ?? new SurveyModel();
+            var surveyModel = GetSurveyModel() ?? new SurveyModel();
             action(surveyModel);
-            await SetSurveyModel(userId, surveyModel);
+            SetSurveyModel(surveyModel);
             return surveyModel;
         }
 
-        public Task<PagingState> GetPagingState()
+        public PagingState GetPagingState()
         {
             var json = _sessionStorageService.Get(PagingStateKey);            
 
@@ -61,24 +58,23 @@ namespace SFA.DAS.EmployerFeedback.Web.Services.SessionStorage
                 result = JsonSerializer.Deserialize<PagingState>(json);
             }
 
-            return Task.FromResult(result);
+            return result;
         }
 
-        public Task SetPagingState(PagingState pagingState)
+        public void SetPagingState(PagingState pagingState)
         {
-             _sessionStorageService.Set(PagingStateKey, JsonSerializer.Serialize(pagingState)); 
-            return Task.CompletedTask;
+             _sessionStorageService.Set(PagingStateKey, JsonSerializer.Serialize(pagingState));             
         }
 
-        public async Task<PagingState> UpdatePagingState(Action<PagingState> action)
+        public PagingState UpdatePagingState(Action<PagingState> action)
         {
-            var pagingState = await GetPagingState() ?? new PagingState();
+            var pagingState = GetPagingState() ?? new PagingState();
             action(pagingState);
-            await SetPagingState(pagingState);
+            SetPagingState(pagingState);
             return pagingState;
         }
 
-        public async Task<FeedbackSource?> GetFeedbackSource(Guid userId)
+        public FeedbackSource? GetFeedbackSource()
         {
             var json = _sessionStorageService.Get(FeedbackSourceKey);           
 
@@ -91,13 +87,12 @@ namespace SFA.DAS.EmployerFeedback.Web.Services.SessionStorage
             return Enum.IsDefined(typeof(FeedbackSource), result) ? result : null;
         }
 
-        public Task SetFeedbackSource(Guid userId, FeedbackSource feedbackSource)
+        public void SetFeedbackSource(FeedbackSource feedbackSource)
         {
-            _sessionStorageService.Set(FeedbackSourceKey, JsonSerializer.Serialize(feedbackSource));  
-            return Task.CompletedTask;
+            _sessionStorageService.Set(FeedbackSourceKey, JsonSerializer.Serialize(feedbackSource));              
         }
 
-        public  Task<List<ProviderSearchViewModel.EmployerTrainingProvider>> GetProviders(Guid userId)
+        public  List<ProviderSearchViewModel.EmployerTrainingProvider> GetProviders()
         {
             var json = _sessionStorageService.Get(ProvidersKey);
             var result = new List<ProviderSearchViewModel.EmployerTrainingProvider>();
@@ -107,23 +102,20 @@ namespace SFA.DAS.EmployerFeedback.Web.Services.SessionStorage
                 result = JsonSerializer.Deserialize<List<ProviderSearchViewModel.EmployerTrainingProvider>>(json);
             }
 
-            return Task.FromResult(result);            
+            return result;            
         }
 
-        public  Task SetProviders(Guid userId, List<ProviderSearchViewModel.EmployerTrainingProvider> providers)
+        public  void SetProviders(List<ProviderSearchViewModel.EmployerTrainingProvider> providers)
         {
-            _sessionStorageService.Set(ProvidersKey, JsonSerializer.Serialize(providers));
-            return Task.CompletedTask;
-
+            _sessionStorageService.Set(ProvidersKey, JsonSerializer.Serialize(providers));            
         }
 
-        public Task ClearUserSession(Guid userId)
+        public void ClearUserSession()
         {
             _sessionStorageService.Clear(SurveyModelKey);
             _sessionStorageService.Clear(PagingStateKey);
             _sessionStorageService.Clear(FeedbackSourceKey);
-            _sessionStorageService.Clear(ProvidersKey);
-            return Task.CompletedTask;
-        }
+            _sessionStorageService.Clear(ProvidersKey);            
+        }        
     }
 }

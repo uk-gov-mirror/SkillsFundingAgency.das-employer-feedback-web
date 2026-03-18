@@ -3,22 +3,21 @@ using SFA.DAS.EmployerFeedback.Web.Models.Shared;
 using SFA.DAS.EmployerFeedback.Web.Paging;
 using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace SFA.DAS.EmployerFeedback.Web.Services.SessionStorage
 {
     public interface ISessionService
     {
-        Task<SurveyModel> GetSurveyModel(Guid userId);
-        Task SetSurveyModel(Guid userId, SurveyModel surveyModel);
-        Task<SurveyModel> UpdateSurveyModel(Guid userId, Action<SurveyModel> action);
-        Task<PagingState> GetPagingState();
-        Task SetPagingState(PagingState pagingState);
-        Task<PagingState> UpdatePagingState(Action<PagingState> action);
-        Task<FeedbackSource?> GetFeedbackSource(Guid userId);
-        Task SetFeedbackSource(Guid userId, FeedbackSource feedbackSource);
-        Task<List<ProviderSearchViewModel.EmployerTrainingProvider>> GetProviders(Guid userId);
-        Task SetProviders(Guid userId, List<ProviderSearchViewModel.EmployerTrainingProvider> providers);
-        Task ClearUserSession(Guid userId);
+        SurveyModel GetSurveyModel();
+        void SetSurveyModel(SurveyModel surveyModel);
+        SurveyModel UpdateSurveyModel(Action<SurveyModel> action);
+        PagingState GetPagingState();
+        void SetPagingState(PagingState pagingState);
+        PagingState UpdatePagingState(Action<PagingState> action);
+        FeedbackSource? GetFeedbackSource();
+        void SetFeedbackSource(FeedbackSource feedbackSource);
+        List<ProviderSearchViewModel.EmployerTrainingProvider> GetProviders();
+        void SetProviders(List<ProviderSearchViewModel.EmployerTrainingProvider> providers);
+        void ClearUserSession();
     }
 }

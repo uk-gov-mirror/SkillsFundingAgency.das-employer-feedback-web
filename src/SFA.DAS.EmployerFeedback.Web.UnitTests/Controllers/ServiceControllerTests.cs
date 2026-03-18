@@ -65,67 +65,86 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Controllers
         }
 
         [Test]
-        public async Task SignOut_Should_Return_SignOutResult_With_Correct_Schemes_When_StubAuth_False()
+        public void SignOut_Should_Return_SignOutResult_With_Correct_Schemes_When_StubAuth_False()
         {
             // Arrange
             var expectedToken = "id123";
 
             var authServiceMock = new Mock<IAuthenticationService>();
             authServiceMock
-                .Setup(a => a.AuthenticateAsync(_mockHttpContext.Object, It.IsAny<string>()))
+                .Setup(a => a.AuthenticateAsync(
+                    _mockHttpContext.Object,
+                    It.IsAny<string>()))
                 .ReturnsAsync(AuthenticateResult.Success(
-                    ticket: new AuthenticationTicket(new ClaimsPrincipal(), new AuthenticationProperties
-                    {
-                        Items = { { ".Token.id_token", expectedToken } }
-                    },
-                    CookieAuthenticationDefaults.AuthenticationScheme)));
+                    new AuthenticationTicket(
+                        new ClaimsPrincipal(),
+                        new AuthenticationProperties
+                        {
+                            Items = { { ".Token.id_token", expectedToken } }
+                        },
+                        CookieAuthenticationDefaults.AuthenticationScheme)));
 
-            _mockHttpContext.Setup(h => h.RequestServices.GetService(typeof(IAuthenticationService)))
+            _mockHttpContext
+                .Setup(h => h.RequestServices.GetService(typeof(IAuthenticationService)))
                 .Returns(authServiceMock.Object);
+
             _mockConfig.Setup(c => c["StubAuth"]).Returns("false");
 
             // Act
-            var result = await _sut.SignOut();
+            var result = _sut.SignOut();
 
             // Assert
             var signOutResult = result.Should().BeOfType<SignOutResult>().Subject;
+
             signOutResult.AuthenticationSchemes.Should().Contain(CookieAuthenticationDefaults.AuthenticationScheme);
             signOutResult.AuthenticationSchemes.Should().Contain(OpenIdConnectDefaults.AuthenticationScheme);
+
+            signOutResult.Properties.Should().NotBeNull();
+            signOutResult.Properties!.Parameters.Should().ContainKey("id_token");
             signOutResult.Properties.Parameters["id_token"].Should().Be(expectedToken);
         }
 
         [Test]
-        public async Task SignOut_Should_Include_Only_Cookie_Scheme_When_StubAuth_True()
+        public void SignOut_Should_Include_Only_Cookie_Scheme_When_StubAuth_True()
         {
             // Arrange
             var expectedToken = "id123";
 
             var authServiceMock = new Mock<IAuthenticationService>();
             authServiceMock
-                .Setup(a => a.AuthenticateAsync(_mockHttpContext.Object, It.IsAny<string>()))
+                .Setup(a => a.AuthenticateAsync(
+                    _mockHttpContext.Object,
+                    It.IsAny<string>()))
                 .ReturnsAsync(AuthenticateResult.Success(
-                    ticket: new AuthenticationTicket(new ClaimsPrincipal(), new AuthenticationProperties
-                    {
-                        Items = { { ".Token.id_token", expectedToken } }
-                    },
-                    CookieAuthenticationDefaults.AuthenticationScheme)));
+                    new AuthenticationTicket(
+                        new ClaimsPrincipal(),
+                        new AuthenticationProperties
+                        {
+                            Items = { { ".Token.id_token", expectedToken } }
+                        },
+                        CookieAuthenticationDefaults.AuthenticationScheme)));
 
-            _mockHttpContext.Setup(h => h.RequestServices.GetService(typeof(IAuthenticationService)))
+            _mockHttpContext
+                .Setup(h => h.RequestServices.GetService(typeof(IAuthenticationService)))
                 .Returns(authServiceMock.Object);
+
             _mockConfig.Setup(c => c["StubAuth"]).Returns("true");
 
             // Act
-            var result = await _sut.SignOut();
+            var result = _sut.SignOut();
 
             // Assert
             var signOutResult = result.Should().BeOfType<SignOutResult>().Subject;
-            signOutResult.AuthenticationSchemes.Should()
-                .ContainSingle().Which.Should().Be(CookieAuthenticationDefaults.AuthenticationScheme);
+
+            signOutResult.AuthenticationSchemes.Should().ContainSingle();
+            signOutResult.AuthenticationSchemes.Single().Should().Be(CookieAuthenticationDefaults.AuthenticationScheme);
+
+            signOutResult.Properties.Should().NotBeNull();
+            signOutResult.Properties!.Parameters.Should().ContainKey("id_token");
             signOutResult.Properties.Parameters["id_token"].Should().Be(expectedToken);
         }
-
         [Test]
-        public async Task SignOut_Should_Clear_UserSession_When_UserId_Present()
+        public void SignOut_Should_Clear_UserSession_When_UserId_Present()
         {
             // Arrange
             var userId = Guid.NewGuid();
@@ -149,10 +168,10 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Controllers
             _mockConfig.Setup(c => c["StubAuth"]).Returns("false");
 
             // Act
-            await _sut.SignOut();
+            _sut.SignOut();
 
             // Assert
-            _mockSessionStorageService.Verify(s => s.ClearUserSession(userId), Times.Once);
+            _mockSessionStorageService.Verify(s => s.ClearUserSession());
         }
 
         [Test]

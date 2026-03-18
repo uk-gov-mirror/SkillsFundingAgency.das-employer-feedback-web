@@ -37,9 +37,9 @@ namespace SFA.DAS.EmployerFeedback.Web.Controllers
 
         [HttpGet]
         [Route("review-answers", Name = ReviewAnswersGet)]
-        public async Task<IActionResult> ReviewAnswers()
+        public IActionResult ReviewAnswers()
         {
-            return View(await _reviewAnswersOrchestrator.GetReviewAnswersViewModel());
+            return View(_reviewAnswersOrchestrator.GetReviewAnswersViewModel());
         }
 
         [HttpPost]
@@ -61,9 +61,9 @@ namespace SFA.DAS.EmployerFeedback.Web.Controllers
 
         [HttpGet]
         [Route("feedback-confirmation", Name = FeedbackConfirmationGet)]
-        public async Task<IActionResult> FeedbackConfirmation(AccountModel model)
+        public IActionResult FeedbackConfirmation(AccountModel model)
         {
-            return View(await _reviewAnswersOrchestrator.GetFeedbackConfirmationViewModel(model));
+            return View(_reviewAnswersOrchestrator.GetFeedbackConfirmationViewModel(model));
         }
 
         [HttpGet]

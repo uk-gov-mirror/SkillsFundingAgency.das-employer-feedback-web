@@ -10,14 +10,14 @@ namespace SFA.DAS.EmployerFeedback.Web.Orchestrators
     public interface IProviderOrchestrator
     {
         Task<ProviderSearchViewModel> GetProviderSearchViewModel(ProviderSearchRequestModel model);
-        Task SetProviderSearchPageIndex(int pageIndex);
-        Task SetProviders(List<ProviderSearchViewModel.EmployerTrainingProvider> providers);
-        Task SetFeedbackSource(FeedbackSource feedbackSource);
-        Task UpdateProviderSearchFilters(ProviderSearchViewModel viewModel);
-        Task ClearProviderSearchFilters();
-        Task SortProviderSearch(SortColumn sortColumn, SortOrder sortOrder);
-        Task<ProviderConfirmViewModel> GetProviderConfirmViewModel(ProviderConfirmRequestModel model);
-        Task<bool> ValidateProviderConfirmViewModel(ProviderConfirmViewModel viewModel, ModelStateDictionary modelState);
+        void SetProviderSearchPageIndex(int pageIndex);
+        void SetProviders(List<ProviderSearchViewModel.EmployerTrainingProvider> providers);
+        void SetFeedbackSource(FeedbackSource feedbackSource);
+        void UpdateProviderSearchFilters(ProviderSearchViewModel viewModel);
+        void ClearProviderSearchFilters();
+        void SortProviderSearch(SortColumn sortColumn, SortOrder sortOrder);
+        ProviderConfirmViewModel GetProviderConfirmViewModel(ProviderConfirmRequestModel model);
+        bool ValidateProviderConfirmViewModel(ProviderConfirmViewModel viewModel, ModelStateDictionary modelState);
         Task CreateNewSurvey(ProviderConfirmViewModel viewModel);
     }
 }

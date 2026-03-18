@@ -43,14 +43,14 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Controllers
         }
 
         [Test]
-        public async Task ReviewAnswers_Get_Should_Return_View_With_ViewModel()
+        public void ReviewAnswers_Get_Should_Return_View_With_ViewModel()
         {
             // Arrange
             var expectedViewModel = new ReviewAnswersViewModel();
-            _mockOrchestrator.Setup(o => o.GetReviewAnswersViewModel()).ReturnsAsync(expectedViewModel);
+            _mockOrchestrator.Setup(o => o.GetReviewAnswersViewModel()).Returns(expectedViewModel);
 
             // Act
-            var result = await _sut.ReviewAnswers();
+            var result = _sut.ReviewAnswers();
 
             // Assert
             var viewResult = result.Should().BeOfType<ViewResult>().Subject;
@@ -113,16 +113,16 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Controllers
         }
 
         [Test]
-        public async Task FeedbackConfirmation_Should_Return_View_With_Model()
+        public void  FeedbackConfirmation_Should_Return_View_With_Model()
         {
             // Arrange
             var accountModel = new AccountModel { EncodedAccountId = "ABC123" };
             var expectedViewModel = new FeedbackConfirmationViewModel();
             _mockOrchestrator.Setup(o => o.GetFeedbackConfirmationViewModel(accountModel))
-                .ReturnsAsync(expectedViewModel);
+                .Returns(expectedViewModel);
 
             // Act
-            var result = await _sut.FeedbackConfirmation(accountModel);
+            var result = _sut.FeedbackConfirmation(accountModel);
 
             // Assert
             var viewResult = result.Should().BeOfType<ViewResult>().Subject;

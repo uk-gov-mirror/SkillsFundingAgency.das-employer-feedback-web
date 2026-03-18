@@ -152,6 +152,6 @@ namespace SFA.DAS.EmployerFeedback.Services
                 providers = providers.Where(p => null == p.DateSubmitted || !p.DateSubmitted.HasValue);
             }
             return providers;
-        }
+        }       
     }
 }

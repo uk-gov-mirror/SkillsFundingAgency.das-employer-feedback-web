@@ -52,7 +52,7 @@ namespace SFA.DAS.EmployerFeedback.Web.Controllers
 
         [HttpGet]
         [Route("signout", Name = SignoutGet)]
-        public new async Task<IActionResult> SignOut()
+        public new IActionResult SignOut()
         {
             // clear distributed cache entries associated with the user if we can determine the user id
             var maybeUserId = _userService.GetUserId();
@@ -60,7 +60,7 @@ namespace SFA.DAS.EmployerFeedback.Web.Controllers
             {
                 try
                 {
-                    await _sessionService.ClearUserSession(maybeUserId.Value);
+                    _sessionService.ClearUserSession();
                 }
                 catch (Exception ex)
                 {
@@ -68,7 +68,7 @@ namespace SFA.DAS.EmployerFeedback.Web.Controllers
                 }
             }
 
-            var idToken = await _contextAccessor.HttpContext.GetTokenAsync("id_token");
+            var idToken = _contextAccessor.HttpContext.GetTokenAsync("id_token").Result;
 
             var authenticationProperties = new AuthenticationProperties
             {

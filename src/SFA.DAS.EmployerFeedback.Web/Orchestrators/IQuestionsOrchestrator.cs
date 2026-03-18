@@ -1,5 +1,4 @@
-﻿using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
+﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
 using SFA.DAS.EmployerFeedback.Web.Models.Questions;
 using SFA.DAS.EmployerFeedback.Web.Models.Shared;
 
@@ -7,15 +6,15 @@ namespace SFA.DAS.EmployerFeedback.Web.Orchestrators
 {
     public interface IQuestionsOrchestrator
     {
-        Task<StartFeedbackViewModel> GetStartFeedbackViewModel(AccountModel model);
-        Task<QuestionOneStrengthsViewModel> GetQuestionOneStrengthsViewModel(QuestionRequestModel model);
-        Task<bool> ValidateQuestionOneStrengthsViewModel(QuestionOneStrengthsViewModel viewModel, ModelStateDictionary modelState);
-        Task UpdateQuestionOneAnswers(QuestionOneStrengthsViewModel viewModel);
-        Task<QuestionTwoWeaknessesViewModel> GetQuestionTwoWeaknessesViewModel(QuestionRequestModel model);
-        Task<bool> ValidateQuestionTwoWeaknessesViewModel(QuestionTwoWeaknessesViewModel viewModel, ModelStateDictionary modelState);
-        Task UpdateQuestionTwoAnswers(QuestionTwoWeaknessesViewModel viewModel);
-        Task<QuestionThreeRatingViewModel> GetQuestionThreeRatingViewModel(QuestionRequestModel model);
-        Task<bool> ValidateQuestionThreeRatingViewModel(QuestionThreeRatingViewModel viewModel, ModelStateDictionary modelState);
-        Task UpdateQuestionThreeAnswers(QuestionThreeRatingViewModel viewModel);
+        StartFeedbackViewModel GetStartFeedbackViewModel(AccountModel model);
+        QuestionOneStrengthsViewModel GetQuestionOneStrengthsViewModel(QuestionRequestModel model);
+        bool ValidateQuestionOneStrengthsViewModel(QuestionOneStrengthsViewModel viewModel, ModelStateDictionary modelState);
+        void UpdateQuestionOneAnswers(QuestionOneStrengthsViewModel viewModel);
+        QuestionTwoWeaknessesViewModel GetQuestionTwoWeaknessesViewModel(QuestionRequestModel model);
+        bool ValidateQuestionTwoWeaknessesViewModel(QuestionTwoWeaknessesViewModel viewModel, ModelStateDictionary modelState);
+        void UpdateQuestionTwoAnswers(QuestionTwoWeaknessesViewModel viewModel);
+        QuestionThreeRatingViewModel GetQuestionThreeRatingViewModel(QuestionRequestModel model);
+        bool ValidateQuestionThreeRatingViewModel(QuestionThreeRatingViewModel viewModel, ModelStateDictionary modelState);
+        void UpdateQuestionThreeAnswers(QuestionThreeRatingViewModel viewModel);
     }
 }

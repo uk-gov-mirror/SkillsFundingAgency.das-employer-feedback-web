@@ -1,5 +1,4 @@
-﻿using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Logging;
@@ -9,6 +8,7 @@ using SFA.DAS.EmployerFeedback.Web.Authorization;
 using SFA.DAS.EmployerFeedback.Web.Models.Provider;
 using SFA.DAS.EmployerFeedback.Web.Models.Shared;
 using SFA.DAS.EmployerFeedback.Web.Orchestrators;
+using System.Threading.Tasks;
 
 namespace SFA.DAS.EmployerFeedback.Web.Controllers
 {
@@ -42,46 +42,46 @@ namespace SFA.DAS.EmployerFeedback.Web.Controllers
         {
             if (model.FeedbackSource.HasValue)
             {
-                await _providerOrchestrator.SetFeedbackSource(model.FeedbackSource.Value);
+                _providerOrchestrator.SetFeedbackSource(model.FeedbackSource.Value);
             }
 
-            await _providerOrchestrator.SetProviderSearchPageIndex(model.PageIndex);
+            _providerOrchestrator.SetProviderSearchPageIndex(model.PageIndex);
 
             var viewModel = await _providerOrchestrator.GetProviderSearchViewModel(model);
-            await _providerOrchestrator.SetProviders(viewModel.Providers.Items);
+            _providerOrchestrator.SetProviders(viewModel.Providers.Items);
             
             return View(viewModel);
         }
 
         [HttpPost]
         [Route("providers", Name = ProviderSearchPost)]
-        public async Task<IActionResult> ProviderSearch(ProviderSearchViewModel viewModel)
+        public IActionResult ProviderSearch(ProviderSearchViewModel viewModel)
         {
-            await _providerOrchestrator.UpdateProviderSearchFilters(viewModel);
+            _providerOrchestrator.UpdateProviderSearchFilters(viewModel);
             return RedirectToRoute(ProviderSearchGet, new { viewModel.EncodedAccountId });
         }
 
         [HttpGet]
         [Route("providers/sort", Name = SortProvidersGet)]
-        public async Task<IActionResult> SortProviders(ProviderSearchSortRequestModel model)
+        public IActionResult SortProviders(ProviderSearchSortRequestModel model)
         {
-            await _providerOrchestrator.SortProviderSearch(model.SortColumn, model.SortOrder);
+            _providerOrchestrator.SortProviderSearch(model.SortColumn, model.SortOrder);
             return RedirectToRoute(ProviderSearchGet, new { model.EncodedAccountId, model.SortColumn, model.SortOrder });
         }
 
         [HttpGet]
         [Route("providers/clearfilters", Name = ClearFiltersGet)]
-        public async Task<IActionResult> ClearFilters(AccountModel model)
+        public IActionResult ClearFilters(AccountModel model)
         {
-            await _providerOrchestrator.ClearProviderSearchFilters();
+            _providerOrchestrator.ClearProviderSearchFilters();
             return RedirectToRoute(ProviderSearchGet, new { model.EncodedAccountId });
         }
 
         [HttpGet]
         [Route("providers/{providerId}", Name = ProviderConfirmGet)]
-        public async Task<IActionResult> ProviderConfirm(ProviderConfirmRequestModel model)
+        public IActionResult ProviderConfirm(ProviderConfirmRequestModel model)
         {
-            var viewModel = await _providerOrchestrator.GetProviderConfirmViewModel(model);
+            var viewModel = _providerOrchestrator.GetProviderConfirmViewModel(model);
             if(viewModel == null)
             {
                 return RedirectToRoute(ProviderSearchGet, new { encodedAccountId = model.EncodedAccountId });
@@ -92,9 +92,9 @@ namespace SFA.DAS.EmployerFeedback.Web.Controllers
 
         [HttpPost]
         [Route("providers/{providerId}", Name = ProviderConfirmPost)]
-        public async Task<IActionResult> ProviderConfirm(ProviderConfirmViewModel viewModel)
+        public IActionResult ProviderConfirm(ProviderConfirmViewModel viewModel)
         {
-            if (!await _providerOrchestrator.ValidateProviderConfirmViewModel(viewModel, ModelState))
+            if (!_providerOrchestrator.ValidateProviderConfirmViewModel(viewModel, ModelState))
             {
                 return RedirectToRoute(ProviderConfirmGet, new { encodedAccountId = viewModel.EncodedAccountId, providerId = viewModel.ProviderId });
             }
@@ -104,7 +104,7 @@ namespace SFA.DAS.EmployerFeedback.Web.Controllers
                 return RedirectToRoute(ProviderSearchGet, new { encodedAccountId = viewModel.EncodedAccountId });
             }
 
-            await _providerOrchestrator.CreateNewSurvey(viewModel);
+            _providerOrchestrator.CreateNewSurvey(viewModel);
             return RedirectToRoute(QuestionsController.StartFeedbackGet, new { viewModel.EncodedAccountId });
         }
     }

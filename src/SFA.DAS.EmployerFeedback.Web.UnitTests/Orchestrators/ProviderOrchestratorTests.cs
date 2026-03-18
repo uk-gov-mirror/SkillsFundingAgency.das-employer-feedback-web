@@ -81,7 +81,7 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Orchestrators
                 SortOrder = SortOrder.Ascending
             };
             var viewModel = new ProviderSearchViewModel();
-            _mockSessionService.Setup(s => s.GetPagingState()).ReturnsAsync(pagingState);
+            _mockSessionService.Setup(s => s.GetPagingState()).Returns(pagingState);
             _mockTrainingProviderService.Setup(t => t.GetTrainingProviderSearchViewModel(
                 model.AccountId, model.EncodedAccountId, _userId, "Test", "Submitted", 10, 2, SortColumn.Default, SortOrder.Ascending))
                 .ReturnsAsync(viewModel);
@@ -111,10 +111,10 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Orchestrators
             _mockSessionService
                 .Setup(s => s.UpdatePagingState(It.IsAny<Action<PagingState>>()))
                 .Callback<Action<PagingState>>((action) => capturedAction = action)
-                .ReturnsAsync(new PagingState()); // no need to check what is returned
+                .Returns(new PagingState()); // no need to check what is returned
 
             // Act
-            await _sut.SetProviderSearchPageIndex(newPageIndex);
+            _sut.SetProviderSearchPageIndex(newPageIndex);
 
             // Assert
             capturedAction.Should().NotBeNull("the orchestrator should call UpdatePagingState with an action");
@@ -126,7 +126,7 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Orchestrators
         }
 
         [Test]
-        public async Task SetProviders_Should_Save_Providers_To_Session()
+        public void SetProviders_Should_Save_Providers_To_Session()
         {
             // Arrange
             var viewModel = new ProviderSearchViewModel
@@ -139,22 +139,22 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Orchestrators
             };
 
             // Act
-            await _sut.SetProviders(viewModel.Providers.Items);
+            _sut.SetProviders(viewModel.Providers.Items);
 
             // Assert
             _mockSessionService.Verify(s =>
-                s.SetProviders(_userId, viewModel.Providers.Items), Times.Once);
+                s.SetProviders(viewModel.Providers.Items), Times.Once);
         }
 
         [TestCase(FeedbackSource.AdHoc)]
         [TestCase(FeedbackSource.Email)]
-        public async Task SetFeedbackSource_Should_Save_To_Session(FeedbackSource feedbackSource)
+        public void SetFeedbackSource_Should_Save_To_Session(FeedbackSource feedbackSource)
         {
             // Act
-            await _sut.SetFeedbackSource(feedbackSource);
+            _sut.SetFeedbackSource(feedbackSource);
 
             // Assert
-            _mockSessionService.Verify(s => s.SetFeedbackSource(_userId, feedbackSource), Times.Once);
+            _mockSessionService.Verify(s => s.SetFeedbackSource(feedbackSource), Times.Once);
         }
 
         [Test]
@@ -178,10 +178,10 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Orchestrators
             _mockSessionService
                 .Setup(s => s.UpdatePagingState(It.IsAny<Action<PagingState>>()))
                 .Callback<Action<PagingState>>((action) => capturedAction = action)
-                .ReturnsAsync(new PagingState()); // no need to check what is returned
+                .Returns(new PagingState()); // no need to check what is returned
 
             // Act
-            await _sut.UpdateProviderSearchFilters(viewModel);
+            _sut.UpdateProviderSearchFilters(viewModel);
 
             // Assert
             capturedAction.Should().NotBeNull("the orchestrator should call UpdatePagingState with an action");
@@ -198,7 +198,7 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Orchestrators
         public async Task ClearProviderSearchFilters_Should_Set_New_PagingState()
         {
             // Act
-            await _sut.ClearProviderSearchFilters();
+            _sut.ClearProviderSearchFilters();
 
             // Assert
             _mockSessionService.Verify(s => s.SetPagingState(                
@@ -235,10 +235,10 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Orchestrators
             _mockSessionService
                 .Setup(s => s.UpdatePagingState(It.IsAny<Action<PagingState>>()))
                 .Callback<Action<PagingState>>((action) => capturedAction = action)
-                .ReturnsAsync(new PagingState());
+                .Returns(new PagingState());
 
             // Act
-            await _sut.SortProviderSearch(model.SortColumn, model.SortOrder);
+            _sut.SortProviderSearch(model.SortColumn, model.SortOrder);
 
             // Assert
             capturedAction.Should().NotBeNull("the orchestrator should call UpdatePagingState with an action");
@@ -258,11 +258,11 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Orchestrators
             {
                 new ProviderSearchViewModel.EmployerTrainingProvider { ProviderId = 999, ProviderName = "Found" }
             };
-            _mockSessionService.Setup(s => s.GetProviders(_userId)).ReturnsAsync(providers);
+            _mockSessionService.Setup(s => s.GetProviders()).Returns(providers);
             var model = new ProviderConfirmRequestModel { ProviderId = 999, EncodedAccountId = "ABC123" };
 
             // Act
-            var result = await _sut.GetProviderConfirmViewModel(model);
+            var result =_sut.GetProviderConfirmViewModel(model);
 
             // Assert
             result.Should().NotBeNull();
@@ -272,38 +272,38 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Orchestrators
         }
 
         [Test]
-        public async Task GetProviderConfirmViewModel_Should_Return_Null_When_Not_Found()
+        public void  GetProviderConfirmViewModel_Should_Return_Null_When_Not_Found()
         {
             // Arrange
-            _mockSessionService.Setup(s => s.GetProviders(_userId))
-                .ReturnsAsync(new List<ProviderSearchViewModel.EmployerTrainingProvider>());
+            _mockSessionService.Setup(s => s.GetProviders())
+                .Returns(new List<ProviderSearchViewModel.EmployerTrainingProvider>());
             var model = new ProviderConfirmRequestModel { ProviderId = 111 };
 
             // Act
-            var result = await _sut.GetProviderConfirmViewModel(model);
+            var result =  _sut.GetProviderConfirmViewModel(model);
 
             // Assert
             result.Should().BeNull();
         }
 
         [Test]
-        public async Task ValidateProviderConfirmViewModel_Should_Return_True_When_Valid()
+        public void ValidateProviderConfirmViewModel_Should_Return_True_When_Valid()
         {
             // Arrange
             var viewModel = new ProviderConfirmViewModel();
             var modelState = new ModelStateDictionary();
-            _mockValidator.Setup(v => v.ValidateAsync(viewModel, It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new ValidationResult());
+            _mockValidator.Setup(v => v.Validate(viewModel))
+                .Returns(new ValidationResult());
 
             // Act
-            var result = await _sut.ValidateProviderConfirmViewModel(viewModel, modelState);
+            var result =  _sut.ValidateProviderConfirmViewModel(viewModel, modelState);
 
             // Assert
             result.Should().BeTrue();
         }
 
         [Test]
-        public async Task ValidateProviderConfirmViewModel_Should_Return_False_When_Invalid()
+        public void ValidateProviderConfirmViewModel_Should_Return_False_When_Invalid()
         {
             // Arrange
             var viewModel = new ProviderConfirmViewModel();
@@ -312,11 +312,11 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Orchestrators
             {
                 new ValidationFailure("Field", "Error message")
             };
-            _mockValidator.Setup(v => v.ValidateAsync(viewModel, It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new ValidationResult(failures));
+            _mockValidator.Setup(v => v.Validate(viewModel))
+                .Returns(new ValidationResult(failures));
 
             // Act
-            var result = await _sut.ValidateProviderConfirmViewModel(viewModel, modelState);
+            var result = _sut.ValidateProviderConfirmViewModel(viewModel, modelState);
 
             // Assert
             result.Should().BeFalse();
@@ -342,13 +342,13 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Orchestrators
 
             _mockMediator.Setup(m => m.Send(It.IsAny<GetAllQuestionAttributesQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(attributes);
-            _mockSessionService.Setup(s => s.GetFeedbackSource(_userId)).ReturnsAsync(FeedbackSource.AdHoc);
+            _mockSessionService.Setup(s => s.GetFeedbackSource());
 
             // Act
             await _sut.CreateNewSurvey(viewModel);
 
             // Assert
-            _mockSessionService.Verify(s => s.SetSurveyModel(_userId,
+            _mockSessionService.Verify(s => s.SetSurveyModel(
                 It.Is<SurveyModel>(m =>
                     m.AccountId == 100 &&
                     m.EncodedAccountId == "ENC123" &&
@@ -378,15 +378,15 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Orchestrators
             _mockMediator.Setup(m => m.Send(It.IsAny<GetAllQuestionAttributesQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(attributes);
 
-            _mockSessionService.Setup(s => s.GetFeedbackSource(_userId)).ReturnsAsync((FeedbackSource?)null);
+            _mockSessionService.Setup(s => s.GetFeedbackSource());
 
             // Act
             await _sut.CreateNewSurvey(viewModel);
 
             // Assert
-            _mockSessionService.Verify(s => s.SetFeedbackSource(_userId, FeedbackSource.AdHoc), Times.Once);
+            _mockSessionService.Verify(s => s.SetFeedbackSource(FeedbackSource.AdHoc), Times.Once);
 
-            _mockSessionService.Verify(s => s.SetSurveyModel(_userId,
+            _mockSessionService.Verify(s => s.SetSurveyModel(
                 It.Is<SurveyModel>(m =>
                     m.AccountId == 200 &&
                     m.EncodedAccountId == "ENC999" &&
