@@ -144,7 +144,7 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Controllers
             signOutResult.Properties.Parameters["id_token"].Should().Be(expectedToken);
         }
         [Test]
-        public void SignOut_Should_Clear_UserSession_When_UserId_Present()
+        public async Task SignOut_Should_Clear_UserSession_When_UserId_Present()
         {
             // Arrange
             var userId = Guid.NewGuid();
@@ -168,7 +168,7 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Controllers
             _mockConfig.Setup(c => c["StubAuth"]).Returns("false");
 
             // Act
-            _sut.SignOut();
+            await _sut.SignOut();
 
             // Assert
             _mockSessionStorageService.Verify(s => s.ClearUserSession());
