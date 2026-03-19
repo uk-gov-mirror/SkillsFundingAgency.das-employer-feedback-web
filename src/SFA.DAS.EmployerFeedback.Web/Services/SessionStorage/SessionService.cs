@@ -21,17 +21,16 @@ namespace SFA.DAS.EmployerFeedback.Web.Services.SessionStorage
             _sessionStorageService = sessionStorageService;          
         }
 
-        public  SurveyModel GetSurveyModel()
+        public SurveyModel? GetSurveyModel()
         {
             var json = _sessionStorageService.Get(SurveyModelKey);
-            var result = new SurveyModel();
 
-            if (!string.IsNullOrWhiteSpace(json))
-           {
-                result = JsonSerializer.Deserialize<SurveyModel>(json);
-           }
+            if (string.IsNullOrWhiteSpace(json))
+            {
+                return null;
+            }
 
-            return result;            
+            return JsonSerializer.Deserialize<SurveyModel>(json);
         }
 
         public void SetSurveyModel(SurveyModel surveyModel)

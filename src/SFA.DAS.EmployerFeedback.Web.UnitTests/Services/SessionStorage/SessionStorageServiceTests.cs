@@ -82,7 +82,7 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Services
         }
 
         [Test]
-        public void  GetSurveyModel_Should_Return_Empty_Model_When_No_Value_Found()
+        public void  GetSurveyModel_Should_Return_null_When_No_Value_Found()
         {
             // Arrange
             _sessionStorageServiceMock
@@ -93,8 +93,7 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Services
             var result = _sessionService.GetSurveyModel();
 
             // Assert
-            result.Should().NotBeNull();
-            result.ProviderName.Should().BeNull();
+            result.Should().BeNull();            
         }
 
         [Test]

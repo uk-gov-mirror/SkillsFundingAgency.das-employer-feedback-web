@@ -52,7 +52,7 @@ namespace SFA.DAS.EmployerFeedback.Web.Controllers
 
         [HttpGet]
         [Route("signout", Name = SignoutGet)]
-        public new IActionResult SignOut()
+        public new async Task <IActionResult> SignOut()
         {
             // clear session entries before sign-out
             var maybeUserId = _userService.GetUserId();
@@ -68,7 +68,7 @@ namespace SFA.DAS.EmployerFeedback.Web.Controllers
                 }
             }
 
-            var idToken = _contextAccessor.HttpContext.GetTokenAsync("id_token").Result;
+            var idToken = await _contextAccessor.HttpContext.GetTokenAsync("id_token");
 
             var authenticationProperties = new AuthenticationProperties
             {

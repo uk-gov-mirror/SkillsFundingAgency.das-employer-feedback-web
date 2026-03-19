@@ -174,7 +174,7 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Controllers
         }
 
         [Test]
-        public void ProviderConfirm_Post_Should_Redirect_To_Search_When_Not_Confirmed()
+        public async Task ProviderConfirm_Post_Should_Redirect_To_Search_When_Not_Confirmed()
         {
             // Arrange
             var viewModel = new ProviderConfirmViewModel { ProviderId = 1, EncodedAccountId = "EFG456", Confirmed = false };
@@ -182,10 +182,10 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Controllers
                 .Returns(true);
 
             // Act
-            var result = _sut.ProviderConfirm(viewModel);
+            var result = await _sut.ProviderConfirm(viewModel);
 
             // Assert
-            var redirect = (RedirectToRouteResult)result.Should().BeOfType<Task<IActionResult>>().Subject.Result;
+            var redirect = result.Should().BeOfType<RedirectToRouteResult>().Subject;
             redirect.RouteName.Should().Be(ProviderController.ProviderSearchGet);
         }
 

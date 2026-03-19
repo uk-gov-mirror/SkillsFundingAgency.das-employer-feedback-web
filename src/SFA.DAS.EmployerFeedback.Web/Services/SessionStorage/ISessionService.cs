@@ -8,7 +8,7 @@ namespace SFA.DAS.EmployerFeedback.Web.Services.SessionStorage
 {
     public interface ISessionService
     {
-        SurveyModel GetSurveyModel();
+        SurveyModel? GetSurveyModel();
         void SetSurveyModel(SurveyModel surveyModel);
         SurveyModel UpdateSurveyModel(Action<SurveyModel> action);
         PagingState GetPagingState();

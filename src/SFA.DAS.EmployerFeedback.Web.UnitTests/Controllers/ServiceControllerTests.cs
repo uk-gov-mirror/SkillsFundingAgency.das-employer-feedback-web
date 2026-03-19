@@ -65,7 +65,7 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Controllers
         }
 
         [Test]
-        public void SignOut_Should_Return_SignOutResult_With_Correct_Schemes_When_StubAuth_False()
+        public async Task SignOut_Should_Return_SignOutResult_With_Correct_Schemes_When_StubAuth_False()
         {
             // Arrange
             var expectedToken = "id123";
@@ -91,7 +91,7 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Controllers
             _mockConfig.Setup(c => c["StubAuth"]).Returns("false");
 
             // Act
-            var result = _sut.SignOut();
+            var result = await _sut.SignOut();
 
             // Assert
             var signOutResult = result.Should().BeOfType<SignOutResult>().Subject;
@@ -105,7 +105,7 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Controllers
         }
 
         [Test]
-        public void SignOut_Should_Include_Only_Cookie_Scheme_When_StubAuth_True()
+        public async Task SignOut_Should_Include_Only_Cookie_Scheme_When_StubAuth_True()
         {
             // Arrange
             var expectedToken = "id123";
@@ -131,7 +131,7 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Controllers
             _mockConfig.Setup(c => c["StubAuth"]).Returns("true");
 
             // Act
-            var result = _sut.SignOut();
+            var result = await _sut.SignOut();
 
             // Assert
             var signOutResult = result.Should().BeOfType<SignOutResult>().Subject;
