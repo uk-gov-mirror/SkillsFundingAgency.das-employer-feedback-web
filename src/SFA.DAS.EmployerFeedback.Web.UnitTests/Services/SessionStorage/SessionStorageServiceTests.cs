@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Text.Json;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -17,15 +16,13 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Services
     public class SessionStorageServiceTests
     {
         private Mock<ISessionStorageService> _sessionStorageServiceMock;       
-        private SessionService _sessionService;
-        private Guid _userId;
+        private SessionService _sessionService;        
 
         [SetUp]
         public void Setup()
         {
             _sessionStorageServiceMock = new Mock<ISessionStorageService>();          
-            _sessionService = new SessionService(_sessionStorageServiceMock.Object);
-            _userId = Guid.NewGuid();
+            _sessionService = new SessionService(_sessionStorageServiceMock.Object);           
         }
 
         private static string ToJson<T>(T obj) => JsonSerializer.Serialize(obj);
@@ -85,7 +82,7 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Services
         }
 
         [Test]
-        public async Task GetSurveyModel_Should_Return_Empty_Model_When_No_Value_Found()
+        public void  GetSurveyModel_Should_Return_Empty_Model_When_No_Value_Found()
         {
             // Arrange
             _sessionStorageServiceMock
@@ -131,7 +128,7 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Services
         }
 
         [Test]
-        public async Task GetPagingState_Should_Return_Deserialized_PagingState()
+        public void GetPagingState_Should_Return_Deserialized_PagingState()
         {
             // Arrange
             var expectedItem = new PagingState
@@ -151,7 +148,7 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Services
         }
 
         [Test]
-        public async Task GetPagingState_Should_Return_Default_PagingState_When_No_Value_Found()
+        public void GetPagingState_Should_Return_Default_PagingState_When_No_Value_Found()
         {
             // Arrange
             _sessionStorageServiceMock
@@ -257,7 +254,7 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Services
         }
 
         [Test]
-        public async Task GetFeedbackSource_Should_Return_Null_When_No_Value_Found()
+        public void GetFeedbackSource_Should_Return_Null_When_No_Value_Found()
         {
             // Arrange
             _sessionStorageServiceMock
@@ -272,7 +269,7 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Services
         }
 
         [Test]
-        public async Task SetProviders_Should_Store_Serialized_Providers()
+        public void SetProviders_Should_Store_Serialized_Providers()
         {
             // Arrange
             var providers = new List<ProviderSearchViewModel.EmployerTrainingProvider>

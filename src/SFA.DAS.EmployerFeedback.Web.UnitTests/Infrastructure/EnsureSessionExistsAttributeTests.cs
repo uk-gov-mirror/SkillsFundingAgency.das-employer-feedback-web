@@ -72,7 +72,7 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Infrastructure
         }
 
         [Test]
-        public async Task When_UserId_Is_Missing_Should_Log_Warn_And_Redirect_To_ProviderSearchGet_And_Not_Call_Next()
+        public void  When_UserId_Is_Missing_Should_Log_Warn_And_Redirect_To_ProviderSearchGet_And_Not_Call_Next()
         {
             // Arrange
             _userService.Setup(u => u.GetUserId()).Returns((Guid?)null);
@@ -81,7 +81,7 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Infrastructure
             var (next, signal) = NextDelegate();
 
             // Act
-            await _sut.OnActionExecutionAsync(context, next);
+            _sut.OnActionExecuting(context);
 
             // Assert
             signal.IsCompleted.Should().BeFalse(); // next() not called
@@ -115,7 +115,7 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Infrastructure
             var (next, signal) = NextDelegate();
 
             // Act
-            _sut.OnActionExecutionAsync(context, next);
+            _sut.OnActionExecuting(context);
 
             // Assert
             signal.IsCompleted.Should().BeFalse(); // next() not called
@@ -136,7 +136,7 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Infrastructure
         }
 
         [Test]
-        public async Task When_Survey_Exists_Should_Call_Next_And_Not_Set_Result()
+        public void  When_Survey_Exists_Should_Call_Next_And_Not_Set_Result()
         {
             // Arrange
             var userId = Guid.NewGuid();
@@ -147,10 +147,9 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Infrastructure
             var (next, signal) = NextDelegate();
 
             // Act
-            await _sut.OnActionExecutionAsync(context, next);
+            _sut.OnActionExecuting(context);
 
-            // Assert
-            signal.IsCompleted.Should().BeTrue(); // next() was called
+            // Assert            
             context.Result.Should().BeNull();
 
             _session.Verify(s => s.GetSurveyModel(), Times.Once);

@@ -167,7 +167,8 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Controllers
             // Assert
             _mockOrchestrator.Verify(o => o.ValidateProviderConfirmViewModel(viewModel, It.IsAny<ModelStateDictionary>()), Times.Once);
 
-            var redirect = result.Should().BeOfType<RedirectToRouteResult>().Subject;
+            var redirect = (RedirectToRouteResult)result.Should().BeOfType<Task<IActionResult>>().Subject.Result;
+            
             redirect.RouteName.Should().Be(ProviderController.ProviderConfirmGet);
             redirect.RouteValues["encodedAccountId"].Should().Be("EFG123");
         }
@@ -184,7 +185,7 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Controllers
             var result = _sut.ProviderConfirm(viewModel);
 
             // Assert
-            var redirect = result.Should().BeOfType<RedirectToRouteResult>().Subject;
+            var redirect = (RedirectToRouteResult)result.Should().BeOfType<Task<IActionResult>>().Subject.Result;
             redirect.RouteName.Should().Be(ProviderController.ProviderSearchGet);
         }
 
@@ -202,7 +203,8 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Controllers
             // Assert
             _mockOrchestrator.Verify(o => o.CreateNewSurvey(viewModel), Times.Once);
 
-            var redirect = result.Should().BeOfType<RedirectToRouteResult>().Subject;
+            var redirect = (RedirectToRouteResult)result.Should().BeOfType<Task<IActionResult>>().Subject.Result;
+           
             redirect.RouteName.Should().Be(QuestionsController.StartFeedbackGet);
             redirect.RouteValues["EncodedAccountId"].Should().Be("MNO789");
         }

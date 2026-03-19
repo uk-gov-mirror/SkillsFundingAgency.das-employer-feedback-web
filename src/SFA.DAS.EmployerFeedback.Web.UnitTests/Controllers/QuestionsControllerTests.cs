@@ -78,7 +78,7 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Controllers
         }
 
         [Test]
-        public async Task QuestionOne_Post_Should_Redirect_To_Get_When_Invalid()
+        public void QuestionOne_Post_Should_Redirect_To_Get_When_Invalid()
         {
             // Arrange
             var viewModel = new QuestionOneStrengthsViewModel { EncodedAccountId = "AAA1111", ReturnToReviewAnswers = false };
@@ -94,7 +94,7 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Controllers
         }
 
         [Test]
-        public async Task QuestionOne_Post_Should_Update_And_Redirect_To_Review_When_ReturnToReviewAnswers_True()
+        public void QuestionOne_Post_Should_Update_And_Redirect_To_Review_When_ReturnToReviewAnswers_True()
         {
             // Arrange
             var viewModel = new QuestionOneStrengthsViewModel { EncodedAccountId = "EFG123", ReturnToReviewAnswers = true };
@@ -112,7 +112,7 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Controllers
         }
 
         [Test]
-        public async Task QuestionOne_Post_Should_Update_And_Redirect_To_QuestionTwo_When_Valid()
+        public void QuestionOne_Post_Should_Update_And_Redirect_To_QuestionTwo_When_Valid()
         {
             // Arrange
             var viewModel = new QuestionOneStrengthsViewModel { EncodedAccountId = "MNO222", ReturnToReviewAnswers = false };
@@ -130,7 +130,7 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Controllers
         }
 
         [Test]
-        public async Task QuestionTwo_Get_Should_Return_View_With_Model()
+        public void QuestionTwo_Get_Should_Return_View_With_Model()
         {
 
             // Arrange
@@ -147,7 +147,7 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Controllers
         }
 
         [Test]
-        public async Task QuestionTwo_Post_Should_Redirect_To_Get_When_Invalid()
+        public void QuestionTwo_Post_Should_Redirect_To_Get_When_Invalid()
         {
             // Arrange
             var viewModel = new QuestionTwoWeaknessesViewModel { EncodedAccountId = "ABC321", ReturnToReviewAnswers = false };
@@ -163,7 +163,7 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Controllers
         }
 
         [Test]
-        public async Task QuestionTwo_Post_Should_Update_And_Redirect_To_Review_When_ReturnToReviewAnswers_True()
+        public void QuestionTwo_Post_Should_Update_And_Redirect_To_Review_When_ReturnToReviewAnswers_True()
         {
             // Arrange
             var viewModel = new QuestionTwoWeaknessesViewModel { EncodedAccountId = "CAB123", ReturnToReviewAnswers = true };
@@ -181,7 +181,7 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Controllers
         }
 
         [Test]
-        public async Task QuestionTwo_Post_Should_Update_And_Redirect_To_QuestionThree_When_Valid()
+        public void QuestionTwo_Post_Should_Update_And_Redirect_To_QuestionThree_When_Valid()
         {
             // Arrange
             var viewModel = new QuestionTwoWeaknessesViewModel { EncodedAccountId = "EFG432", ReturnToReviewAnswers = false };
@@ -199,7 +199,7 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Controllers
         }
 
         [Test]
-        public async Task QuestionThree_Get_Should_Return_View_With_Model()
+        public void QuestionThree_Get_Should_Return_View_With_Model()
         {
             // Arrange
             var model = new QuestionRequestModel();
@@ -215,7 +215,7 @@ namespace SFA.DAS.EmployerFeedback.Web.UnitTests.Controllers
         }
 
         [Test]
-        public async Task QuestionThree_Post_Should_Redirect_To_Get_When_Invalid()
+        public void QuestionThree_Post_Should_Redirect_To_Get_When_Invalid()
         {
             // Arrange
             var viewModel = new QuestionThreeRatingViewModel { EncodedAccountId = "ABC321", ReturnToReviewAnswers = false };

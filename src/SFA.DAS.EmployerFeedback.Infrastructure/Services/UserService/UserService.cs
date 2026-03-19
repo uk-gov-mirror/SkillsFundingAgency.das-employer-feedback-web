@@ -21,17 +21,26 @@ namespace SFA.DAS.EmployerFeedback.Infrastructure.Services.UserService
 
         private bool IsUserAuthenticated()
         {
-            return _httpContextAccessor.HttpContext.User.Identity.IsAuthenticated;
+            return _httpContextAccessor.HttpContext?.User?.Identity?.IsAuthenticated == true;
         }
 
         private bool TryGetUserClaimValue(string key, out string value)
         {
-            var claimsIdentity = (ClaimsIdentity)_httpContextAccessor.HttpContext.User.Identity;
-            var claim = claimsIdentity.FindFirst(key);
-            var exists = claim != null;
-            value = exists ? claim.Value : null;
+            value = null;
 
-            return exists;
+            var claimsIdentity = _httpContextAccessor.HttpContext?.User?.Identity as ClaimsIdentity;
+            if (claimsIdentity == null)
+            {
+                return false;
+
+            }
+            var claim = claimsIdentity.FindFirst(key);
+            if (claim == null) {
+                return false;
+            }
+            value = claim.Value;
+
+            return true;
         }
 
         private string GetUserClaimAsString(string claim)

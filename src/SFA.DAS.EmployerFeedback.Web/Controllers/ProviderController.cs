@@ -92,7 +92,7 @@ namespace SFA.DAS.EmployerFeedback.Web.Controllers
 
         [HttpPost]
         [Route("providers/{providerId}", Name = ProviderConfirmPost)]
-        public IActionResult ProviderConfirm(ProviderConfirmViewModel viewModel)
+        public async Task<IActionResult> ProviderConfirm(ProviderConfirmViewModel viewModel)
         {
             if (!_providerOrchestrator.ValidateProviderConfirmViewModel(viewModel, ModelState))
             {
@@ -104,7 +104,7 @@ namespace SFA.DAS.EmployerFeedback.Web.Controllers
                 return RedirectToRoute(ProviderSearchGet, new { encodedAccountId = viewModel.EncodedAccountId });
             }
 
-            _providerOrchestrator.CreateNewSurvey(viewModel);
+            await _providerOrchestrator.CreateNewSurvey(viewModel);
             return RedirectToRoute(QuestionsController.StartFeedbackGet, new { viewModel.EncodedAccountId });
         }
     }

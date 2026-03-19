@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Logging;
@@ -22,7 +21,7 @@ namespace SFA.DAS.EmployerFeedback.Web.Services.SessionStorage
             _userService = userService;
         }
 
-        public override async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
+        public override void  OnActionExecuting(ActionExecutingContext context)
         {
             var userId = _userService.GetUserId();
             if (!userId.HasValue || _sessionService.GetSurveyModel() == null)
@@ -33,8 +32,7 @@ namespace SFA.DAS.EmployerFeedback.Web.Services.SessionStorage
                 context.Result = controller.RedirectToRoute(ProviderController.ProviderSearchGet);
                 return;
             }
-
-            await next();
+            
         }
     }
 }

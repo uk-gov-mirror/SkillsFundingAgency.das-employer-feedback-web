@@ -27,9 +27,9 @@ namespace SFA.DAS.EmployerFeedback.Web.Services.SessionStorage
             var result = new SurveyModel();
 
             if (!string.IsNullOrWhiteSpace(json))
-            {
+           {
                 result = JsonSerializer.Deserialize<SurveyModel>(json);
-            }
+           }
 
             return result;            
         }
@@ -99,7 +99,8 @@ namespace SFA.DAS.EmployerFeedback.Web.Services.SessionStorage
 
             if (!string.IsNullOrWhiteSpace(json))
             {
-                result = JsonSerializer.Deserialize<List<ProviderSearchViewModel.EmployerTrainingProvider>>(json);
+                result = JsonSerializer.Deserialize<List<ProviderSearchViewModel.EmployerTrainingProvider>>(json)
+                         ?? new List<ProviderSearchViewModel.EmployerTrainingProvider>();
             }
 
             return result;            

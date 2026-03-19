@@ -54,7 +54,7 @@ namespace SFA.DAS.EmployerFeedback.Web.Controllers
         [Route("signout", Name = SignoutGet)]
         public new IActionResult SignOut()
         {
-            // clear distributed cache entries associated with the user if we can determine the user id
+            // clear session entries before sign-out
             var maybeUserId = _userService.GetUserId();
             if (maybeUserId.HasValue)
             {
@@ -64,7 +64,7 @@ namespace SFA.DAS.EmployerFeedback.Web.Controllers
                 }
                 catch (Exception ex)
                 {
-                    _logger?.LogWarning(ex, "Failed to clear distributed session cache for user {UserId}", maybeUserId.Value);
+                    _logger?.LogWarning(ex, "Failed to clear session state for user {UserId}", maybeUserId.Value);
                 }
             }
 
