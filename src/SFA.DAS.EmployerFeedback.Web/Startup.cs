@@ -1,4 +1,3 @@
-using System.Diagnostics.CodeAnalysis;
 using FluentValidation;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -16,6 +15,8 @@ using SFA.DAS.EmployerFeedback.Web.Filters;
 using SFA.DAS.EmployerFeedback.Web.ModelBinders;
 using SFA.DAS.EmployerFeedback.Web.StartupExtensions;
 using SFA.DAS.Validation.Mvc.Extensions;
+using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace SFA.DAS.EmployerFeedback.Web
 {
@@ -34,6 +35,10 @@ namespace SFA.DAS.EmployerFeedback.Web
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddHttpContextAccessor();
+            services.AddHsts(options =>
+            {
+                options.MaxAge = TimeSpan.FromDays(90);
+            });
             services.AddConfigurationOptions(_configuration);
             services.AddOpenTelemetryRegistration(_configuration["APPLICATIONINSIGHTS_CONNECTION_STRING"]!);
             services.AddAntiforgery(options =>
@@ -101,6 +106,7 @@ namespace SFA.DAS.EmployerFeedback.Web
                 // re-executes the pipeline for non-exception status codes (e.g., 404) at /error/{statusCode}
                 app.UseStatusCodePagesWithReExecute("/error/{0}");
 
+                // HSTS configured to 90 days in ConfigureServices.
                 app.UseHsts();
             }
 
