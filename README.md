@@ -50,7 +50,7 @@ In the web project, if not exist already, add `AppSettings.Development.json` fil
 ```
 
 ## Technologies
-* .NetCore 8.0
+* .Net 10.0
 * NUnit
 * Moq
 * FluentAssertions

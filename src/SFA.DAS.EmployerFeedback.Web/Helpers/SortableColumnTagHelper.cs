@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
@@ -40,11 +39,11 @@ namespace SFA.DAS.EmployerFeedback.Web.Helpers
         [HtmlAttributeNotBound]
         public ViewContext ViewContext { get; set; }
 
-        private readonly IUrlHelper _urlHelper;
+        private readonly IUrlHelperFactory _urlHelperFactory;
 
-        public SortableColumnTagHelper(IUrlHelperFactory urlHelperFactory, IActionContextAccessor contextAccessor)
+        public SortableColumnTagHelper(IUrlHelperFactory urlHelperFactory)
         {
-            _urlHelper = urlHelperFactory.GetUrlHelper(contextAccessor.ActionContext);
+            _urlHelperFactory = urlHelperFactory;
         }
 
         public override void Process(TagHelperContext context, TagHelperOutput output)
@@ -60,7 +59,8 @@ namespace SFA.DAS.EmployerFeedback.Web.Helpers
                 SortOrder = isSortColumn ? sortOrder.Reverse().ToString() : DefaultSortOrder.ToString()
             };
 
-            var href = _urlHelper.RouteUrl(RouteName, values);
+            var urlHelper = _urlHelperFactory.GetUrlHelper(ViewContext);
+            var href = urlHelper.RouteUrl(RouteName, values);
 
             var sortOrderCssSuffix = string.Empty;
             if (isSortColumn)
